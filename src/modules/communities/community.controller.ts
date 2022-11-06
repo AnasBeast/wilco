@@ -17,6 +17,7 @@ import { BaseCommunity } from 'src/dto/communities/base-community.dto';
 import { CommunityService } from './community.service';
 
 @Controller('community')
+@ApiTags('community')
 export class CommunityController {
     constructor(private readonly service: CommunityService) { }
 
