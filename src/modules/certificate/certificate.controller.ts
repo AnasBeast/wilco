@@ -13,67 +13,67 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { BaseCommunity } from 'src/dto/communities/base-community.dto';
-import { CommunityService } from './community.service';
+import { BaseCertificate } from 'src/dto/certificate/base-certificate.dto';
+import { CertificateService } from './certificate.service';
 
-@Controller('community')
-@ApiTags('community')
-export class CommunityController {
-  constructor(private readonly service: CommunityService) {}
+@Controller('certificates')
+@ApiTags('certificates')
+export class CertificateController {
+  constructor(private readonly service: CertificateService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get List of Communities' })
+  @ApiOperation({ summary: 'Get List of Certificates' })
   @ApiResponse({
     status: 200,
     description: 'The records found',
-    type: [BaseCommunity],
+    type: [BaseCertificate],
   })
   async index() {
     return await this.service.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get Community' })
+  @ApiOperation({ summary: 'Get Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
-    type: BaseCommunity,
+    type: BaseCertificate,
   })
   async find(@Param('id') id: string) {
     return await this.service.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create Community' })
+  @ApiOperation({ summary: 'Create Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
-    type: BaseCommunity,
+    type: BaseCertificate,
   })
-  async create(@Body() createCommunityDto: BaseCommunity) {
-    return await this.service.create(createCommunityDto);
+  async create(@Body() createTodoDto: BaseCertificate) {
+    return await this.service.create(createTodoDto);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update Community' })
+  @ApiOperation({ summary: 'Update Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record updated',
-    type: BaseCommunity,
+    type: BaseCertificate,
   })
   async update(
     @Param('id') id: string,
-    @Body() updateCommunityDto: BaseCommunity,
+    @Body() updateTodoDto: BaseCertificate,
   ) {
-    return await this.service.update(id, updateCommunityDto);
+    return await this.service.update(id, updateTodoDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete Community' })
+  @ApiOperation({ summary: 'Delete Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',
-    type: BaseCommunity,
+    type: BaseCertificate,
   })
   async delete(@Param('id') id: string) {
     return await this.service.delete(id);

@@ -6,13 +6,13 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // versioning 
+  // versioning
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: '1'
+    defaultVersion: '1',
   });
 
-  // enabling swagger 
+  // enabling swagger
   const config = new DocumentBuilder()
     .setTitle('Wilco')
     .setDescription('Wilco WS API V1')

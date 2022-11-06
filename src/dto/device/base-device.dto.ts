@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BaseCommunity {
+export class BaseDevice {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  name?: string;
+  token?: string;
 }

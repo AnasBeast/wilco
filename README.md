@@ -74,3 +74,6 @@ Nest is [MIT licensed](LICENSE).
 
 # Swagger API Documentation
 http://localhost:3000/api
+
+# ESLint --fix
+npm run lint -- --fix

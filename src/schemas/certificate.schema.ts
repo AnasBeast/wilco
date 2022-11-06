@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type CommunityDocument = Community & Document;
+export type CertificateDocument = Certificate & Document;
 
 @Schema()
-export class Community {
+export class Certificate {
   @Prop({ required: true })
   id: string;
 
@@ -12,4 +12,4 @@ export class Community {
   name?: string;
 }
 
-export const CommunitySchema = SchemaFactory.createForClass(Community);
+export const CertificateSchema = SchemaFactory.createForClass(Certificate);
