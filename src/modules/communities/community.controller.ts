@@ -50,8 +50,8 @@ export class CommunityController {
         description: 'The record found',
         type: BaseCommunity,
     })
-    async create(@Body() createTodoDto: BaseCommunity) {
-        return await this.service.create(createTodoDto);
+    async create(@Body() createCommunityDto: BaseCommunity) {
+        return await this.service.create(createCommunityDto);
     }
 
     @Put(':id')
@@ -61,8 +61,8 @@ export class CommunityController {
         description: 'The record updated',
         type: BaseCommunity,
     })
-    async update(@Param('id') id: string, @Body() updateTodoDto: BaseCommunity) {
-        return await this.service.update(id, updateTodoDto);
+    async update(@Param('id') id: string, @Body() updateCommunityDto: BaseCommunity) {
+        return await this.service.update(id, updateCommunityDto);
     }
 
     @Delete(':id')
