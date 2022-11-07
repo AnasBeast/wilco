@@ -1,3 +1,4 @@
+import { VersioningType } from '@nestjs/common';
 import { swaggerConfig } from './providers/swagger/config';
 import { AppConfigService } from './config/app/config.service';
 import { NestFactory } from '@nestjs/core';
@@ -8,6 +9,11 @@ import { urlencoded, json } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
   // app.setGlobalPrefix('/api/v1');
   app.setGlobalPrefix('api/v1');
   app.use(json({ limit: '50mb' }));
