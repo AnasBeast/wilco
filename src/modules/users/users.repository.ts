@@ -12,6 +12,10 @@ export class UsersRepository {
     return await this.userModel.findOne(filter).exec();
   }
 
+  async getUsersByFilter(filter: object): Promise<User[]> {
+    return await this.userModel.find(filter).exec();
+  }
+
   async createNewUser(user: SignUpDtoProfilePhotoDto): Promise<User> {
     return await this.userModel.create(user);
   }

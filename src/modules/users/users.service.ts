@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { S3Service } from './../files/s3.service';
 import { RolesService } from './../roles/roles.service';
 import { SignUpDto } from './../../authentication/dto/sign-up.dto';
@@ -13,6 +14,10 @@ export class UsersService {
 
   async getUserByEmail(email: string): Promise<UserEntity> {
     return await this.usersRepository.getUserByFilter({ email });
+  }
+
+  async getUserById(id: string): Promise<UserEntity> {
+    return await this.usersRepository.getUserByFilter({ _id: new Types.ObjectId(id) });
   }
 
   async create(body: SignUpDto, file: Express.Multer.File) {
