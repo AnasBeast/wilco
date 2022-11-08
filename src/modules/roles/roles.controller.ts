@@ -1,4 +1,4 @@
-import { RoleEntity } from './entities/role.entity';
+import { RoleEntity } from '../../common/entities/role.entity';
 import { CreateRoleDto } from './dto/create.dto';
 import { RolesService } from './roles.service';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
@@ -19,6 +19,6 @@ export class RolesController {
   @ResponseMessage(CREATED)
   @UseInterceptors(TransformationInterceptor)
   async createRole(@Body() body: CreateRoleDto): Promise<RoleEntity> {
-    return this.rolesService.createRole(body);
+    return await this.rolesService.createRole(body);
   }
 }

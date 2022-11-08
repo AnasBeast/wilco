@@ -1,4 +1,4 @@
-import { RoleEntity } from './entities/role.entity';
+import { RoleEntity } from '../../common/entities/role.entity';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { CreateRoleDto } from './dto/create.dto';
 import { RolesRepository } from './roles.repository';
@@ -12,7 +12,7 @@ export class RolesService {
     return await this.rolesRepository.getRoleByFilter(filter);
   }
 
-  async createRole(body: CreateRoleDto) {
+  async createRole(body: CreateRoleDto): Promise<RoleEntity> {
     const { name } = body;
     const roleExist = await this.rolesRepository.getRoleByFilter({ name });
     if (roleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);

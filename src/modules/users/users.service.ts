@@ -5,7 +5,7 @@ import { SignUpDto } from './../../authentication/dto/sign-up.dto';
 import { AuthenticationProvider } from './../../authentication/auth.provider';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { UsersRepository } from './users.repository';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity } from '../../common/entities/user.entity';
 import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 
 @Injectable()

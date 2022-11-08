@@ -1,4 +1,4 @@
-import { RoleEntity } from './../../roles/entities/role.entity';
+import { RoleEntity } from './role.entity';
 import { Date } from 'mongoose';
 
 export class UserEntity {

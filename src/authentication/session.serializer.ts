@@ -1,4 +1,4 @@
-import { UserEntity } from './../modules/users/entities/user.entity';
+import { UserEntity } from '../common/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 

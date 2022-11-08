@@ -1,4 +1,4 @@
-import { UserEntity } from './../../modules/users/entities/user.entity';
+import { UserEntity } from '../../common/entities/user.entity';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import type { Response } from 'express';
 import { Observable } from 'rxjs';

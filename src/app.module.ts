@@ -1,3 +1,4 @@
+import { AirportsModule } from './modules/airports/airports.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './authentication/auth.module';
@@ -6,7 +7,7 @@ import { AppConfigModule } from './config/app/config.module';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [AppConfigModule, MongoDBModule, UsersModule, AuthModule, RolesModule],
+  imports: [AppConfigModule, MongoDBModule, UsersModule, AuthModule, RolesModule, AirportsModule],
   controllers: [],
   providers: [],
 })

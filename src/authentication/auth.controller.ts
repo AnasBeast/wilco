@@ -4,7 +4,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { TokenInterceptor } from './interceptors/token.interceptor';
-import { UserEntity } from './../modules/users/entities/user.entity';
+import { UserEntity } from '../common/entities/user.entity';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';

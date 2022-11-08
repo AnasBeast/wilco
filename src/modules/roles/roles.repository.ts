@@ -1,4 +1,4 @@
-import { RoleEntity } from './entities/role.entity';
+import { RoleEntity } from '../../common/entities/role.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -9,7 +9,7 @@ export class RolesRepository {
   constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) {}
 
   async getRoleByFilter(filter: object): Promise<Role> {
-    return await await this.roleModel.findOne(filter).exec();
+    return await this.roleModel.findOne(filter).exec();
   }
 
   async createRole(body: RoleEntity): Promise<Role> {

@@ -3,7 +3,7 @@ import { AuthenticationProvider } from './auth.provider';
 
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { UserEntity } from './../modules/users/entities/user.entity';
+import { UserEntity } from '../common/entities/user.entity';
 import { UserResponseDto } from './dto/user.response.dto';
 import { UsersService } from './../modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
