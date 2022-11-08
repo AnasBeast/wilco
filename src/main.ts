@@ -25,8 +25,7 @@ async function bootstrap() {
 
   setup(app);
 
-  await app
-    .listen(appConfig.port || 8080, '0.0.0.0')
-    .then(() => console.log(`Application is running on: http://localhost:${appConfig.port}`));
+  const port = appConfig.port || 8080;
+  await app.listen(port, '0.0.0.0').then(() => console.log(`Application is running on: http://localhost:${port}`));
 }
 bootstrap();

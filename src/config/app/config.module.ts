@@ -12,7 +12,7 @@ import configuration from './configuration';
         APP_NAME: Joi.string().default('MyApp'),
         APP_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         APP_URL: Joi.string().default('http://my-app.test'),
-        APP_PORT: Joi.number().default(9000),
+        PORT: Joi.number().default(8080),
         JWT_SECRET_KEY: Joi.string().default('secret'),
         JWT_EXPIRATION_TIME: Joi.string().default('10d'),
       }),
