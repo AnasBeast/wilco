@@ -6,7 +6,7 @@ export type RoleDocument = Role & Document;
 @Schema({ timestamps: true })
 export class Role {
   @ApiProperty()
-  @Prop({ unique: true })
+  @Prop({ unique: true, required: true })
   name: string;
 }
 

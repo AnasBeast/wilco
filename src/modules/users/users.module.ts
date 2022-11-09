@@ -1,3 +1,4 @@
+import { UsersController } from './users.controller';
 import { PilotsService } from './pilots.service';
 import { S3Module } from './../files/s3.module';
 import { RolesModule } from './../roles/roles.module';
@@ -9,6 +10,7 @@ import { Module } from '@nestjs/common';
 import { IsUserAlreadyExist } from './UserExists';
 @Module({
   imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), RolesModule, S3Module],
+  controllers: [UsersController],
   providers: [UsersService, PilotsService, UsersRepository, IsUserAlreadyExist],
   exports: [UsersService],
 })

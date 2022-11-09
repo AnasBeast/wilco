@@ -14,8 +14,7 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-  // app.setGlobalPrefix('/api/v1');
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api');
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   const appConfig: AppConfigService = app.get(AppConfigService);

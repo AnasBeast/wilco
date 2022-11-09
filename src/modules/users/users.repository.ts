@@ -9,14 +9,14 @@ export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getUserByFilter(filter: object): Promise<User> {
-    return await this.userModel.findOne(filter).exec();
+    return await this.userModel.findOne(filter).populate('role home_airport').exec();
   }
 
   async getUsersByFilter(filter: object): Promise<User[]> {
-    return await this.userModel.find(filter).exec();
+    return await this.userModel.find(filter).populate('role home_airport').exec();
   }
 
   async createNewUser(user: SignUpDtoProfilePhotoDto): Promise<User> {
-    return await this.userModel.create(user);
+    return await this.userModel.create(user).then((user) => user.populate('role home_airport'));
   }
 }

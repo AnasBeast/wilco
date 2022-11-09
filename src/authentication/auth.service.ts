@@ -25,12 +25,8 @@ export class AuthService {
   }
 
   async register(file: Express.Multer.File, signUpDto: SignUpDto): Promise<any> {
-    try {
-      const user = await this.usersService.create(signUpDto, file);
-      return this.transformUserResponse(user);
-    } catch (error) {
-      console.log(error);
-    }
+    const user = await this.usersService.create(signUpDto, file);
+    return this.transformUserResponse(user);
   }
 
   async verifyPayload(payload: JwtPayload): Promise<UserResponseDto> {

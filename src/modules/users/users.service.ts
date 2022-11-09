@@ -27,6 +27,8 @@ export class UsersService {
     const roleExist = await this.rolesService.getRoleByFilter({ _id: body.role });
     if (!roleExist) throw new HttpException(errors.ROLE_NOT_EXIST, HttpStatus.BAD_REQUEST);
 
+    if (roleExist.name === 'pilot' && !body.home_airport) throw new HttpException(errors.HOME_AIRPORT_NOT_EXIST, HttpStatus.BAD_REQUEST);
+
     const resUpload = await this.s3Service.uploadFile(file);
     if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
 

@@ -19,6 +19,14 @@ export class UsersController {
     return await this.pilotsService.searchPilotsByName(pattern);
   }
 
+  @Get('/getPilotsByHomeAirPort/:airportId')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage(FETCHED)
+  @UseInterceptors(TransformationInterceptor)
+  async getPilotsByHomeAirPort(@Param('airportId') airportId: string) {
+    return await this.pilotsService.getPilotsByHomeAirPort(airportId);
+  }
+
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)

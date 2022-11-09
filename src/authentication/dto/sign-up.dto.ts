@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty, IsEmail, MinLength, Validate } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsEmail, MinLength, Validate, IsOptional } from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { IsUserAlreadyExist } from 'src/modules/users/UserExists';
 
@@ -20,6 +20,9 @@ export class SignUpDto {
   @IsNotEmpty()
   @ApiProperty({ example: 'pilot role id' })
   readonly role: ObjectId;
+
+  @IsOptional()
+  readonly home_airport?: ObjectId;
 
   @IsDefined()
   @IsNotEmpty()

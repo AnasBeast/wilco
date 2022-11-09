@@ -15,6 +15,8 @@ export const errors = {
   PHONE_EXIST: { message: 'Phone number already exists', code: 'PHONE_EXIST' },
   ROLE_EXIST: { message: 'Role already exists', code: 'ROLE_EXIST' },
   ROLE_NOT_EXIST: { message: 'Role not exists', code: 'ROLE_NOT_EXIST' },
+  AIRPORT_NOT_EXIST: { message: 'Airport not exists', code: 'AIRPORT_NOT_EXIST' },
+  HOME_AIRPORT_NOT_EXIST: { message: 'Home airport for pilot not exists', code: 'HOME_AIRPORT_NOT_EXIST' },
   FILE_UPLOAD_ERROR: { message: 'Error on upload file to aws s3', code: 'FILE_UPLOAD_ERROR' },
   ADMIN_EXIST: { message: 'Admin already exists', code: 'ADMIN_EXIST' },
   USER_NOT_EXIST: { message: 'User does not exists', code: 'USER_NOT_EXIST' },

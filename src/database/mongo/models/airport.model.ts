@@ -6,7 +6,7 @@ export type AirportDocument = Airport & Document;
 @Schema({ timestamps: true })
 export class Airport {
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop({ unique: true, required: true })
   name: string;
 }
 
