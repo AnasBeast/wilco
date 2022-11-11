@@ -4,7 +4,6 @@ import { AuthenticationProvider } from './auth.provider';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UserEntity } from '../common/entities/user.entity';
-import { UserResponseDto } from './dto/user.response.dto';
 import { UsersService } from './../modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -29,10 +28,8 @@ export class AuthService {
     return this.transformUserResponse(user);
   }
 
-  async verifyPayload(payload: JwtPayload): Promise<UserResponseDto> {
+  async verifyPayload(payload: JwtPayload): Promise<UserEntity> {
     let user: UserEntity;
-
-    console.log({ payload });
 
     try {
       user = await this.usersService.getUserByEmail(payload.sub);
@@ -42,14 +39,14 @@ export class AuthService {
     return this.transformUserResponse(user);
   }
 
-  signToken(user: UserEntity): string {
+  signToken(email: string): string {
     const payload = {
-      sub: user.email,
+      sub: email,
     };
     return this.jwtService.sign(payload);
   }
 
-  transformUserResponse(user: UserEntity): UserResponseDto {
+  transformUserResponse(user: UserEntity): UserEntity {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const newUser = { ...user }._doc;

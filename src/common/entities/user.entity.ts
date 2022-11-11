@@ -1,8 +1,9 @@
 import { AirportEntity } from 'src/common/entities/airport.entity';
 import { RoleEntity } from './role.entity';
-import { Date } from 'mongoose';
+import { Date, ObjectId } from 'mongoose';
 
 export class UserEntity {
+  id?: ObjectId;
   email: string;
   password: string;
   role: RoleEntity;

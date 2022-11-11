@@ -1,6 +1,7 @@
+import { Response as ResponseData } from './transform.interceptor';
+import type { Response } from 'express';
 import { UserEntity } from '../../common/entities/user.entity';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import type { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -10,11 +11,11 @@ import { AuthService } from '../auth.service';
 export class TokenInterceptor implements NestInterceptor {
   constructor(private readonly authService: AuthService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler<UserEntity>): Observable<UserEntity> {
+  intercept(context: ExecutionContext, next: CallHandler<ResponseData<UserEntity>>): Observable<ResponseData<UserEntity>> {
     return next.handle().pipe(
       map((user) => {
         const response = context.switchToHttp().getResponse<Response>();
-        const token = this.authService.signToken(user);
+        const token = this.authService.signToken(user.data.email);
 
         response.setHeader('Authorization', `Bearer ${token}`);
         response.cookie('token', token, {

@@ -5,10 +5,9 @@ import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { UserEntity } from '../common/entities/user.entity';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthUser } from 'src/common/decorators/metadata/users.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 
@@ -40,7 +39,7 @@ export class AuthController {
   @Get('/me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async me(@AuthUser() user: UserEntity): Promise<UserEntity> {
-    return user;
+  async me(@Request() req) {
+    return req.user;
   }
 }

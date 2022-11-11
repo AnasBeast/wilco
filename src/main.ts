@@ -4,8 +4,8 @@ import { AppConfigService } from './config/app/config.service';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
-import { setup } from './setup';
 import { urlencoded, json } from 'express';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,9 +20,15 @@ async function bootstrap() {
   const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  SwaggerModule.setup('/api/v1/swagger', app, document);
+  SwaggerModule.setup('/api/swagger', app, document);
 
-  setup(app);
+  app.use(cookieParser(appConfig.jwtSecret));
+
+  app.enableCors({
+    origin: appConfig.corsOrigin.split(/\s*,\s*/) ?? '*',
+    credentials: true,
+    exposedHeaders: ['Authorization'],
+  });
 
   const port = appConfig.port || 8080;
   await app.listen(port, '0.0.0.0').then(() => console.log(`Application is running on: http://localhost:${port}`));
