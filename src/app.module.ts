@@ -15,6 +15,12 @@ import { CertificateModule } from './modules/certificate/certificate.module';
     CommunitiesModule,
     DeviceModule,
     CertificateModule,
+    AppConfigModule, 
+    MongoDBModule, 
+    UsersModule, 
+    AuthModule, 
+    RolesModule, 
+    AirportsModule
   ],
   controllers: [AppController],
   providers: [AppService],
