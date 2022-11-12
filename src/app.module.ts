@@ -6,6 +6,12 @@ import config from './config/keys';
 import { CommunitiesModule } from './modules/communities/communities.module';
 import { DeviceModule } from './modules/device/device.module';
 import { CertificateModule } from './modules/certificate/certificate.module';
+import { AirportsModule } from './modules/airports/airports.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './authentication/auth.module';
+import { MongoDBModule } from './database/mongo/database.module';
+import { AppConfigModule } from './config/app/config.module';
 
 @Module({
   imports: [
