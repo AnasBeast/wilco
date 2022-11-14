@@ -42,20 +42,20 @@ export class BasePost {
   flight: BasePostFlight;
 
   @ApiProperty()
-  photo_urls: string;
+  photo_urls: string[];
 
   @ApiProperty()
-  photo_preview_urls: string;
+  photo_preview_urls: string[];
 
   @ApiProperty()
-  photo_ids: string;
+  photo_ids: string[];
 
   @ApiProperty()
-  community_tags: string;
+  community_tags: string[];
 
   @ApiProperty()
-  airports: string;
+  airports: string[];
 
   @ApiProperty()
-  hashtags: string;
+  hashtags: string[];
 }

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AirCraft } from 'src/database/mongo/models/airCraft.model';
 import { Role } from 'src/database/mongo/models/role.model';
-import { Certificate } from 'src/schemas/certificate.schema';
-import { PostFlight } from 'src/schemas/post-flight.schema';
+import { BaseCertificate } from '../certificate/base-certificate.dto';
+import { BasePostFlight } from '../post-flight/base-post-flight.dto';
 
 export class BasePilot {
   @ApiProperty()
@@ -24,20 +24,20 @@ export class BasePilot {
   profile_picture_url: string;
 
   @ApiProperty()
-  latest_flights: PostFlight;
+  latest_flights: BasePostFlight[];
 
   @ApiProperty()
-  aircrafts: AirCraft;
+  aircrafts: AirCraft[]; // TODO by Awais
 
   @ApiProperty()
-  certificates: Certificate;
+  certificates: BaseCertificate[];
 
   @ApiProperty()
-  ratings: string; // TODO by AWAIS
+  ratings: string[]; // TODO by AWAIS
 
   @ApiProperty()
-  community_tags: string;
+  community_tags: string[];
 
   @ApiProperty()
-  roles: Role; // TODO by AWAIS
+  roles: Role[]; // TODO by AWAIS
 }
