@@ -10,7 +10,7 @@ import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) { }
+  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) {}
 
   async getUserByEmail(email: string): Promise<UserEntity> {
     return await this.usersRepository.getUserByFilter({ email });
@@ -28,8 +28,6 @@ export class UsersService {
     if (!roleExist) throw new HttpException(errors.ROLE_NOT_EXIST, HttpStatus.BAD_REQUEST);
 
     if (roleExist.name === 'pilot' && !body.home_airport) throw new HttpException(errors.HOME_AIRPORT_NOT_EXIST, HttpStatus.BAD_REQUEST);
-
-    if (!file) throw new HttpException(errors.EMPTY_AVATAR, HttpStatus.BAD_REQUEST);
 
     const resUpload = await this.s3Service.uploadFile(file);
     if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
