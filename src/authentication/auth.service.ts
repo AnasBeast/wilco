@@ -7,6 +7,7 @@ import { UserEntity } from '../common/entities/user.entity';
 import { UsersService } from './../modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/database/mongo/models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -25,11 +26,12 @@ export class AuthService {
 
   async register(file: Express.Multer.File, signUpDto: SignUpDto): Promise<any> {
     const user = await this.usersService.create(signUpDto, file);
+
     return this.transformUserResponse(user);
   }
 
-  async verifyPayload(payload: JwtPayload): Promise<UserEntity> {
-    let user: UserEntity;
+  async verifyPayload(payload: JwtPayload): Promise<User> {
+    let user: User;
 
     try {
       user = await this.usersService.getUserByEmail(payload.sub);
@@ -46,7 +48,7 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  transformUserResponse(user: UserEntity): UserEntity {
+  transformUserResponse(user: User): User {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const newUser = { ...user }._doc;

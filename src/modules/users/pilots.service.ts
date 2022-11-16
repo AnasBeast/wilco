@@ -5,6 +5,7 @@ import { errors } from 'src/common/helpers/responses/error.helper';
 import { RolesService } from '../roles/roles.service';
 import { UsersRepository } from './users.repository';
 import { Types } from 'mongoose';
+import { User } from 'src/database/mongo/models/user.model';
 
 @Injectable()
 export class PilotsService {
@@ -27,7 +28,7 @@ export class PilotsService {
     });
   }
 
-  async getPilotsByHomeAirPort(airportId: string): Promise<UserEntity[]> {
+  async getPilotsByHomeAirPort(airportId: string): Promise<User[]> {
     const pilotRoleExist = await this.getPilotRole();
 
     return await this.usersRepository.getUsersByFilter({

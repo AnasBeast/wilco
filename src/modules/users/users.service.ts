@@ -7,20 +7,21 @@ import { errors } from './../../common/helpers/responses/error.helper';
 import { UsersRepository } from './users.repository';
 import { UserEntity } from '../../common/entities/user.entity';
 import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
+import { User } from 'src/database/mongo/models/user.model';
 
 @Injectable()
 export class UsersService {
   constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) { }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<User> {
     return await this.usersRepository.getUserByFilter({ email });
   }
 
-  async getUserById(id: string): Promise<UserEntity> {
+  async getUserById(id: string): Promise<User> {
     return await this.usersRepository.getUserByFilter({ _id: new Types.ObjectId(id) });
   }
 
-  async create(body: SignUpDto, file: Express.Multer.File) {
+  async create(body: SignUpDto, file: Express.Multer.File): Promise<User> {
     const userExist = await this.usersRepository.getUserByFilter({ email: body.email });
     if (userExist) throw new HttpException(errors.USER_EXIST, HttpStatus.BAD_REQUEST);
 

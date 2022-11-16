@@ -5,6 +5,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { AuthService } from '../auth.service';
+import { User } from 'src/database/mongo/models/user.model';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<UserEntity> {
+  async validate(payload: JwtPayload): Promise<User> {
     return this.authService.verifyPayload(payload);
   }
 }
