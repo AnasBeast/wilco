@@ -27,6 +27,7 @@ export class AuthService {
   async register(file: Express.Multer.File, signUpDto: SignUpDto): Promise<any> {
     const user = await this.usersService.create(signUpDto, file);
 
+    
     return this.transformUserResponse(user);
   }
 

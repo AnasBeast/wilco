@@ -22,6 +22,7 @@ export class UsersService {
   }
 
   async create(body: SignUpDto, file: Express.Multer.File): Promise<User> {
+    
     const userExist = await this.usersRepository.getUserByFilter({ email: body.email });
     if (userExist) throw new HttpException(errors.USER_EXIST, HttpStatus.BAD_REQUEST);
 
