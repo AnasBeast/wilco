@@ -34,4 +34,5 @@ export const errors = {
   },
   SUPERADMIN: { message: 'You are not a superadmin', code: 1000 },
   SAME_STATUS: { message: 'same status', code: 'SAME_STATUS' },
+  EMPTY_AVATAR: { message: 'You must provide your avatar', code: 'EMPTY_AVATAR' }
 };

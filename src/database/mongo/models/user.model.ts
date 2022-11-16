@@ -21,30 +21,10 @@ export class User {
   cometchat_auth_token: string;
 
   @ApiProperty()
-  @Prop()
-  first_name: string;
-
-  @ApiProperty()
-  @Prop()
-  last_name: string;
-
-  @ApiProperty()
-  @Prop({ default: null })
-  description: string;
-
-  @ApiProperty()
-  @Prop({ default: null })
-  primary_aircraft_id: string;
-
-  @ApiProperty()
-  @Prop({ default: null })
-  total_hours: string;
-
-  @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Role',
-    default: 'pilot',
+    required: true,
   })
   role: Role;
 
