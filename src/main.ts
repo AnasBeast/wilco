@@ -1,4 +1,4 @@
-import { VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { swaggerConfig } from './providers/swagger/config';
 import { AppConfigService } from './config/app/config.service';
 import { NestFactory } from '@nestjs/core';
@@ -15,8 +15,13 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   app.setGlobalPrefix('api');
-  app.use(json({ limit: '50mb' }));
-  app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+  // Globally Set EveryEndpoint to use validation on inputs
+  app.useGlobalPipes(new ValidationPipe());
+  //nest js transformes responses to their corresponding type for example if response type is String the response Content-Type is set to text/html
+  //so there is no use for using json as a middleware
+  // app.use(json({ limit: '50mb' }));
+  // app.use(urlencoded({ extended: true, limit: '50mb' }));
   const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 

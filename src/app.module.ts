@@ -1,20 +1,18 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import config from './config/keys';
 import { AppConfigModule } from './config/app/config.module';
+import config from './config/keys';
 import { MongoDBModule } from './database/mongo/database.module';
 
+import { AuthModule } from './authentication/auth.module';
+import { AirportsModule } from './modules/airports/airports.module';
+import { CertificateModule } from './modules/certificate/certificate.module';
 import { CommunitiesModule } from './modules/communities/communities.module';
 import { DeviceModule } from './modules/device/device.module';
-import { CertificateModule } from './modules/certificate/certificate.module';
 import { HashtagsModule } from './modules/hashtags/hashtags.module';
-import { AirportsModule } from './modules/airports/airports.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './authentication/auth.module';
-import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -33,7 +31,5 @@ import { PostsModule } from './modules/posts/posts.module';
     AirportsModule,
     PostsModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
