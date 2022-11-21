@@ -1,15 +1,15 @@
-import { TransformationInterceptor } from './interceptors/transform.interceptor';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
+import { UserEntity } from '../common/entities/user.entity';
 import { REGISTERED } from './../common/constants/response.constants';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { JwtAuthGuard, Public } from './guards/jwt-auth.guard';
 import { TokenInterceptor } from './interceptors/token.interceptor';
-import { UserEntity } from '../common/entities/user.entity';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
+import { TransformationInterceptor } from './interceptors/transform.interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -17,6 +17,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/register')
+  @Public()
   @UseInterceptors(FileInterceptor('file'))
   @ApiCreatedResponse({ description: 'User has been successfully created.', type: UserEntity })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
@@ -29,6 +30,7 @@ export class AuthController {
   }
 
   @Post('/login')
+  @Public()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(TransformationInterceptor)
   @UseInterceptors(TokenInterceptor)

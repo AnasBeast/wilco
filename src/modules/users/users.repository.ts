@@ -9,7 +9,7 @@ export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getUserByFilter(filter: object): Promise<User> {
-    return await this.userModel.findOne(filter).populate('role home_airport').exec();
+    return await this.userModel.findOne(filter).populate('role home_airport').lean().exec();
   }
 
   async getUsersByFilter(filter: object): Promise<User[]> {
