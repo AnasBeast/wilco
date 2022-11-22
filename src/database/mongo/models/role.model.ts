@@ -8,6 +8,10 @@ export class Role {
   @ApiProperty()
   @Prop({ unique: true, required: true })
   name: string;
+
+  @ApiProperty()
+  @Prop({ required: false })
+  custom: boolean;
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

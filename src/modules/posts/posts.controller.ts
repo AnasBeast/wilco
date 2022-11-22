@@ -7,6 +7,7 @@ import {
     Patch,
     Post,
     Put,
+    UploadedFile,
 } from '@nestjs/common';
 import {
     ApiBearerAuth,
@@ -52,7 +53,7 @@ export class PostsController {
         description: 'The record found',
         type: BasePost,
     })
-    async create(@Body() createTodoDto: BasePost) {
+    async create(@UploadedFile() file: Express.Multer.File,@Body() createTodoDto: BasePost) {
         return await this.service.create(createTodoDto);
     }
 

@@ -1,53 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty, IsEmail, MinLength, Validate, IsOptional } from 'class-validator';
-import { ObjectId } from 'mongoose';
+import { IsEmail, IsMongoId, IsNotEmpty, IsOptional, MinLength, Validate } from 'class-validator';
+import { Types } from 'mongoose';
 import { IsUserAlreadyExist } from 'src/modules/users/UserExists';
 
 export class SignUpDto {
-  @IsDefined()
-  @IsEmail()
-  @Validate(IsUserAlreadyExist)
-  @ApiProperty({ example: 'qwerty@gmail.com' })
-  readonly email: string;
-
-  @IsDefined()
-  @IsNotEmpty()
-  @MinLength(4)
-  @ApiProperty({ example: 'qwerty123' })
-  readonly password: string;
-
-  @IsDefined()
-  @IsNotEmpty()
-  @ApiProperty({ example: 'pilot role id' })
-  readonly role: ObjectId;
-
-  @IsOptional()
-  readonly home_airport?: ObjectId;
-
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'James' })
   readonly first_name: string;
 
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'Lebron' })
   readonly last_name: string;
+
+  @IsEmail()
+  @ApiProperty({ example: 'qwerty@gmail.com' })
+  @Validate(IsUserAlreadyExist)
+  readonly email: string;
+
+  @MinLength(8)
+  @ApiProperty({ example: 'qwerty123'})
+  readonly password: string;
+
+  @IsMongoId({ each: true })
+  @ApiProperty({ example: 'pilot role(s) id(s) | exp ["635820733ce0994a2711582a"]' })
+  readonly roles: Types.ObjectId[];
+
+  @IsOptional()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'role(s) seperated by commas' })
+  readonly custom_roles: string;
+
 }
 
 export class SignUpSuperAdminDto extends SignUpDto {
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'Secret key' })
   secret: string;
 }
 
-export class SignUpDtoProfilePhotoDto extends SignUpDto {
-  @IsDefined()
+export class SignUpDtoWithProfilePhotoDto extends SignUpDto {
   @IsNotEmpty()
   profile_picture_link: string;
 
-  @IsDefined()
   @IsNotEmpty()
   profile_picture_key: string;
 }

@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateRoleDto {
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'pilot' })
   readonly name: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'true|false' })
+  readonly custom?: boolean
 }

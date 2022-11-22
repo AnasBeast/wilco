@@ -13,38 +13,35 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 export class AuthService {
   constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
-
   //Not Secure for bruteforce attacks
   //Whats the purpose of typescript if we use any
-  async login(signInDto: SignInDto): Promise<any> {
-    const user = await this.usersService.getUserByEmail(signInDto.email);
+  async login({email, password} : SignInDto): Promise<any> {
+    const user = await this.usersService.getUserDocumentByEmail(email);
     if (!user) throw new UnauthorizedException('The Email is incorrect.');
 
-    if (!(await AuthenticationProvider.checkPassword(signInDto.password, user.password))) {
+    if(!(await user.comparePassword(password))) {
       throw new UnauthorizedException('The password is incorrect.');
     }
 
     return this.transformUserResponse(user);
   }
 
-
-  //any promise
-  async register(file: Express.Multer.File, signUpDto: SignUpDto): Promise<any> {
-    const user = await this.usersService.create(signUpDto, file);
+  async register(signUpDto: SignUpDto): Promise<Omit<User, "password">> {
+    const user = await this.usersService.create(signUpDto);
 
     return this.transformUserResponse(user);
   }
 
-  async verifyPayload(payload: JwtPayload): Promise<any> {
-    let user: User;
+  // async verifyPayload(payload: JwtPayload): Promise<any> {
+  //   let user: User;
 
-    try {
-      user = await this.usersService.getUserByEmail(payload.sub);
-    } catch (error) {
-      throw new UnauthorizedException(`There isn't any user with email: ${payload.sub}`);
-    }
-    return this.transformUserResponse(user);
-  }
+  //   try {
+  //     user = await this.usersService.getUserByEmail(payload.sub);
+  //   } catch (error) {
+  //     throw new UnauthorizedException(`There isn't any user with email: ${payload.sub}`);
+  //   }
+  //   return this.transformUserResponse(user);
+  // }
 
   signToken(email: string): string {
     const payload = {
@@ -53,7 +50,8 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  transformUserResponse(user: User) {
-    return omit(user, "password");
+  transformUserResponse(user: User): Omit<User, "password"> {
+    delete user.password;
+    return user
   }
 }

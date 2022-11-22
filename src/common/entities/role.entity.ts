@@ -1,8 +1,9 @@
-import { Date, ObjectId } from 'mongoose';
+import { Date, Types } from 'mongoose';
 
 export class RoleEntity {
-  id?: ObjectId;
+  _id?: Types.ObjectId;
   name: string;
+  custom: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

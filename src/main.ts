@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { urlencoded, json } from 'express';
 import * as cookieParser from 'cookie-parser';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,8 @@ async function bootstrap() {
 
   // Globally Set EveryEndpoint to use validation on inputs
   app.useGlobalPipes(new ValidationPipe());
+  // For Implementing dependency injection in custom validator classes
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
   //nest js transformes responses to their corresponding type for example if response type is String the response Content-Type is set to text/html
   //so there is no use for using json as a middleware
   // app.use(json({ limit: '50mb' }));

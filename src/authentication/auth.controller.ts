@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
@@ -7,7 +7,7 @@ import { REGISTERED } from './../common/constants/response.constants';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { JwtAuthGuard, Public } from './guards/jwt-auth.guard';
+import { Public } from './guards/jwt-auth.guard';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { TransformationInterceptor } from './interceptors/transform.interceptor';
 
@@ -18,15 +18,14 @@ export class AuthController {
 
   @Post('/register')
   @Public()
-  @UseInterceptors(FileInterceptor('file'))
   @ApiCreatedResponse({ description: 'User has been successfully created.', type: UserEntity })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(REGISTERED)
   @UseInterceptors(TransformationInterceptor)
   @UseInterceptors(TokenInterceptor)
-  async register(@UploadedFile() file: Express.Multer.File, @Body() body: SignUpDto): Promise<any> {
-    return this.authService.register(file, body);
+  async register(@Body() body: SignUpDto) {
+    return this.authService.register(body);
   }
 
   @Post('/login')
@@ -39,7 +38,6 @@ export class AuthController {
   }
 
   @Get('/me')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async me(@Request() req) {
     return req.user;

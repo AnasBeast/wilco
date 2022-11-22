@@ -1,8 +1,10 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Role } from 'aws-sdk/clients/budgets';
+import { ProjectionType, Types } from 'mongoose';
 import { RoleEntity } from '../../common/entities/role.entity';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { CreateRoleDto } from './dto/create.dto';
 import { RolesRepository } from './roles.repository';
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class RolesService {
@@ -12,11 +14,31 @@ export class RolesService {
     return await this.rolesRepository.getRoleByFilter(filter);
   }
 
-  async createRole(body: CreateRoleDto): Promise<RoleEntity> {
-    const { name } = body;
+  async getRolesByFilter(filter: object, projection: ProjectionType<Role>): Promise<RoleEntity[]> {
+    return await this.rolesRepository.getRolesByFilter(filter, projection);
+  }
+
+  async createRole({ name }: CreateRoleDto): Promise<RoleEntity> {
     const roleExist = await this.rolesRepository.getRoleByFilter({ name });
     if (roleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);
 
-    return await this.rolesRepository.createRole(body);
+    return await this.rolesRepository.createRole(name);
+  }
+
+  async createCustomRoles(roles: CreateRoleDto[], rolesFilterArray: string[]): Promise<RoleEntity[]> {
+    const rolesExist = await this.rolesRepository.getRolesByFilter({ name: { $in: rolesFilterArray } }, { select: "_id" });
+    if (rolesExist.length === rolesFilterArray.length) {
+      return rolesExist;
+    } else if (rolesExist.length < rolesFilterArray.length) {
+      roles.forEach((role, ind) => {
+        rolesExist.forEach((exsitingRole) => {
+          if (exsitingRole.name === role.name) {
+            roles.splice(ind, 1)
+          }
+        })
+      })
+    }
+
+    return await this.rolesRepository.createRoles(roles);
   }
 }

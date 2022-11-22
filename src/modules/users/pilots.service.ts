@@ -23,7 +23,7 @@ export class PilotsService {
     if (!pilotRoleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);
 
     return await this.usersRepository.getUsersByFilter({
-      role: pilotRoleExist.id,
+      role: pilotRoleExist._id,
       $or: [{ first_name: { $regex: pattern, $options: 'i' } }, { last_name: { $regex: pattern, $options: 'i' } }],
     });
   }
@@ -32,7 +32,7 @@ export class PilotsService {
     const pilotRoleExist = await this.getPilotRole();
 
     return await this.usersRepository.getUsersByFilter({
-      role: pilotRoleExist.id,
+      role: pilotRoleExist._id,
       home_airport: new Types.ObjectId(airportId),
     });
   }
