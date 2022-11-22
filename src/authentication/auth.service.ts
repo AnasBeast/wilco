@@ -29,6 +29,7 @@ export class AuthService {
   async register(signUpDto: SignUpDto): Promise<Omit<User, "password">> {
     const user = await this.usersService.create(signUpDto);
 
+    
     return this.transformUserResponse(user);
   }
 
