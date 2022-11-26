@@ -1,19 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { compare, genSalt, hash } from "bcrypt";
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
 import { AirportEntity } from 'src/common/entities/airport.entity';
 import { CommunityEntity } from 'src/common/entities/community.entity';
 import { RoleEntity } from 'src/common/entities/role.entity';
-import { Airport } from 'src/database/mongo/models/airport.model';
-import { Community } from 'src/schemas/community.schema';
-import { AirCraft } from './airCraft.model';
-import { Role } from './role.model';
 
-export type UserDocument = HydratedDocument<User> & {
-  comparePassword(candidatePassword: string): Promise<boolean>;
-};
+export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
@@ -24,6 +17,10 @@ export class User {
   @ApiProperty()
   @Prop()
   last_name: string;
+
+  @ApiProperty()
+  @Prop()
+  firebase_uid: string;
 
   @ApiProperty()
   @Prop()
@@ -73,10 +70,6 @@ export class User {
   @Prop({ unique: true })
   email: string;
 
-  @ApiProperty()
-  @Prop()
-  password: string;
-
   // @ApiProperty()
   // @Prop()
   // cometchat_auth_token: string;
@@ -91,23 +84,3 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.pre("save", async function(this: UserDocument, next: Function) {
-  const user = this;
-
-  if(!user.isModified("password")) return next();
-
-  const salt = await genSalt();
-
-  const hashedPassword = await hash(user.password, salt);
-
-  user.password = hashedPassword;
-
-  return next();
-})
-
-UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
-  const user = this as UserDocument;
-
-  return compare(candidatePassword, user.password).catch((_) => false);
-}

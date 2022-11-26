@@ -14,7 +14,7 @@ export class SignUpDto {
 
   @IsEmail()
   @ApiProperty({ example: 'qwerty@gmail.com' })
-  @Validate(IsUserAlreadyExist)
+  @Validate(IsUserAlreadyExist, [false])
   readonly email: string;
 
   @MinLength(8)

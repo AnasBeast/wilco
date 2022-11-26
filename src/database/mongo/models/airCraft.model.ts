@@ -1,10 +1,16 @@
+import { Type } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 export type AirCraftDocument = AirCraft & Document;
 
 @Schema({ timestamps: true })
 export class AirCraft {
+  @ApiProperty()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  pilot_id: Types.ObjectId
+
   @ApiProperty()
   @Prop({ required: true })
   make_and_model: string;
@@ -14,11 +20,11 @@ export class AirCraft {
   tail_number: string;
 
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop()
   aicraft_picture: string;
 
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop()
   aircraft_picture_key: string;
 }
 

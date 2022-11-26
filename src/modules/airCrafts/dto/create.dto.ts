@@ -1,26 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAirCraftDto {
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'make and model example' })
   readonly make_and_model: string;
 
-  @IsDefined()
   @IsNotEmpty()
   @ApiProperty({ example: 'tail number example' })
   readonly tail_number: string;
 }
 
 export class CreateAirCraftPictureDto extends CreateAirCraftDto {
-  @IsDefined()
+  @IsOptional()
   @IsNotEmpty()
   @ApiProperty({ example: 'mpicture' })
-  readonly aicraft_picture: string;
+  readonly aicraft_picture?: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsNotEmpty()
   @ApiProperty({ example: 'picture key' })
-  readonly aircraft_picture_key: string;
+  readonly aircraft_picture_key?: string;
 }

@@ -26,7 +26,9 @@ export class RolesService {
   }
 
   async createCustomRoles(roles: CreateRoleDto[], rolesFilterArray: string[]): Promise<RoleEntity[]> {
-    const rolesExist = await this.rolesRepository.getRolesByFilter({ name: { $in: rolesFilterArray } }, { select: "_id" });
+    console.log("rolesFilterArray", rolesFilterArray);
+    const rolesExist = await this.rolesRepository.getRolesByFilter({ name: { $in: rolesFilterArray } }, "_id name");
+    console.log("rolesExist", rolesExist)
     if (rolesExist.length === rolesFilterArray.length) {
       return rolesExist;
     } else if (rolesExist.length < rolesFilterArray.length) {

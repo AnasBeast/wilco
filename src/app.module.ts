@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppConfigModule } from './config/app/config.module';
 import config from './config/keys';
@@ -13,6 +13,7 @@ import { HashtagsModule } from './modules/hashtags/hashtags.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,11 @@ import { UsersModule } from './modules/users/users.module';
     PostsModule
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+      consumer
+      .apply(AuthorizationMiddleware)
+      .exclude({ path: "/api/v1/auth/register", method: RequestMethod.POST })
+      .forRoutes('*')
+    }
+}

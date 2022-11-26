@@ -14,11 +14,30 @@ export type PostDocument = Post & Document;
 export class Post {
   @ApiProperty()
   @Prop({ required: true })
-  text: string;
+  title: string;
 
   @ApiProperty()
   @Prop({ required: true })
-  title: string;
+  message: string;
+
+  @ApiProperty()
+  @Prop({ default: [] })
+  post_media: string[];
+
+  @ApiProperty()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Flight' })
+  flight_info: Flight;
+
+  @ApiProperty()
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Community' }],
+    default: [],
+  })
+  post_communities: Community[];
+
+  @ApiProperty()
+  @Prop({ required: true })
+  visibility: string;
 
   @ApiProperty()
   @Prop({ required: true })
@@ -31,14 +50,6 @@ export class Post {
   @ApiProperty()
   @Prop({ default: 0 })
   number_of_comments: number;
-
-  @ApiProperty()
-  @Prop({ required: true })
-  visibility: string;
-
-  @ApiProperty()
-  @Prop({ default: [] })
-  post_media: string[];
 
   @ApiProperty()
   @Prop({
@@ -55,22 +66,11 @@ export class Post {
   Likes: Like[];
 
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Flight' })
-  flight_info: Flight;
-
-  @ApiProperty()
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
     default: [],
   })
-  mentioned_pilots: User[];
-
-  @ApiProperty()
-  @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Community' }],
-    default: [],
-  })
-  post_communities: Community[];
+  mentioned_users: User[];
 
   @ApiProperty()
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Contribution' })

@@ -24,6 +24,7 @@ export class PostsController {
 
     constructor(private readonly service: PostsService) { }
 
+    //TODO implement pagination
     @Get()
     @ApiOperation({ summary: 'Get List of Posts' })
     @ApiResponse({
@@ -53,8 +54,8 @@ export class PostsController {
         description: 'The record found',
         type: BasePost,
     })
-    async create(@UploadedFile() file: Express.Multer.File,@Body() createTodoDto: BasePost) {
-        return await this.service.create(createTodoDto);
+    async create(@UploadedFile() file: Express.Multer.File,@Body() createPostDto: BasePost) {
+        return await this.service.create(createPostDto);
     }
 
     @Patch(':id')

@@ -1,12 +1,15 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { swaggerConfig } from './providers/swagger/config';
-import { AppConfigService } from './config/app/config.service';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { urlencoded, json } from 'express';
-import * as cookieParser from 'cookie-parser';
+import { SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
+import * as admin from 'firebase-admin';
+import { AppModule } from './app.module';
+import { AppConfigService } from './config/app/config.service';
+import { firebaseConfig } from './providers/firebase/config';
+import { swaggerConfig } from './providers/swagger/config';
+
+const fb_admin = admin.initializeApp(firebaseConfig, "test-wilco")
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +28,10 @@ async function bootstrap() {
   //so there is no use for using json as a middleware
   // app.use(json({ limit: '50mb' }));
   // app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+
+
+
   const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
@@ -41,4 +48,5 @@ async function bootstrap() {
   const port = appConfig.port || 8080;
   await app.listen(port, '0.0.0.0').then(() => console.log(`Application is running on: http://localhost:${port}`));
 }
+export default fb_admin;
 bootstrap();

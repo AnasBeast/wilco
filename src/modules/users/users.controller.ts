@@ -1,10 +1,11 @@
 import { UsersService } from './users.service';
 import { FETCHED } from '../../common/constants/response.constants';
-import { Controller, Get, HttpCode, HttpStatus, Param, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PilotsService } from './pilots.service';
 import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
+import { EditUserDto } from 'src/dto/user/update-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -34,4 +35,10 @@ export class UsersController {
   async getUserById(@Param('id') id: string) {
     return await this.usersService.getUserById(id);
   }
+
+  // //TODO: implement updating user
+  // @Patch()
+  // async editUserProfile(@Body() editUserDto: EditUserDto, @UploadedFile() file?: Express.Multer.File) {
+  //   return await this.usersService.updateUser(editUserDto, file);
+  // }
 }

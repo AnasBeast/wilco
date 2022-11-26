@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Types } from 'aws-sdk/clients/acm';
 import { FilterQuery, Model } from 'mongoose';
 import { UserEntity } from 'src/common/entities/user.entity';
 import { SignUpDto } from './../../authentication/dto/sign-up.dto';
@@ -21,7 +22,11 @@ export class UsersRepository {
     return await this.userModel.find(filter).populate('roles home_airport').exec();
   }
 
-  async createNewUser(user: SignUpDto): Promise<User> {
+  async createNewUser(user): Promise<User> {
     return await this.userModel.create(user).then((user) => user.populate('roles home_airport'));
+  }
+
+  async updateUser(id: string, updatedUser: UserEntity) {
+    return await this.userModel.updateOne({ _id: id}, { ...updatedUser });
   }
 }

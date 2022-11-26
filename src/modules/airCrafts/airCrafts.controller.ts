@@ -1,6 +1,6 @@
 import { ADDED } from './../../common/constants/response.constants';
 import { AirCraftEntity } from './../../common/entities/airCraft.entity';
-import { Body, Controller, HttpCode, HttpStatus, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
@@ -20,7 +20,12 @@ export class AirCraftController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(ADDED)
   @UseInterceptors(TransformationInterceptor)
-  async create(@UploadedFile() file: Express.Multer.File, @Body() body: CreateAirCraftDto): Promise<AirCraftEntity> {
+  async create(@Body() body: CreateAirCraftDto, @UploadedFile() file?: Express.Multer.File): Promise<AirCraftEntity> {
     return await this.airCraftService.create(body, file);
+  }
+
+  @Get()
+  async getAircrafts(@Res() res) {
+    return await this.airCraftService.getAircraftsByPilotEmail(res.locals.user.email);
   }
 }

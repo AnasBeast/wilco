@@ -15,13 +15,7 @@ export class BasePost {
   title: string;
 
   @ApiProperty()
-  text: string;
-
-  @ApiProperty()
-  created_at: string;
-
-  @ApiProperty()
-  edited_at: string;
+  message: string;
 
   @ApiProperty()
   number_of_likes: number;
@@ -30,7 +24,7 @@ export class BasePost {
   number_of_comments: number;
 
   @ApiProperty()
-  iked: boolean;
+  liked: boolean;
 
   @ApiProperty()
   visibility: Visiblity;
@@ -58,4 +52,10 @@ export class BasePost {
 
   @ApiProperty()
   hashtags: string[];
+
+  @ApiProperty()
+  created_at: string;
+
+  @ApiProperty()
+  edited_at: string;
 }
