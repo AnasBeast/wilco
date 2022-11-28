@@ -17,50 +17,55 @@ import { BaseCommunity } from 'src/dto/communities/base-community.dto';
 import { CommunityService } from './community.service';
 
 @Controller('community')
+@ApiBearerAuth()
 @ApiTags('community')
 export class CommunityController {
   constructor(private readonly service: CommunityService) {}
 
-  @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get List of Communities' })
   @ApiResponse({
     status: 200,
     description: 'The records found',
     type: [BaseCommunity],
   })
+  @Get()
   async index() {
     return await this.service.findAll();
   }
 
-  @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get Community' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseCommunity,
   })
+  @Get(':id')
   async find(@Param('id') id: string) {
     return await this.service.findOne(id);
   }
 
-  @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Community' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseCommunity,
   })
+  @Post()
   async create(@Body() createCommunityDto: BaseCommunity) {
     return await this.service.create(createCommunityDto);
   }
 
-  @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update Community' })
   @ApiResponse({
     status: 200,
     description: 'The record updated',
     type: BaseCommunity,
   })
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateCommunityDto: BaseCommunity,
@@ -68,13 +73,14 @@ export class CommunityController {
     return await this.service.update(id, updateCommunityDto);
   }
 
-  @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete Community' })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',
     type: BaseCommunity,
   })
+  @Delete(':id')
   async delete(@Param('id') id: string) {
     return await this.service.delete(id);
   }

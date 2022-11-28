@@ -22,6 +22,7 @@ export class HashtagsController {
   constructor(private readonly service: HashtagsService) {}
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get List of Hashtagss' })
   @ApiResponse({
     status: 200,

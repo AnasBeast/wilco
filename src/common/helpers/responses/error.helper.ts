@@ -34,5 +34,8 @@ export const errors = {
   },
   SUPERADMIN: { message: 'You are not a superadmin', code: 1000 },
   SAME_STATUS: { message: 'same status', code: 'SAME_STATUS' },
-  EMPTY_AVATAR: { message: 'You must provide your avatar', code: 'EMPTY_AVATAR' }
+  EMPTY_AVATAR: { message: 'You must provide your avatar', code: 'EMPTY_AVATAR' },
+  AIRCRAFT_NOT_FOUND: { message: 'Aircraft not found', code: 'AIRCRAFT_NOT_FOUND' },
+  MISSING_TAIL_NUMBER: { message: "The provided aircraft doesn't have tail number", code: 'MISSING_TAIL_NUMBER' },
+  PERMISSION_DENIED: { message: "You don't have permission to perform this action", code: "PERMISSION_DENIED" }
 };

@@ -14,19 +14,16 @@ export class CertificateService {
     private readonly model: Model<CertificateDocument>,
   ) {}
 
-  async findAll(): Promise<Certificate[]> {
-    return await this.model.find().exec();
+  async getCertificates(): Promise<Certificate[]> {
+    return await this.model.find().lean();
   }
 
   async findOne(id: string): Promise<Certificate> {
-    return await this.model.findById(id).exec();
+    return await this.model.findById(id).lean();
   }
 
   async create(createTodoDto: BaseCertificate): Promise<Certificate> {
-    return await new this.model({
-      ...createTodoDto,
-      createdAt: new Date(),
-    }).save();
+    return await this.model.create({ ...createTodoDto });
   }
 
   async update(

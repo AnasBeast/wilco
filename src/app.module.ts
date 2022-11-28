@@ -14,6 +14,7 @@ import { PostsModule } from './modules/posts/posts.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
+import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthorizationMiddleware } from './authentication/middlewares/authorizat
     DeviceModule,
     CertificateModule,
     HashtagsModule,
+    AirCraftModule,
     AppConfigModule, 
     MongoDBModule, 
     UsersModule, 

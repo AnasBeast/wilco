@@ -19,63 +19,68 @@ import { CertificateService } from './certificate.service';
 @Controller('certificates')
 @ApiTags('certificates')
 export class CertificateController {
-  constructor(private readonly service: CertificateService) {}
+  constructor(private readonly certificatesService: CertificateService) {}
 
-  @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get List of Certificates' })
   @ApiResponse({
     status: 200,
     description: 'The records found',
     type: [BaseCertificate],
   })
-  async index() {
-    return await this.service.findAll();
+  @Get()
+  async getCertificates() {
+    return await this.certificatesService.getCertificates();
   }
 
-  @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseCertificate,
   })
+  @Get(':id')
   async find(@Param('id') id: string) {
-    return await this.service.findOne(id);
+    return await this.certificatesService.findOne(id);
   }
 
-  @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseCertificate,
   })
+  @Post()
   async create(@Body() createTodoDto: BaseCertificate) {
-    return await this.service.create(createTodoDto);
+    return await this.certificatesService.create(createTodoDto);
   }
 
-  @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record updated',
     type: BaseCertificate,
   })
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateTodoDto: BaseCertificate,
   ) {
-    return await this.service.update(id, updateTodoDto);
+    return await this.certificatesService.update(id, updateTodoDto);
   }
 
-  @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete Certificate' })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',
     type: BaseCertificate,
   })
+  @Delete(':id')
   async delete(@Param('id') id: string) {
-    return await this.service.delete(id);
+    return await this.certificatesService.delete(id);
   }
 }

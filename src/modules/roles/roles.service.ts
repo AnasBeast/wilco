@@ -26,21 +26,23 @@ export class RolesService {
   }
 
   async createCustomRoles(roles: CreateRoleDto[], rolesFilterArray: string[]): Promise<RoleEntity[]> {
-    console.log("rolesFilterArray", rolesFilterArray);
+    const newFilteredRoles = [];
     const rolesExist = await this.rolesRepository.getRolesByFilter({ name: { $in: rolesFilterArray } }, "_id name");
-    console.log("rolesExist", rolesExist)
     if (rolesExist.length === rolesFilterArray.length) {
       return rolesExist;
     } else if (rolesExist.length < rolesFilterArray.length) {
-      roles.forEach((role, ind) => {
-        rolesExist.forEach((exsitingRole) => {
-          if (exsitingRole.name === role.name) {
-            roles.splice(ind, 1)
+      for(let i = 0; i < roles.length; i++) {
+        for(let k = 0; k < rolesExist.length; k++) {
+          if(rolesExist[k].name === roles[i].name) {
+            break
+          } else if (k === rolesExist.length - 1 && rolesExist[k].name !== roles[i].name) {
+            newFilteredRoles.push(roles[i]);
           }
-        })
-      })
+        }
+      }
     }
 
-    return await this.rolesRepository.createRoles(roles);
+    const customCreatedRoles = await this.rolesRepository.createRoles(newFilteredRoles);
+    return [...customCreatedRoles, ...rolesExist];
   }
 }

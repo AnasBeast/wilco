@@ -26,6 +26,7 @@ export class PostsController {
 
     //TODO implement pagination
     @Get()
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get List of Posts' })
     @ApiResponse({
         status: 200,
@@ -37,6 +38,7 @@ export class PostsController {
     }
 
     @Get(':id')
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get Post' })
     @ApiResponse({
         status: 200,
@@ -48,6 +50,7 @@ export class PostsController {
     }
 
     @Post()
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Create Post' })
     @ApiResponse({
         status: 200,
@@ -59,6 +62,7 @@ export class PostsController {
     }
 
     @Patch(':id')
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Update Post' })
     @ApiResponse({
         status: 200,
@@ -70,6 +74,7 @@ export class PostsController {
     }
 
     @Delete(':id')
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Delete Post' })
     @ApiResponse({
         status: 200,

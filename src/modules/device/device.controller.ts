@@ -21,57 +21,63 @@ import { DeviceService } from './device.service';
 export class DeviceController {
   constructor(private readonly service: DeviceService) {}
 
-  @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get List of Devices' })
   @ApiResponse({
     status: 200,
     description: 'The records found',
     type: [BaseDevice],
   })
+  @Get()
   async index() {
     return await this.service.findAll();
   }
 
-  @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get Device' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseDevice,
   })
+  @Get(':id')
   async find(@Param('id') id: string) {
     return await this.service.findOne(id);
   }
 
-  @Post()
+
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Device' })
   @ApiResponse({
     status: 200,
     description: 'The record found',
     type: BaseDevice,
   })
+  @Post()
   async create(@Body() createTodoDto: BaseDevice) {
     return await this.service.create(createTodoDto);
   }
 
-  @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update Device' })
   @ApiResponse({
     status: 200,
     description: 'The record updated',
     type: BaseDevice,
   })
+  @Put(':id')
   async update(@Param('id') id: string, @Body() updateTodoDto: BaseDevice) {
     return await this.service.update(id, updateTodoDto);
   }
 
-  @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete Device' })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',
     type: BaseDevice,
   })
+  @Delete(':id')
   async delete(@Param('id') id: string) {
     return await this.service.delete(id);
   }

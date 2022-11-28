@@ -1,7 +1,7 @@
 import { Date, ObjectId } from 'mongoose';
 
 export class AirCraftEntity {
-  id?: ObjectId;
+  _id: ObjectId;
   make_and_model: string;
   tail_number: string;
   aicraft_picture: string;

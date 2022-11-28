@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ObjectId, Types } from 'mongoose';
+import { ObjectId, Types, UpdateQuery } from 'mongoose';
 import { RoleEntity } from 'src/common/entities/role.entity';
 import { UserEntity } from 'src/common/entities/user.entity';
 import { User, UserDocument } from 'src/database/mongo/models/user.model';
@@ -16,6 +16,14 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
   constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) { }
 
+  async getPopulatedUserById(id: string) {
+    return await this.usersRepository.getPopulatedUserById(id);
+  }
+
+  async getUserById(id: string): Promise<UserEntity> {
+    return await this.usersRepository.getUserById(id);
+  }
+
   async getUserByEmail(email: string): Promise<UserEntity> {
     return await this.usersRepository.getUserByFilter({ email });
   }
@@ -24,24 +32,13 @@ export class UsersService {
     return await this.usersRepository.getUserDocumentByFilter({ email });
   }
 
-  async getUserById(id: string): Promise<UserEntity> {
-    return await this.usersRepository.getUserByFilter({ _id: new Types.ObjectId(id) });
-  }
 
-  async create({ email, password, custom_roles, first_name, last_name, roles }: SignUpDto): Promise<User> {
+
+  async create({ email, password, custom_roles, first_name, last_name, roles }: SignUpDto): Promise<UserEntity> {
     const roleExist = await this.rolesService.getRolesByFilter({ _id: {$in: roles} }, { select: "_id" });
     if (!roleExist || roles.length !== roleExist.length) throw new HttpException(errors.ROLE_NOT_EXIST, HttpStatus.BAD_REQUEST)
 
-    let firebase_uid: string;
-    try {
-      const user = await fb_admin.auth().createUser({
-        email,
-        password
-      });
-      firebase_uid = user.uid;
-    } catch (error) {
-      throw new UnauthorizedException(error.message);
-    }
+
 
     let createdRoles: RoleEntity[] = [];
     if (custom_roles) {
@@ -56,10 +53,35 @@ export class UsersService {
       createdRoles = await this.rolesService.createCustomRoles(newRoles, rolesFilterArray);
     }
 
-    return await this.usersRepository.createNewUser({...{email, first_name, last_name, firebase_uid}, roles: [...roles, ...createdRoles.map((role) => role._id)]});
+    let firebase_uid: string;
+    try {
+      const user = await fb_admin.auth().createUser({
+        email,
+        password
+      });
+      firebase_uid = user.uid;
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    const newUser = await this.usersRepository.createNewUser({...{email, first_name, last_name, firebase_uid}, roles: [...roles, ...createdRoles.map((role) => role._id)]});
+
+    await fb_admin.auth().setCustomUserClaims(firebase_uid, { _id: newUser._id });
+
+    return newUser;
   }
 
-  // async updateUser(updatedUser: EditUserDto, file: Express.Multer.File) {
-  //   return await this.usersRepository.updateUser(updatedUser._id,updatedUser);
-  // }
+  async editUser(userId: string, editedUser: UpdateQuery<User>, file?: Express.Multer.File) {
+    if(file) {
+      const user = await this.usersRepository.getUserById(userId);
+      if (user.profile_picture_key) {
+        await this.s3Service.deleteFile(user.profile_picture_key);
+      }
+      const resUpload = await this.s3Service.uploadFile(file);
+      if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
+      return await this.usersRepository.editUser(userId, { ...user, ...editedUser, profile_picture_key: resUpload.key, profile_picture_link: resUpload.location })
+    }
+
+    return await this.usersRepository.editUser(userId, editedUser);
+  }
 }

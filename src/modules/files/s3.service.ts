@@ -2,6 +2,7 @@ import { AWSConfigService } from './../../config/aws/config.service';
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { Credentials } from 'aws-sdk';
+import { DeleteObjectRequest } from 'aws-sdk/clients/s3';
 
 @Injectable()
 export class S3Service {
@@ -37,6 +38,18 @@ export class S3Service {
     return files.map(async (file) => {
       return await this.uploadFile(file);
     });
+  }
+
+  async deleteFile(file_name: string) {
+    return await this.s3_delete(file_name, this.awsConfigService.awsBucketName);
+  }
+
+  async s3_delete(Key: string, Bucket: string) {
+    try {
+      return await this.s3Client.deleteObject({ Bucket, Key }).promise();
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async s3_upload(file, bucket, name, mimetype) {

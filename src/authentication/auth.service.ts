@@ -1,14 +1,14 @@
 import { SignUpDto } from './dto/sign-up.dto';
 
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/database/mongo/models/user.model';
 import { UsersService } from './../modules/users/users.service';
+import { UserEntity } from 'src/common/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async register(signUpDto: SignUpDto): Promise<Omit<User, "password">> {
+  async register(signUpDto: SignUpDto): Promise<UserEntity> {
     return await this.usersService.create(signUpDto);
   }
 

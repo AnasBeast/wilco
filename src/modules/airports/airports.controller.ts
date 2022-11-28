@@ -4,7 +4,7 @@ import { CREATED } from './../../common/constants/response.constants';
 import { AirportEntity } from './../../common/entities/airport.entity';
 import { AirportsService } from './airports.service';
 import { Controller, HttpCode, Post, HttpStatus, UseInterceptors, Body } from '@nestjs/common';
-import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 
 @ApiTags('Airports')
@@ -13,6 +13,7 @@ export class AirportsController {
   constructor(private airportsService: AirportsService) {}
 
   @Post('/')
+  @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Airport has been successfully created.', type: AirportEntity })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.CREATED)
