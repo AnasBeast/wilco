@@ -1,12 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
 
-enum Visiblity {
-  public,
-  only_me,
-}
+type Visibility = "public" | "only_me";
 
-export class BasePost {
+export class CreatePostDTO {
   @ApiProperty()
   title: string;
 
@@ -14,17 +11,17 @@ export class BasePost {
   message: string;
 
   @ApiProperty()
-  visibility: Visiblity;
+  visibility: Visibility;
 
   @ApiProperty()
-  flight: Types.ObjectId;
+  flight?: Types.ObjectId;
 
   @ApiProperty()
-  post_communities: string[];
+  post_communities?: Types.ObjectId[];
 
   @ApiProperty()
-  mentioned_users: Types.ObjectId[]
+  mentioned_users?: Types.ObjectId[]
 
   @ApiProperty()
-  contribution: Types.ObjectId;
+  contribution?: Types.ObjectId;
 }

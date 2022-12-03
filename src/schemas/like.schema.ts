@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Post } from 'src/database/mongo/models/post.model';
 import { Pilot } from './pilot.schema';
-import { Post } from './post.schema';
 
 export type LikeDocument = Like & Document;
 

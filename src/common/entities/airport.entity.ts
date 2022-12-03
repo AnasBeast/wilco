@@ -1,8 +1,9 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 export class AirportEntity {
-  id?: ObjectId;
+  _id: Types.ObjectId;
   name: string;
+  icao: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

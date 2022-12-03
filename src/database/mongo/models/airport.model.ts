@@ -8,6 +8,10 @@ export class Airport {
   @ApiProperty()
   @Prop({ unique: true, required: true })
   name: string;
+
+  @ApiProperty()
+  @Prop({ unique: true, required: true })
+  icao: string;
 }
 
 export const AirportSchema = SchemaFactory.createForClass(Airport);

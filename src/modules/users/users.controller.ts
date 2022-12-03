@@ -46,7 +46,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @Get('/searchPilotsByName/:pattern')
+  @Get('/searchByName/:pattern')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
@@ -54,13 +54,13 @@ export class UsersController {
     return await this.usersService.searchByName(pattern);
   }
 
-  @Get('/getPilotsByHomeAirPort/:airportId')
+  @Get('/searchByHomeAirPort/:airport_code')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
-  async getPilotsByHomeAirPort(@Param('airportId') airportId: string) {
-    return await this.usersService.searchByHomeAirPort(airportId);
+  async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string) {
+    return await this.usersService.searchByHomeAirPort(airport_code);
   }
 
 }

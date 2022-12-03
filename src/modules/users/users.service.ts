@@ -6,6 +6,7 @@ import { User, UserDocument } from 'src/database/mongo/models/user.model';
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import fb_admin from 'src/main';
 import admin from 'src/main';
+import { AirportsService } from '../airports/airports.service';
 import { SignUpDto } from './../../authentication/dto/sign-up.dto';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { S3Service } from './../files/s3.service';
@@ -14,7 +15,7 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) { }
+  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service, private airportService: AirportsService) { }
 
   async getUsers() {
     return await this.usersRepository.getUsers(["first_name", "last_name", "banner", "home_airport", "profile_picture_link"]);
@@ -32,7 +33,7 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string): Promise<UserEntity> {
-    return await this.usersRepository.getUserByFilter({ email });
+    return await this.usersRepository.getUserByFilter({ email }, []);
   }
 
   async getUserDocumentByEmail(email: string): Promise<UserDocument> {
@@ -110,16 +111,19 @@ export class UsersService {
 
     return await this.usersRepository.getUsersByFilter({
       $or: [{ first_name: { $regex: pattern, $options: 'i' } }, { last_name: { $regex: pattern, $options: 'i' } }],
-    });
+    }, ["first_name", "last_name", "banner", "home_airport", "primary_aircraft", "profile_picture_link"]);
   }
 
-  async searchByHomeAirPort(airportId: string): Promise<User[]> {
+  async searchByHomeAirPort(airport_code: string): Promise<User[]> {
+    const airport = await this.airportService.getAirportByFilter({ icao: airport_code });
+    console.log(airport, airport_code);
     return await this.usersRepository.getUsersByFilter({
-      home_airport: new Types.ObjectId(airportId),
-    });
+      home_airport: airport._id
+    }, ["first_name", "last_name", "banner", "home_airport", "primary_aircraft", "profile_picture_link"]);
   }
 
   async searchByCommunities() {
 
   }
+
 }

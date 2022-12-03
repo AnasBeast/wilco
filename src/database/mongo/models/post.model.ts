@@ -39,9 +39,9 @@ export class Post {
   @Prop({ required: true })
   visibility: string;
 
-  @ApiProperty()
-  @Prop({ required: true })
-  post_type: string;
+  // @ApiProperty()
+  // @Prop({ required: true })
+  // post_type: string;
 
   @ApiProperty()
   @Prop({ default: 0 })

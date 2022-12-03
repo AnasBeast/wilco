@@ -3,12 +3,14 @@ import { errors } from './../../common/helpers/responses/error.helper';
 import { AirportsRepository } from './airports.repository';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { AirportEntity } from 'src/common/entities/airport.entity';
+import { Airport } from 'src/database/mongo/models/airport.model';
+import { FilterQuery } from 'mongoose';
 
 @Injectable()
 export class AirportsService {
   constructor(private airportsRepository: AirportsRepository) {}
 
-  async getAirportByFilter(filter: object): Promise<AirportEntity> {
+  async getAirportByFilter(filter: FilterQuery<Airport>): Promise<AirportEntity> {
     return await this.airportsRepository.getAirportByFilter(filter);
   }
 

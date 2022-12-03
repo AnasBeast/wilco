@@ -26,16 +26,16 @@ export class UsersRepository {
     return await this.userModel.findById(id).populate("roles aircrafts").lean();
   }
 
-  async getUserByFilter(filter: object): Promise<UserEntity> {
-    return await this.userModel.findOne(filter).populate('roles home_airport').lean().exec();
+  async getUserByFilter(filter: object, projectionFields: ProjectionFields<User>): Promise<UserEntity> {
+    return await this.userModel.findOne(filter).select(projectionFields).populate('roles home_airport').lean().exec();
   }
 
   async getUserDocumentByFilter(filter: FilterQuery<User>): Promise<UserDocument> {
     return await this.userModel.findOne(filter);
   }
 
-  async getUsersByFilter(filter: object): Promise<User[]> {
-    return await this.userModel.find(filter).populate('roles home_airport').exec();
+  async getUsersByFilter(filter: object, projectionFields: ProjectionFields<User>): Promise<User[]> {
+    return await this.userModel.find(filter).select(projectionFields).populate('roles home_airport').exec();
   }
 
   async createNewUser(user): Promise<UserEntity> {

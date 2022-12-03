@@ -25,19 +25,9 @@ export class S3Service {
   }
 
   async uploadFiles(files) {
-    // const filesData = [];
-    // for (let i = 0; i < files.length + 1; i++) {
-    //   if (i === files.length) {
-    //     return filesData;
-    //   }
-    //   const file = files[i];
-    //   const resFile = await this.uploadFile(file);
-    //   filesData.push(resFile.location);
-    // }
-
-    return files.map(async (file) => {
+    return await Promise.all(files.map(async file => {
       return await this.uploadFile(file);
-    });
+    }));
   }
 
   async deleteFile(file_name: string) {

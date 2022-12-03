@@ -9,7 +9,7 @@ enum Visiblity {
 
 export class BasePost {
   @ApiProperty()
-  id: string;
+  _id: string;
 
   @ApiProperty()
   title: string;
