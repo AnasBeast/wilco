@@ -16,7 +16,14 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
   constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service) { }
 
-  async getPopulatedUserById(id: string) {
+  async getUsers() {
+    return await this.usersRepository.getUsers(["first_name", "last_name", "banner", "home_airport", "profile_picture_link"]);
+  }
+  
+  async getPopulatedUserById(id: string, userId: string) {
+    if (id === "me" || id === userId) {
+      return await this.usersRepository.getMe(userId);
+    }
     return await this.usersRepository.getPopulatedUserById(id);
   }
 
@@ -71,7 +78,10 @@ export class UsersService {
     return newUser;
   }
 
-  async editUser(userId: string, editedUser: UpdateQuery<User>, file?: Express.Multer.File) {
+  async editUserById(id: string, editedUser: UpdateQuery<User>, userId: string, file?: Express.Multer.File) {
+    if (id !== "me" && id !== userId) {
+      throw new UnauthorizedException();
+    }
     if(file) {
       const user = await this.usersRepository.getUserById(userId);
       if (user.profile_picture_key) {
@@ -79,9 +89,37 @@ export class UsersService {
       }
       const resUpload = await this.s3Service.uploadFile(file);
       if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
-      return await this.usersRepository.editUser(userId, { ...user, ...editedUser, profile_picture_key: resUpload.key, profile_picture_link: resUpload.location })
+      return await this.usersRepository.editUser(userId, { ...editedUser, profile_picture_key: resUpload.key, profile_picture_link: resUpload.location })
     }
 
     return await this.usersRepository.editUser(userId, editedUser);
+  }
+
+  //delete all data!
+  async deleteUserById(id: string, userId: string) {
+    if (id !== "me" && id !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    return await this.usersRepository.deleteUser(userId);
+  }
+
+  async searchByName(pattern: string) {
+    // const pilotRoleExist = await this.rolesService.getRoleByFilter({ name: 'pilot' });
+    // if (!pilotRoleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);
+
+    return await this.usersRepository.getUsersByFilter({
+      $or: [{ first_name: { $regex: pattern, $options: 'i' } }, { last_name: { $regex: pattern, $options: 'i' } }],
+    });
+  }
+
+  async searchByHomeAirPort(airportId: string): Promise<User[]> {
+    return await this.usersRepository.getUsersByFilter({
+      home_airport: new Types.ObjectId(airportId),
+    });
+  }
+
+  async searchByCommunities() {
+
   }
 }

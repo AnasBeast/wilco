@@ -1,6 +1,6 @@
 import { UsersService } from './users.service';
 import { FETCHED } from '../../common/constants/response.constants';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PilotsService } from './pilots.service';
 import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
@@ -8,27 +8,50 @@ import { ResponseMessage } from 'src/common/decorators/response/response.decorat
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('Users')
-@Controller('users')
+@ApiTags('Pilots')
+@Controller('pilots')
 export class UsersController {
   constructor(private pilotsService: PilotsService, private usersService: UsersService) {}
   
   @ApiBearerAuth()
-  @Get('/:id')
+  @Get()
+  async getUsers() {
+    return await this.usersService.getUsers();
+  }
+
+
+  // map to GET /1/pilots/{id} in old api
+  @ApiBearerAuth()
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
-  async getUserById(@Param('id') id: string) {
-    return await this.usersService.getPopulatedUserById(id);
+  async getUserById(@Param('id') id: string, @Req() req) {
+    return await this.usersService.getPopulatedUserById(id, req.user._id);
   }
 
-  @Get('/searchPilotsByName/:pattern')
+  // map to PATCH /1/pilots/{id} in old api
   @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('file'))
+  @Patch(':id')
+  async editUserProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
+    console.log(id, editUserDto, req.user._id, file);
+    return await this.usersService.editUserById(id, editUserDto, req.user._id, file);
+  }
+
+  @ApiBearerAuth()
+  @Delete('id')
+  async deleteUser(@Param('id') id: string, @Req() req) {
+    return await this.usersService.deleteUserById(id, req.user._id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/searchPilotsByName/:pattern')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
   async searchPilotsByName(@Param('pattern') pattern: string) {
-    return await this.pilotsService.searchPilotsByName(pattern);
+    return await this.usersService.searchByName(pattern);
   }
 
   @Get('/getPilotsByHomeAirPort/:airportId')
@@ -37,14 +60,7 @@ export class UsersController {
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
   async getPilotsByHomeAirPort(@Param('airportId') airportId: string) {
-    return await this.pilotsService.getPilotsByHomeAirPort(airportId);
+    return await this.usersService.searchByHomeAirPort(airportId);
   }
 
-
-
-  @UseInterceptors(FileInterceptor('file'))
-  @Patch()
-  async editUserProfile(@Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    return await this.usersService.editUser(req.user._id, editUserDto, file);
-  }
 }

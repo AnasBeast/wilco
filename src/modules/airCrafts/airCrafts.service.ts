@@ -37,7 +37,7 @@ export class AirCraftService {
     }
 
     const data = await this.airCraftsRepository.create(aircraftInput);
-    await this.usersService.editUser(pilot_id, { $push: { aircrafts: data._id } })
+    await this.usersService.editUserById(pilot_id, { $push: { aircrafts: data._id } }, pilot_id)
     return data;
   }
 
@@ -66,22 +66,20 @@ export class AirCraftService {
     if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER.message, errors.MISSING_TAIL_NUMBER.code);
     
     // const data = await axios.get(`https://flighttracking-production.up.railway.app/api/v1/flightsTrack/${aircraft.tail_number}`);
+    // let maxSpeed = 0;
+    // let maxAltitude = 0;
+    // try {
+    //   let track = await api.get(`/flights/${flight.fa_flight_id}/track`);
+    //   track.data.map(track => {
+    //     if (track.groundspeed > maxSpeed) maxSpeed = track.groundspeed;
+    //     if (track.altitude > maxAltitude) maxAltitude = track.altitude;
+    //   })
+    // } catch (error) {
+    //   console.log(error);
+    // }
     try {
       let data = await api.get(`/flights/${aircraft.tail_number}`)
-      return data.data.flights.map(async flight => {
-        // let maxSpeed = 0;
-        // let maxAltitude = 0;
-        // try {
-        //   let track = await api.get(`/flights/${flight.fa_flight_id}/track`);
-        //   track.data.map(track => {
-        //     if (track.groundspeed > maxSpeed) maxSpeed = track.groundspeed;
-        //     if (track.altitude > maxAltitude) maxAltitude = track.altitude;
-        //   })
-        // } catch (error) {
-        //   console.log(error);
-        // }
-        
-        return {
+      return data.data.flights.map(flight => ({
             external_id: flight.fa_flight_id,
             from: flight.origin?.code,
             to: flight.destination?.code ?? null,
@@ -90,8 +88,7 @@ export class AirCraftService {
             max_speed: null,
             max_altitude: null,
             distance: flight.route_distance
-          }
-        });
+        }));
     } catch (error) {
       console.log(error);
       console.log("api key", process.env.API_KEY)
@@ -101,18 +98,6 @@ export class AirCraftService {
     
 
     
-    // return data.data.FlightInfoExResult.flights?.map((flight) => {
-    //   return {
-    //     external_id: flight._id,
-    //     from: flight.origin,
-    //     to: flight.destination,
-    //     departure_time: new Date(flight.actualdeparturetime),
-    //     arrival_time: new Date(flight.actualarrivaltime),
-    //     max_speed: flight.filed_airspeed_kts,
-    //     max_altitude: flight.filed_altitude,
-    //     distance: null
-    //   }
-    // })
   }
 
   async editAircraft({ make_and_model, tail_number }: UpdateAirCraftDto, aircraftId: string, pilot_id: Types.ObjectId, file?: Express.Multer.File) {

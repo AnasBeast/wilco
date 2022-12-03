@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, ProjectionFields, UpdateQuery } from 'mongoose';
 import { UserEntity } from 'src/common/entities/user.entity';
 import { SignUpDto } from './../../authentication/dto/sign-up.dto';
 import { User, UserDocument } from './../../database/mongo/models/user.model';
@@ -9,6 +9,14 @@ import { Types } from "mongoose";
 @Injectable()
 export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async getMe(id: string) {
+    return await this.userModel.findById(id).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean().exec();
+  }
+
+  async getUsers(projectionFields: ProjectionFields<User>) {
+    return await this.userModel.find().populate(["home_airport", "primary_aircraft"]).select(projectionFields).lean();
+  }
 
   async getUserById(id: string) {
     return await this.userModel.findById(id).lean();
@@ -35,7 +43,10 @@ export class UsersRepository {
   }
 
   async editUser(id: string, updatedUser: UpdateQuery<User>) {
-    console.log("updated user", updatedUser);
-    return await this.userModel.updateOne({ _id: id}, updatedUser);
+    return await this.userModel.findByIdAndUpdate(id, updatedUser, { returnDocument: "after" }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean();
+  }
+
+  async deleteUser(id: string) {
+    return await this.userModel.findByIdAndDelete(id);
   }
 }
