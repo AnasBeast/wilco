@@ -58,7 +58,7 @@ export class User {
   @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'Airport',
+    ref: 'Community',
   })
   communities: CommunityEntity[];
 

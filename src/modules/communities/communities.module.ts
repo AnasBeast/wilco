@@ -13,5 +13,6 @@ import { Community, CommunitySchema } from 'src/schemas/community.schema';
   ],
   controllers: [CommunityController],
   providers: [CommunityService],
+  exports: [CommunityService],
 })
 export class CommunitiesModule {}

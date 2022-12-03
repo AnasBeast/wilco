@@ -9,8 +9,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 import { IsUserAlreadyExist } from './UserExists';
 import { AirportsModule } from '../airports/airports.module';
+import { CommunitiesModule } from '../communities/communities.module';
+import { CommunityService } from '../communities/community.service';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), RolesModule, S3Module, AirportsModule],
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), RolesModule, S3Module, AirportsModule, CommunitiesModule],
   controllers: [UsersController],
   providers: [UsersService, PilotsService, UsersRepository, IsUserAlreadyExist],
   exports: [UsersService],

@@ -7,6 +7,7 @@ import { EditUserDto } from 'src/dto/user/update-user.dto';
 import fb_admin from 'src/main';
 import admin from 'src/main';
 import { AirportsService } from '../airports/airports.service';
+import { CommunityService } from '../communities/community.service';
 import { SignUpDto } from './../../authentication/dto/sign-up.dto';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { S3Service } from './../files/s3.service';
@@ -15,7 +16,7 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service, private airportService: AirportsService) { }
+  constructor(private usersRepository: UsersRepository, private rolesService: RolesService, private s3Service: S3Service, private airportService: AirportsService, private communityService: CommunityService) { }
 
   async getUsers() {
     return await this.usersRepository.getUsers(["first_name", "last_name", "banner", "home_airport", "profile_picture_link"]);
@@ -122,8 +123,9 @@ export class UsersService {
     }, ["first_name", "last_name", "banner", "home_airport", "primary_aircraft", "profile_picture_link"]);
   }
 
-  async searchByCommunities() {
-
+  async searchByCommunities(name: string) {
+    const community = await this.communityService.findCommunityByFilter({ name });
+    return await this.usersRepository.getUsersByFilter({ communities: { $in: [community._id] } }, ["first_name", "last_name", "banner", "home_airport", "primary_aircraft", "profile_picture_link"])
   }
 
 }

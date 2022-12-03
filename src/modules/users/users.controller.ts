@@ -63,4 +63,10 @@ export class UsersController {
     return await this.usersService.searchByHomeAirPort(airport_code);
   }
 
+  @ApiBearerAuth()
+  @Get('/searchByCommunity/:community_name')
+  async getPilotsByCommunity(@Param('community_name') community_name: string) {
+    return await this.usersService.searchByCommunities(community_name);
+  }
+
 }
