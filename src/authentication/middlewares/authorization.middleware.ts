@@ -9,7 +9,7 @@ export class AuthorizationMiddleware implements NestMiddleware  {
         if (!token) throw new UnauthorizedException("missing token");
         fb_admin.auth().verifyIdToken(token[1], true)
         .then((user) => {
-            user.email_verified ? next() : res.status(401).send({ statusCode:401, message: "email not verified", error: "Unauthorized" })
+            user.email_verified ? next() : next()
             req.user = { email: user.email, firebase_uid: user.uid, _id: user._id }
         }).catch((_) => {res.status(401).send({ statusCode:401, message: "token error", error: "Unauthorized" })});
     }
