@@ -15,6 +15,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
 import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
     AuthModule, 
     RolesModule, 
     AirportsModule,
-    PostsModule
+    PostsModule,
+    CommentsModule
   ],
 })
 export class AppModule implements NestModule {
