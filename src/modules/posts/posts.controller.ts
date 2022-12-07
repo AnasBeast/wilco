@@ -20,6 +20,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { CreateCommentDTO } from 'src/dto/comment/create-comment.dto';
 import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { FeedDTO } from 'src/dto/post/feed.dto';
@@ -91,5 +92,16 @@ export class PostsController {
     })
     async delete(@Param('id') id: string) {
         return await this.postsService.delete(id);
+    }
+
+    // commentes
+    @Post("/:id/comments")
+    async createComment(@Param('id') postId: string, @Body() createCommentDTO: CreateCommentDTO, @Req() req) {
+        return await this.postsService.createComment(postId, createCommentDTO, req.user._id);
+    }
+
+    @Get("/:id/comments")
+    async getComments(@Param('id') postId: string, @Req() req) {
+        return await this.postsService.getComments(postId, req.user._id);
     }
 }

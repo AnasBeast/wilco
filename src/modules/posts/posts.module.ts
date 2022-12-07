@@ -1,17 +1,20 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from 'src/database/mongo/models/post.model';
 import { S3Service } from '../files/s3.service';
 import { S3Module } from '../files/s3.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-    S3Module
+    S3Module,
+    forwardRef(() => CommentsModule) 
   ],
   providers: [PostsService],
-  controllers: [PostsController]
+  controllers: [PostsController],
+  exports: [PostsService]
 })
 export class PostsModule {}

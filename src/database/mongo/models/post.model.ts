@@ -1,7 +1,7 @@
 import { User } from './user.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 import { Comment } from './comment.model';
 import { Flight } from './flight.model';
 import { Like } from './like.model';
@@ -56,7 +56,7 @@ export class Post {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Comment' }],
     default: [],
   })
-  comments: Comment[];
+  comments: Types.ObjectId[];
 
   @ApiProperty()
   @Prop({

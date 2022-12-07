@@ -4,22 +4,26 @@ import { Schema as MongooseSchema } from 'mongoose';
 import { CommentReply } from './commentReply.model';
 import { Post } from './post.model';
 import { User } from './user.model';
+import { Types } from "mongoose";
 
 export type CommentDocument = Comment & Document;
 
 @Schema({ timestamps: true })
 export class Comment {
+  
+  @ApiProperty()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  creator: User;
+
+  @ApiProperty()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Post', required: true })
+  post: string
+  
   @ApiProperty()
   @Prop({ required: true })
   text: string;
 
-  @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  pilot: User;
-
-  @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Post', required: true })
-  post: Post;
+  // likes and desliked
 
   @ApiProperty()
   @Prop({ default: 0 })
@@ -34,28 +38,36 @@ export class Comment {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
     default: [],
   })
-  likes: User[];
+  likes: Types.ObjectId[];
 
   @ApiProperty()
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
     default: [],
   })
-  dislikes: User[];
+  dislikes: Types.ObjectId[];
 
+    // end of likes and desliked
+
+
+  // mentioned users
   @ApiProperty()
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
     default: [],
   })
   mentioned_pilots: User[];
+  // mentione users
 
+  //replies
   @ApiProperty()
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'CommentReply' }],
     default: [],
   })
-  replies: CommentReply[];
+  replies: Types.ObjectId[];
+  //end of replies
+
 
   @ApiProperty()
   @Prop({ default: [] })
