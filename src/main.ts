@@ -14,11 +14,8 @@ const fb_admin = admin.initializeApp(firebaseConfig, "test-wilco")
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // versioning
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-  app.setGlobalPrefix('api');
+  
+  app.setGlobalPrefix("/1")
 
   // Globally Set EveryEndpoint to use validation on inputs
   app.useGlobalPipes(new ValidationPipe());

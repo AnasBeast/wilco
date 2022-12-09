@@ -19,13 +19,6 @@ export class UsersController {
     return await this.usersService.getUsers();
   }
 
-  @Get('/me')
-  @ApiBearerAuth()
-  @UseInterceptors(TransformationInterceptor)
-  async me(@Request() req) {
-    return await this.usersService.getPopulatedUserByEmail(req.user.email);
-  }
-
   // map to GET /1/pilots/{id} in old api
   @ApiBearerAuth()
   @Get(':id')
@@ -33,7 +26,8 @@ export class UsersController {
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
   async getUserById(@Param('id') id: string, @Req() req) {
-    return await this.usersService.getPopulatedUserById(id, req.user._id);
+
+    return await this.usersService.getPopulatedUserById(id, req.user.email);
   }
 
   // map to PATCH /1/pilots/{id} in old api
@@ -41,14 +35,14 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   async editUserProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    console.log(id, editUserDto, req.user._id, file);
-    return await this.usersService.editUserById(id, editUserDto, req.user._id, file);
+    console.log(id, editUserDto, req.user.email, file);
+    return await this.usersService.editUserByEmail(id, editUserDto, req.user.email, file);
   }
 
   @ApiBearerAuth()
   @Delete('id')
   async deleteUser(@Param('id') id: string, @Req() req) {
-    return await this.usersService.deleteUserById(id, req.user._id);
+    return await this.usersService.deleteUserById(id, req.user.email);
   }
 
   @ApiBearerAuth()
