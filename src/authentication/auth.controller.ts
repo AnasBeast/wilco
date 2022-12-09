@@ -33,7 +33,6 @@ export class AuthController {
   @ResponseMessage(FETCHED)
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(TransformationInterceptor)
   async login(@Body() body: LoginDto) {
     return await this.authService.login(body);
   }
