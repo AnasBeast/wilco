@@ -21,8 +21,9 @@ export class UsersController {
 
   @Get('/me')
   @ApiBearerAuth()
+  @UseInterceptors(TransformationInterceptor)
   async me(@Request() req) {
-    return { "response" : await this.usersService.getPopulatedUserByEmail(req.user.email) };
+    return await this.usersService.getPopulatedUserByEmail(req.user.email);
   }
 
   // map to GET /1/pilots/{id} in old api
