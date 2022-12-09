@@ -1,6 +1,6 @@
 import { UsersService } from './users.service';
 import { FETCHED } from '../../common/constants/response.constants';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PilotsService } from './pilots.service';
 import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
@@ -19,6 +19,11 @@ export class UsersController {
     return await this.usersService.getUsers();
   }
 
+  @Get('/me')
+  @ApiBearerAuth()
+  async me(@Request() req) {
+    return { "response" : await this.usersService.getPopulatedUserByEmail(req.user.email) };
+  }
 
   // map to GET /1/pilots/{id} in old api
   @ApiBearerAuth()

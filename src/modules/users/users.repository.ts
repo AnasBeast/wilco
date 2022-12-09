@@ -14,6 +14,10 @@ export class UsersRepository {
     return await this.userModel.findById(id).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean().exec();
   }
 
+  async getMeByEmail(email: string): Promise<UserDocument> {
+    return await this.userModel.findOne({ email }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]);
+  }
+
   async getUsers(projectionFields: ProjectionFields<User>) {
     return await this.userModel.find().populate(["home_airport", "primary_aircraft"]).select(projectionFields).lean();
   }

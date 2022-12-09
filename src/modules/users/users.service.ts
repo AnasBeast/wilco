@@ -30,6 +30,10 @@ export class UsersService {
     return await this.usersRepository.getPopulatedUserById(id);
   }
 
+  async getPopulatedUserByEmail(email: string): Promise<UserDocument> {
+    return await this.usersRepository.getMeByEmail(email);
+  }
+
   async getUserById(id: string): Promise<UserEntity> {
     return await this.usersRepository.getUserById(id);
   }
