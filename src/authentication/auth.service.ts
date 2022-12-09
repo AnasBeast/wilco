@@ -3,6 +3,8 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from './../modules/users/users.service';
 import { UserEntity } from 'src/common/entities/user.entity';
+import { LoginDto } from './dto/login.dto';
+import { TokenResponseDto } from './dto/token.response.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,8 +14,8 @@ export class AuthService {
     return await this.usersService.create(signUpDto);
   }
 
-  // transformUserResponse(user: User): Omit<User, "password"> {
-  //   delete user.password;
-  //   return user
-  // }
+  async login(loginDTO: LoginDto): Promise<TokenResponseDto> {
+    return await this.usersService.login(loginDTO.assertion);
+  }
+
 }

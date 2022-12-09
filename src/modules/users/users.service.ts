@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ObjectId, Types, UpdateQuery } from 'mongoose';
+import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
 import { RoleEntity } from 'src/common/entities/role.entity';
 import { UserEntity } from 'src/common/entities/user.entity';
 import { User, UserDocument } from 'src/database/mongo/models/user.model';
@@ -41,6 +42,22 @@ export class UsersService {
     return await this.usersRepository.getUserDocumentByFilter({ email });
   }
 
+  async login(token: string): Promise<TokenResponseDto> {
+    let firebase_uid: string;
+    try {
+      const decodedToken = await fb_admin.auth().verifyIdToken(token);
+      firebase_uid = decodedToken.uid;
+      return { 
+        access_token: token, 
+        token_type: 'Bearer',
+        created_at: decodedToken.iat, 
+        expires_in: decodedToken.exp
+      };
+
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+  }
 
 
   async create({ email, password, custom_roles, first_name, last_name, roles }: SignUpDto): Promise<UserEntity> {
