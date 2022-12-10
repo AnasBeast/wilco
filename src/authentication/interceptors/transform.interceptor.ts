@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 
 export interface Response<T> {
-  data: T;
+  response: T;
 }
 
 @Injectable()
@@ -14,7 +14,7 @@ export class TransformationInterceptor<T> implements NestInterceptor<T, Response
     const responseMessage = this.reflector.get<string>(ResponseMessageKey, context.getHandler()) ?? '';
     return next.handle().pipe(
       map((data) => ({
-        data: data,
+        response: data,
         statusCode: context.switchToHttp().getResponse().statusCode,
         message: responseMessage,
       })),
