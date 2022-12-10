@@ -16,6 +16,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
 import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { PilotsModule } from './modules/pilots/pilots.module';
+
 
 @Module({
   imports: [
@@ -29,7 +31,8 @@ import { CommentsModule } from './modules/comments/comments.module';
     AirCraftModule,
     AppConfigModule, 
     MongoDBModule, 
-    UsersModule, 
+    UsersModule,
+    PilotsModule,
     AuthModule, 
     RolesModule, 
     AirportsModule,
@@ -41,9 +44,9 @@ export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
       consumer
       .apply(AuthorizationMiddleware)
-      .exclude(
-        { path: "/api/v1/auth/register", method: RequestMethod.POST },
-        { path: "/api/v1/auth/login", method: RequestMethod.POST })
+      .exclude({ path: "/api/v1/auth/register", method: RequestMethod.POST })
+      .exclude({ path: "/api/v1/auth/login", method: RequestMethod.POST })
       .forRoutes('*')
+          //.exclude('*')
     }
 }
