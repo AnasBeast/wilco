@@ -1,4 +1,4 @@
-import { PilotsController } from './Pilots.controller';
+import { PilotsController } from './pilots.controller';
 import { PilotsService } from './pilots.service';
 import { S3Module } from './../files/s3.module';
 import { RolesModule } from './../roles/roles.module';
