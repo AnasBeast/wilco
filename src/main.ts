@@ -15,8 +15,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // versioning
   
-  app.setGlobalPrefix("/1")
-
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+  app.setGlobalPrefix('api');
+  
   // Globally Set EveryEndpoint to use validation on inputs
   app.useGlobalPipes(new ValidationPipe());
   // For Implementing dependency injection in custom validator classes
