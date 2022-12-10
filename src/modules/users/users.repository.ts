@@ -31,7 +31,7 @@ export class UsersRepository {
   }
 
   async getPopulatedUserById(id: string) {
-    return await this.userModel.findById(id).populate("roles aircrafts").lean();
+    return await this.userModel.findOne({id:id}).populate("roles aircrafts").lean();
   }
 
   async getPopulatedUserByEmail(email: string) {
