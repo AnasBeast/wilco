@@ -26,16 +26,8 @@ export class UsersRepository {
     return await this.userModel.findById(id).lean();
   }
 
-  async getUserByEmail(email: string) {
-    return await this.userModel.findOne({email}).lean();
-  }
-
   async getPopulatedUserById(id: string) {
-    return await this.userModel.findOne({id:id}).populate("roles aircrafts").lean();
-  }
-
-  async getPopulatedUserByEmail(email: string) {
-    return await this.userModel.findOne({email}).populate("roles aircrafts").lean();
+    return await this.userModel.findById(id).populate("roles aircrafts").lean();
   }
 
   async getUserByFilter(filter: object, projectionFields: ProjectionFields<User>): Promise<UserEntity> {
@@ -58,15 +50,7 @@ export class UsersRepository {
     return await this.userModel.findByIdAndUpdate(id, updatedUser, { returnDocument: "after" }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean();
   }
 
-  async editUserByEmail(email: string, updatedUser: UpdateQuery<User>) {
-    return await this.userModel.findByIdAndUpdate(email, updatedUser, { returnDocument: "after" }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean();
-  }
-
   async deleteUser(id: string) {
     return await this.userModel.findByIdAndDelete(id);
-  }
-
-  async deleteUserByEmail(email: string) {
-    return await this.userModel.findOneAndDelete({email});
   }
 }
