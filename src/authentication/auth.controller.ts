@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { UserEntity } from '../common/entities/user.entity';
 import { REGISTERED, FETCHED } from './../common/constants/response.constants';
@@ -19,12 +19,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(REGISTERED)
   @UseInterceptors(TransformationInterceptor)
+  @ApiOperation({ summary: 'Create new user' })
   async register(@Body() body: SignUpDto) {
     return await this.authService.register(body);
   }
 
   @Get('/me')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user info' })
   async me(@Request() req) {
     return req.user;
   }
@@ -33,6 +35,7 @@ export class AuthController {
   @ResponseMessage(FETCHED)
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login' })
   async login(@Body() body: LoginDto) {
     return await this.authService.login(body);
   }

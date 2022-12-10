@@ -22,19 +22,20 @@ import { CommentsModule } from './modules/comments/comments.module';
     MongooseModule.forRoot(config.mongoURI, {
       dbName: config.db,
     }),
+    AirCraftModule,
+    AirportsModule,
+    CommentsModule,
     CommunitiesModule,
     DeviceModule,
+    UsersModule, 
     CertificateModule,
     HashtagsModule,
-    AirCraftModule,
     AppConfigModule, 
-    MongoDBModule, 
-    UsersModule, 
     AuthModule, 
     RolesModule, 
-    AirportsModule,
     PostsModule,
-    CommentsModule
+    MongoDBModule, 
+
   ],
 })
 export class AppModule implements NestModule {

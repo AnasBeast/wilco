@@ -17,7 +17,7 @@ import { BaseDevice } from 'src/dto/device/base-device.dto';
 import { DeviceService } from './device.service';
 
 @Controller('devices')
-@ApiTags('devices')
+@ApiTags('Devices')
 export class DeviceController {
   constructor(private readonly service: DeviceService) {}
 

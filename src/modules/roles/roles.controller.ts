@@ -2,7 +2,7 @@ import { RoleEntity } from '../../common/entities/role.entity';
 import { CreateRoleDto } from './dto/create.dto';
 import { RolesService } from './roles.service';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CREATED } from 'src/common/constants/response.constants';
 import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
@@ -19,6 +19,7 @@ export class RolesController {
   @HttpCode(HttpStatus.CREATED)
   @ResponseMessage(CREATED)
   @UseInterceptors(TransformationInterceptor)
+  @ApiOperation({ summary: 'Create Custom Role' })
   async createRole(@Body() body: CreateRoleDto): Promise<RoleEntity> {
     return await this.rolesService.createRole(body);
   }
