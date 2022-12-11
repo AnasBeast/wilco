@@ -16,34 +16,40 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
 import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { PilotsModule } from './modules/pilots/pilots.module';
+
 
 @Module({
   imports: [
     MongooseModule.forRoot(config.mongoURI, {
       dbName: config.db,
     }),
+    AirCraftModule,
+    AirportsModule,
+    CommentsModule,
     CommunitiesModule,
     DeviceModule,
+    UsersModule, 
     CertificateModule,
     HashtagsModule,
-    AirCraftModule,
     AppConfigModule, 
     MongoDBModule, 
-    UsersModule, 
+    UsersModule,
+    PilotsModule,
     AuthModule, 
     RolesModule, 
-    AirportsModule,
     PostsModule,
-    CommentsModule
+    MongoDBModule, 
+
   ],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
       consumer
       .apply(AuthorizationMiddleware)
-      .exclude(
-        { path: "/api/v1/auth/register", method: RequestMethod.POST },
-        { path: "/api/v1/auth/login", method: RequestMethod.POST })
+      .exclude({ path: "/api/v1/auth/register", method: RequestMethod.POST })
+      .exclude({ path: "/api/v1/auth/login", method: RequestMethod.POST })
       .forRoutes('*')
+          //.exclude('*')
     }
 }

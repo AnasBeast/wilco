@@ -17,7 +17,7 @@ import { BaseHashtags } from 'src/dto/hashtags/base-hashtags.dto';
 import { HashtagsService } from './hashtags.service';
 
 @Controller('hashtags')
-@ApiTags('hashtags')
+@ApiTags('Hashtags')
 export class HashtagsController {
   constructor(private readonly service: HashtagsService) {}
 

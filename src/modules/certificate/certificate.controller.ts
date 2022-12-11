@@ -17,7 +17,7 @@ import { BaseCertificate } from 'src/dto/certificate/base-certificate.dto';
 import { CertificateService } from './certificate.service';
 
 @Controller('certificates')
-@ApiTags('certificates')
+@ApiTags('Certificates')
 export class CertificateController {
   constructor(private readonly certificatesService: CertificateService) {}
 

@@ -12,38 +12,48 @@ import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
 @ApiTags('Pilots')
 @Controller('pilots')
 export class UsersController {
-  constructor(private pilotsService: PilotsService, private usersService: UsersService) {}
+  constructor(/*private pilotsService: PilotsService,*/ private usersService: UsersService) {}
   
   @ApiBearerAuth()
   @Get()
+  @ApiOperation({ summary: 'Get all pilots' })
   async getUsers() {
     return await this.usersService.getUsers();
   }
 
+  @Get('/me')
+  @ApiBearerAuth()
+  @UseInterceptors(TransformationInterceptor)
+  async me(@Request() req) {
+    return await this.usersService.getPopulatedUserByEmail(req.user.email);
+  }
+/*
   // map to GET /1/pilots/{id} in old api
   @ApiBearerAuth()
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
+  @ApiOperation({ summary: 'Get Pilot By ID' })
   async getUserById(@Param('id') id: string, @Req() req) {
-
-    return await this.usersService.getPopulatedUserById(id, req.user.email);
+    return await this.usersService.getPopulatedUserById(id, req.user._id);
   }
-
+*/
   // map to PATCH /1/pilots/{id} in old api
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
+  @ApiOperation({ summary: 'Edit Pilot Profile' })
   async editUserProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    console.log(id, editUserDto, req.user.email, file);
-    return await this.usersService.editUserByEmail(id, editUserDto, req.user.email, file);
+    console.log(id, editUserDto, req.user._id, file);
+    return await this.usersService.editUserById(id, editUserDto, req.user._id, file);
   }
 
   @ApiBearerAuth()
-  @Delete('id')
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete Pilot' })
   async deleteUser(@Param('id') id: string, @Req() req) {
-    return await this.usersService.deleteUserById(id, req.user.email);
+    return await this.usersService.deleteUserById(id, req.user._id);
   }
 
   @ApiTags('Airport')
@@ -60,6 +70,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
+  @ApiOperation({ summary: 'Search Pilot By Name' })
   async searchPilotsByName(@Param('pattern') pattern: string) {
     return await this.usersService.searchByName(pattern);
   }
@@ -69,13 +80,15 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @UseInterceptors(TransformationInterceptor)
+  @ApiOperation({ summary: 'Search Pilot By HomeAirport' })
   async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string) {
     return await this.usersService.searchByHomeAirPort(airport_code);
   }
 
   @ApiBearerAuth()
   @Get('/searchByCommunity/:community_name')
-  async getPilotsByCommunity(@Param('community_name') community_name: string) {
+  @ApiOperation({ summary: 'Search Pilot By Community' })
+    async getPilotsByCommunity(@Param('community_name') community_name: string) {
     return await this.usersService.searchByCommunities(community_name);
   }
 

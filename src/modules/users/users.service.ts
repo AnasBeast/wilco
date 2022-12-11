@@ -26,9 +26,9 @@ export class UsersService {
   
   async getPopulatedUserById(id: string, userId: string) {
     if (id === "me" || id === userId) {
-      return await this.usersRepository.getMeByEmail(userId);
+      return await this.usersRepository.getMe(userId);
     }
-    return await this.usersRepository.getPopulatedUserByEmail(id);
+    return await this.usersRepository.getPopulatedUserById(id);
   }
 
   async getPopulatedUserByEmail(email: string): Promise<UserDocument> {
@@ -119,29 +119,13 @@ export class UsersService {
     return await this.usersRepository.editUser(userId, editedUser);
   }
 
-  async editUserByEmail(id: string, editedUser: UpdateQuery<User>, email: string, file?: Express.Multer.File) {
-    if (id !== "me" && id !== email) {
-      throw new UnauthorizedException();
-    }
-    if(file) {
-      const user = await this.usersRepository.getUserByEmail(email);
-      if (user.profile_picture_key) {
-        await this.s3Service.deleteFile(user.profile_picture_key);
-      }
-      const resUpload = await this.s3Service.uploadFile(file);
-      if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
-      return await this.usersRepository.editUserByEmail(email, { ...editedUser, profile_picture_key: resUpload.key, profile_picture_link: resUpload.location })
-    }
-
-    return await this.usersRepository.editUserByEmail(email, editedUser);
-  }
   //delete all data!
   async deleteUserById(id: string, userId: string) {
     if (id !== "me" && id !== userId) {
       throw new UnauthorizedException();
     }
 
-    return await this.usersRepository.deleteUserByEmail(userId);
+    return await this.usersRepository.deleteUser(userId);
   }
 
   async addAirportsToPilot(id: string, airports: string[], userEmail: string) {

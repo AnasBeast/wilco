@@ -18,7 +18,7 @@ import { CommunityService } from './community.service';
 
 @Controller('community')
 @ApiBearerAuth()
-@ApiTags('community')
+@ApiTags('Communities')
 export class CommunityController {
   constructor(private readonly service: CommunityService) {}
 

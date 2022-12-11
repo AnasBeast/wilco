@@ -27,7 +27,7 @@ import { FeedDTO } from 'src/dto/post/feed.dto';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
-@ApiTags('posts')
+@ApiTags('Posts')
 export class PostsController {
 
     constructor(private readonly postsService: PostsService) { }
@@ -96,11 +96,13 @@ export class PostsController {
 
     // commentes
     @Post("/:id/comments")
+    @ApiOperation({ summary: 'Post a comment' })
     async createComment(@Param('id') postId: string, @Body() createCommentDTO: CreateCommentDTO, @Req() req) {
         return await this.postsService.createComment(postId, createCommentDTO, req.user._id);
     }
 
     @Get("/:id/comments")
+    @ApiOperation({ summary: 'Get Post Comments' })
     async getComments(@Param('id') postId: string, @Req() req) {
         return await this.postsService.getComments(postId, req.user._id);
     }
