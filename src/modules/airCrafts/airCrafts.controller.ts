@@ -1,7 +1,7 @@
 import { ADDED } from './../../common/constants/response.constants';
 import { AirCraftEntity } from './../../common/entities/airCraft.entity';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { CreateAirCraftDto, UpdateAirCraftDto } from './dto/create.dto';
@@ -49,6 +49,8 @@ export class AirCraftController {
   }
 
   @Post(':id/remove')
+  @ApiOperation({ summary: 'Remove aircraft from pilot' })
+  @ApiParam({ name: "id", description: 'aircraft_id'  })
   async removeAircraftFromPilot(@Param('id') id: string, @Req() req) {
     return await this.airCraftService.removeAircraftFromPilot(id, req.user.pilotId);
   }
