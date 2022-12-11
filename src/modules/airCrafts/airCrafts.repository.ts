@@ -32,4 +32,8 @@ export class AirCraftsRepository {
   async editAircraftById(id: string, editedAircraft: UpdateQuery<AirCraft>, options: QueryOptions) {
     return await this.airCraftModel.findByIdAndUpdate(id, editedAircraft, options).lean();
   }
+
+  async removeAircraftByPilotId(id: string) {
+    return await this.airCraftModel.findByIdAndUpdate(id, { removed: true }, { returnDocument: 'after' });
+  }
 }

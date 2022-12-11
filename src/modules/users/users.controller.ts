@@ -1,7 +1,6 @@
 import { FETCHED } from '../../common/constants/response.constants';
 import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,7 +19,6 @@ export class UsersController {
 
   @Get('/me')
   @ApiBearerAuth()
-  @UseInterceptors(TransformationInterceptor)
   async me(@Request() req) {
     return await this.PilotsService.getPopulatedUserByEmail(req.user.email);
   }
@@ -30,7 +28,6 @@ export class UsersController {
   // @Get(':id')
   // @HttpCode(HttpStatus.OK)
   // @ResponseMessage(FETCHED)
-  // @UseInterceptors(TransformationInterceptor)
   // async getPilotById(@Param('id') id: string, @Req() req) {
   //   console.log('serving from pilots')
   //   return await this.PilotsService.getPopulatedUserById(id, req.user._id);
@@ -55,7 +52,6 @@ export class UsersController {
   @Get('/searchByName/:pattern')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
-  @UseInterceptors(TransformationInterceptor)
   async searchPilotsByName(@Param('pattern') pattern: string) {
     return await this.PilotsService.searchByName(pattern);
   }
@@ -64,7 +60,6 @@ export class UsersController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
-  @UseInterceptors(TransformationInterceptor)
   async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string) {
     return await this.PilotsService.searchByHomeAirPort(airport_code);
   }

@@ -2,6 +2,7 @@ import { Type } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { bool } from 'aws-sdk/clients/signer';
 
 export type AirCraftDocument = AirCraft & Document;
 
@@ -26,6 +27,10 @@ export class AirCraft {
   @ApiProperty()
   @Prop()
   aircraft_picture_key?: string;
+
+  @ApiProperty()
+  @Prop({ default: false })
+  removed: boolean;
 }
 
 export const AirCraftSchema = SchemaFactory.createForClass(AirCraft);

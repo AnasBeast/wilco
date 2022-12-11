@@ -30,8 +30,9 @@ export class PilotsService {
   }
   
   // GET PILOT BY ID OR EMAIL
-  async getPilotById(id: string, pilotId: string, userId: string) {
-    if (id === "me" || id === pilotId) {
+  async getPilotById(id: string, pilotId: number, userId: string) {
+    if (id === "me") {
+      console.log(pilotId, userId)
       const pilot = await this.pilotsRepository.getMeById(pilotId);
       const user = await this.usersRepository.getMeById(userId);
       return { pilot, user: {email: user.email} }
@@ -55,63 +56,8 @@ export class PilotsService {
   //   return await this.pilotsRepository.getUserDocumentByFilter({ email });
   // }
 
-  async login(token: string): Promise<TokenResponseDto> {
-    let firebase_uid: string;
-    try {
-      const decodedToken = await fb_admin.auth().verifyIdToken(token);
-      firebase_uid = decodedToken.uid;
-      return { 
-        access_token: token, 
-        token_type: 'Bearer',
-        created_at: decodedToken.iat, 
-        expires_in: decodedToken.exp
-      };
-
-    } catch (error) {
-      throw new UnauthorizedException(error.message);
-    }
-  }
-
-
-  // async create({ email, password, custom_roles, first_name, last_name, roles }: SignUpDto): Promise<Pilot> {
-  //   const roleExist = await this.rolesService.getRolesByFilter({ _id: {$in: roles} }, { select: "_id" });
-  //   if (!roleExist || roles.length !== roleExist.length) throw new HttpException(errors.ROLE_NOT_EXIST, HttpStatus.BAD_REQUEST)
-
-
-
-  //   let createdRoles: RoleEntity[] = [];
-  //   if (custom_roles) {
-  //     let newRoles: RoleEntity[] = [];
-  //     let rolesFilterArray: string[] = [] 
-
-  //     custom_roles.split(",").map((role) => {
-  //       rolesFilterArray.push(role)
-  //       newRoles.push({ name: role, custom: true })
-  //     })
-
-  //     createdRoles = await this.rolesService.createCustomRoles(newRoles, rolesFilterArray);
-  //   }
-
-  //   let firebase_uid: string;
-  //   try {
-  //     const user = await fb_admin.auth().createUser({
-  //       email,
-  //       password
-  //     });
-  //     firebase_uid = user.uid;
-  //   } catch (error) {
-  //     throw new UnauthorizedException(error.message);
-  //   }
-
-  //   const newUser = await this.pilotsRepository.createNewUser({...{email, first_name, last_name, firebase_uid}, roles: [...roles, ...createdRoles.map((role) => role._id)]});
-
-  //   await fb_admin.auth().setCustomUserClaims(firebase_uid, { _id: newUser._id });
-
-  //   return newUser;
-  // }
-
-  async editPilotById(id: string, editedUser: UpdateQuery<User>, pilotId: string, file?: Express.Multer.File) {
-    if (id !== "me" && id !== pilotId) {
+  async editPilotById(id: string, editedUser: UpdateQuery<User>, pilotId: number, file?: Express.Multer.File) {
+    if (id !== "me") {
       throw new UnauthorizedException();
     }
     const pilot = await this.pilotsRepository.getMeById(pilotId);
@@ -130,7 +76,7 @@ export class PilotsService {
   }
 
   //delete all data!
-  async deletePilotById(id: string, pilotId: string) {
+  async deletePilotById(id: string, pilotId: number) {
     if (id !== "me") {
       throw new UnauthorizedException();
     }

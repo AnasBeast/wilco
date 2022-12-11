@@ -17,6 +17,8 @@ import { AuthorizationMiddleware } from './authentication/middlewares/authorizat
 import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { UsersModule } from './modules/users/users.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformationInterceptor } from './authentication/interceptors/transform.interceptor';
 
 
 @Module({
@@ -41,6 +43,12 @@ import { UsersModule } from './modules/users/users.module';
     MongoDBModule, 
 
   ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformationInterceptor
+    }
+  ]
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

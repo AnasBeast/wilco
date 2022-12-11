@@ -8,14 +8,14 @@ import { TokenResponseDto } from './dto/token.response.dto';
 
 @Injectable()
 export class AuthService {
-  // constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   // async register(signUpDto: SignUpDto): Promise<UserEntity> {
   //   return await this.usersService.create(signUpDto);
   // }
 
-  // async login(loginDTO: LoginDto): Promise<TokenResponseDto> {
-  //   return await this.usersService.login(loginDTO.assertion);
-  // }
+  async login(loginDTO: LoginDto): Promise<TokenResponseDto> {
+    return await this.usersService.login(loginDTO.assertion);
+  }
 
 }

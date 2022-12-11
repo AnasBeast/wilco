@@ -8,8 +8,8 @@ import { User } from '../../database/mongo/models/user.model';
 export class PilotsRepository {
   constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>) {}
 
-  async getMeById(id: string): Promise<PilotDocument> {
-    return await this.pilotModel.findOne({ id });
+  async getMeById(id: number): Promise<PilotDocument> {
+    return await this.pilotModel.findOne({ "id": id });
   }
 
   async getMeByEmail(email: string): Promise<PilotDocument> {
@@ -52,7 +52,7 @@ export class PilotsRepository {
     return await this.pilotModel.findByIdAndUpdate(id, updatedUser, { returnDocument: "after" }).lean();
   }
 
-  async deletePilot(id: string) {
+  async deletePilot(id: number) {
     return await this.pilotModel.findOneAndDelete({ id });
   }
 }

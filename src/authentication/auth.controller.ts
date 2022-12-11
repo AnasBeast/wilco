@@ -6,7 +6,6 @@ import { REGISTERED, FETCHED } from './../common/constants/response.constants';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { TransformationInterceptor } from './interceptors/transform.interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -18,7 +17,6 @@ export class AuthController {
   // @ApiForbiddenResponse({ description: 'Forbidden.' })
   // @HttpCode(HttpStatus.OK)
   // @ResponseMessage(REGISTERED)
-  // @UseInterceptors(TransformationInterceptor)
   // @ApiOperation({ summary: 'Create new user' })
   // async register(@Body() body: SignUpDto) {
   //   return await this.authService.register(body);
@@ -31,12 +29,12 @@ export class AuthController {
   //   return req.user;
   // }
 
-  // @Post('/login')
-  // @ResponseMessage(FETCHED)
-  // @ApiForbiddenResponse({ description: 'Forbidden.' })
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Login' })
-  // async login(@Body() body: LoginDto) {
-  //   return await this.authService.login(body);
-  // }
+  @Post('/login')
+  @ResponseMessage(FETCHED)
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login' })
+  async login(@Body() body: LoginDto) {
+    return await this.authService.login(body);
+  }
 }

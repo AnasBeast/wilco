@@ -1,7 +1,6 @@
 import { FETCHED } from '../../common/constants/response.constants';
 import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { TransformationInterceptor } from 'src/authentication/interceptors/transform.interceptor';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,7 +19,6 @@ export class PilotsController {
   @ApiParam({ name:'page', description: "Number of page requested. Starts from 1." })
   @ApiParam({ name:'per_page', description: "Number of pilots returned per page. Cannot exceed 25" })
   @Get()
-  @UseInterceptors(TransformationInterceptor)
   async getPilots(@Body() getPilotsDTO: GetPilotsDTO) {
     return await this.pilotsService.getPilots(getPilotsDTO.page, getPilotsDTO.per_page);
   }
@@ -32,7 +30,6 @@ export class PilotsController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @ApiOperation({ summary: 'Get Pilot By ID' })
-  @UseInterceptors(TransformationInterceptor)
   async getPilotById(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.getPilotById(id, req.user.pilotId, req.user.userId);
   }
@@ -42,7 +39,6 @@ export class PilotsController {
   @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   @ApiOperation({ summary: 'Edit Pilot Profile' })
-  @UseInterceptors(TransformationInterceptor)
   async editPilotProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
     return await this.pilotsService.editPilotById(id, editUserDto, req.user.pilotId, file);
   }
@@ -67,7 +63,6 @@ export class PilotsController {
   @Get('/searchByName/:pattern')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
-  @UseInterceptors(TransformationInterceptor)
   @ApiOperation({ summary: 'Search Pilot By Name' })
   async searchPilotsByName(@Param('pattern') pattern: string) {
     return await this.pilotsService.searchByName(pattern);
@@ -77,7 +72,6 @@ export class PilotsController {
   // @ApiBearerAuth()
   // @HttpCode(HttpStatus.OK)
   // @ResponseMessage(FETCHED)
-  // @UseInterceptors(TransformationInterceptor)
   // @ApiOperation({ summary: 'Search Pilot By HomeAirport' })
   // async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string) {
   //   return await this.pilotsService.searchByHomeAirPort(airport_code);

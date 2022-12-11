@@ -12,6 +12,10 @@ export type PilotDocument = HydratedDocument<Pilot>;
 @Schema({ timestamps: true })
 export class Pilot {
   @ApiProperty()
+  @Prop()
+  id: number;
+
+  @ApiProperty()
   @Prop({ required: true })
   first_name: string;
 

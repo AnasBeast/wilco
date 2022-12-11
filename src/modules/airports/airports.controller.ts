@@ -1,5 +1,4 @@
 import { CreateAirportDto } from './dto/create.dto';
-import { TransformationInterceptor } from './../../authentication/interceptors/transform.interceptor';
 import { CREATED } from './../../common/constants/response.constants';
 import { AirportEntity } from './../../common/entities/airport.entity';
 import { AirportsService } from './airports.service';
@@ -19,7 +18,6 @@ export class AirportsController {
   // @ApiForbiddenResponse({ description: 'Forbidden.' })
   // @HttpCode(HttpStatus.CREATED)
   // @ResponseMessage(CREATED)
-  // @UseInterceptors(TransformationInterceptor)
   // async createAirport(@Body() body: CreateAirportDto): Promise<AirportEntity> {
   //   return await this.airportsService.createAirport(body);
   // }

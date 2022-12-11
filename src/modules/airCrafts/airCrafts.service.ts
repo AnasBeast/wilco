@@ -58,7 +58,7 @@ export class AirCraftService {
 
   async getAircraftLatestFlights(aircraftId: string, pilot_id: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
-    if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND.message, errors.AIRCRAFT_NOT_FOUND.code);
+    if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) {
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
@@ -101,7 +101,7 @@ export class AirCraftService {
 
   async editAircraft({ make_and_model, tail_number }: UpdateAirCraftDto, aircraftId: string, pilot_id: Types.ObjectId, file?: Express.Multer.File) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
-    if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND.message, errors.AIRCRAFT_NOT_FOUND.code);
+    if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     
     if(file) {
       if(aircraft.aircraft_picture_key) {
@@ -116,4 +116,18 @@ export class AirCraftService {
   }
 
   //TODO: ASK ABOUT AIRCRAFT DELETION
+  async removeAircraftFromPilot(id: string, pilotId: number) {
+    const aircraft = await this.airCraftsRepository.getAirCraftById(id);
+    if (!aircraft) {
+      throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
+    }
+    if (aircraft.pilot_id !== pilotId) {
+      throw new UnauthorizedException(errors.PERMISSION_DENIED);
+    }
+    if(aircraft.removed) {
+      throw new BadRequestException(errors.AIRCRAFT_ALREADY_REMOVED);
+    }
+
+    return await this.airCraftsRepository.removeAircraftByPilotId(id);
+  }
 }
