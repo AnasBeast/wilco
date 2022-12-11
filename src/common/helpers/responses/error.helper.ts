@@ -37,5 +37,6 @@ export const errors = {
   EMPTY_AVATAR: { message: 'You must provide your avatar', code: 'EMPTY_AVATAR' },
   AIRCRAFT_NOT_FOUND: { message: 'Aircraft not found', code: 'AIRCRAFT_NOT_FOUND' },
   MISSING_TAIL_NUMBER: { message: "The provided aircraft doesn't have tail number", code: 'MISSING_TAIL_NUMBER' },
-  PERMISSION_DENIED: { message: "You don't have permission to perform this action", code: "PERMISSION_DENIED" }
+  PERMISSION_DENIED: { response: { error_name: "permission_denied", error_message: "You don't have permission to perform this action" } },
+  PILOT_NOT_FOUND: { response: { error_name: "record_not_found", error_message: "Pilot not found" }   }
 };

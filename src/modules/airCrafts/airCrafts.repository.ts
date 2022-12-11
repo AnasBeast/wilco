@@ -16,7 +16,7 @@ export class AirCraftsRepository {
     return await this.airCraftModel.findOne(filter).exec();
   }
 
-  async getAirCraftById(id: string): Promise<AirCraftCreate> {
+  async getAirCraftById(id: string): Promise<AirCraft> {
     return await this.airCraftModel.findById(id).lean();
   }
 

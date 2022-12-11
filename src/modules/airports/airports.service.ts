@@ -4,7 +4,8 @@ import { AirportsRepository } from './airports.repository';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { AirportEntity } from 'src/common/entities/airport.entity';
 import { Airport } from 'src/database/mongo/models/airport.model';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, ProjectionFields } from 'mongoose';
+import { Projection } from 'aws-sdk/clients/dynamodb';
 
 @Injectable()
 export class AirportsService {
@@ -12,6 +13,10 @@ export class AirportsService {
 
   async getAirportByFilter(filter: FilterQuery<Airport>): Promise<AirportEntity> {
     return await this.airportsRepository.getAirportByFilter(filter);
+  }
+
+  async getAirportsByFilter(filter: FilterQuery<Airport>, projection: ProjectionFields<Airport>): Promise<ProjectionFields<Airport>[]> {
+    return await this.airportsRepository.getAirportsByFilter(filter, projection);
   }
 
   async createAirport(body: CreateAirportDto): Promise<AirportEntity> {

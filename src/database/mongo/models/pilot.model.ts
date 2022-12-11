@@ -5,83 +5,102 @@ import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
 import { AirportEntity } from 'src/common/entities/airport.entity';
 import { CommunityEntity } from 'src/common/entities/community.entity';
 import { RoleEntity } from 'src/common/entities/role.entity';
+import { Types } from "mongoose";
 
 export type PilotDocument = HydratedDocument<Pilot>;
 
 @Schema({ timestamps: true })
 export class Pilot {
   @ApiProperty()
-  @Prop()
+  @Prop({ required: true })
   first_name: string;
 
   @ApiProperty()
-  @Prop()
+  @Prop({ required: true })
   last_name: string;
 
   @ApiProperty()
   @Prop()
   description: string;
-/*
-  @ApiProperty()
-  @Prop()
-  banner: string;
 
   @ApiProperty()
   @Prop({
     type: [MongooseSchema.Types.ObjectId],
     ref: 'Role',
     required: true,
+    autopopulate: true
   })
-  roles: RoleEntity[]
+  roles: Types.ObjectId[]
+  
+  @ApiProperty()
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Aircraft',
+  })
+  primary_aircraft_id: Types.ObjectId;
+
+  @ApiProperty()
+  @Prop()
+  profile_picture_url: string;
+
+  @ApiProperty()
+  @Prop({
+    type: [MongooseSchema.Types.ObjectId],
+    ref: 'Flight',
+    autopopulate: true
+  })
+  latest_flights: Types.ObjectId[]
 
   @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'Airport',
+    ref: 'Aircraft',
+    autopopulate: true
   })
-  home_airport: AirportEntity;
+  aircrafts: Types.ObjectId[];
 
   @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'Airport',
+    ref: 'Certificate',
+    autopopulate: true
   })
-  aircrafts: AirCraftEntity[];
-*/
+  certificates: Types.ObjectId[];
+
   @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'Airport',
+    ref: 'Rating',
+    autopopulate: true
   })
-  primary_aircraft: AirCraftEntity;
-/*
+  ratings: Types.ObjectId[];
+
   @ApiProperty()
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Community',
+    autopopulate: true
   })
-  communities: CommunityEntity[];
-*/
-  @ApiProperty()
-  @Prop()
-  total_hours: number;
-/*
-  @ApiProperty()
-  @Prop({ unique: true })
-  email: string;
-*/
-  // @ApiProperty()
-  // @Prop()
-  // cometchat_auth_token: string;
-/*
-  @ApiProperty()
-  @Prop()
-  profile_picture_link: string;
+  community_tags: Types.ObjectId[];
 
   @ApiProperty()
   @Prop()
+  home_airport: string;
+
+  @ApiProperty()
+  @Prop({
+    type: [MongooseSchema.Types.ObjectId],
+    ref: 'Airport',
+    autopopulate: true
+  })
+  airports: Types.ObjectId[];
+
+  @ApiProperty()
+  @Prop()
+  total_hours: number;
+
+  @Prop()
   profile_picture_key: string;
-*/
 }
 
 

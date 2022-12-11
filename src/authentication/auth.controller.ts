@@ -13,30 +13,30 @@ import { TransformationInterceptor } from './interceptors/transform.interceptor'
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/register')
-  @ApiCreatedResponse({ description: 'User has been successfully created.', type: UserEntity })
-  @ApiForbiddenResponse({ description: 'Forbidden.' })
-  @HttpCode(HttpStatus.OK)
-  @ResponseMessage(REGISTERED)
-  @UseInterceptors(TransformationInterceptor)
-  @ApiOperation({ summary: 'Create new user' })
-  async register(@Body() body: SignUpDto) {
-    return await this.authService.register(body);
-  }
+  // @Post('/register')
+  // @ApiCreatedResponse({ description: 'User has been successfully created.', type: UserEntity })
+  // @ApiForbiddenResponse({ description: 'Forbidden.' })
+  // @HttpCode(HttpStatus.OK)
+  // @ResponseMessage(REGISTERED)
+  // @UseInterceptors(TransformationInterceptor)
+  // @ApiOperation({ summary: 'Create new user' })
+  // async register(@Body() body: SignUpDto) {
+  //   return await this.authService.register(body);
+  // }
 
-  @Get('/me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user info' })
-  async me(@Request() req) {
-    return req.user;
-  }
+  // @Get('/me')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get user info' })
+  // async me(@Request() req) {
+  //   return req.user;
+  // }
 
-  @Post('/login')
-  @ResponseMessage(FETCHED)
-  @ApiForbiddenResponse({ description: 'Forbidden.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login' })
-  async login(@Body() body: LoginDto) {
-    return await this.authService.login(body);
-  }
+  // @Post('/login')
+  // @ResponseMessage(FETCHED)
+  // @ApiForbiddenResponse({ description: 'Forbidden.' })
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Login' })
+  // async login(@Body() body: LoginDto) {
+  //   return await this.authService.login(body);
+  // }
 }

@@ -21,25 +21,25 @@ const api = axios.create({
 
 @Injectable()
 export class AirCraftService {
-  constructor(private airCraftsRepository: AirCraftsRepository, private usersService: UsersService, private s3Service: S3Service) {}
+  constructor(private airCraftsRepository: AirCraftsRepository,/* private usersService: UsersService , */private s3Service: S3Service) {}
 
-  async create(body: CreateAirCraftDto, pilot_id: string ,file?: Express.Multer.File) {
-    const aircraftInput: AirCraftCreate = {
-      pilot_id,
-      ...body
-    };
+  // async create(body: CreateAirCraftDto, pilot_id: string ,file?: Express.Multer.File) {
+  //   const aircraftInput: AirCraftCreate = {
+  //     pilot_id,
+  //     ...body
+  //   };
     
-    if(file) {
-      const resUpload = await this.s3Service.uploadFile(file);
-      if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
-      aircraftInput.aicraft_picture = resUpload.location
-      aircraftInput.aircraft_picture_key = resUpload.key
-    }
+  //   if(file) {
+  //     const resUpload = await this.s3Service.uploadFile(file);
+  //     if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
+  //     aircraftInput.aicraft_picture = resUpload.location
+  //     aircraftInput.aircraft_picture_key = resUpload.key
+  //   }
 
-    const data = await this.airCraftsRepository.create(aircraftInput);
-    await this.usersService.editUserById(pilot_id, { $push: { aircrafts: data._id } }, pilot_id)
-    return data;
-  }
+  //   const data = await this.airCraftsRepository.create(aircraftInput);
+  //   await this.usersService.editPilotById(pilot_id, { $push: { aircrafts: data._id } }, pilot_id)
+  //   return data;
+  // }
 
   // async getAircraftsByPilotEmail(email: string) {
   //   //TODO: Change this to save on firebase
@@ -50,18 +50,17 @@ export class AirCraftService {
   //   })
   // }
 
-  async getAircraftsByPilotId(pilot_id: Types.ObjectId) {
+  async getAircraftsByPilotId(pilot_id: number) {
     return await this.airCraftsRepository.getAirCraftsByFilter({
       pilot_id
     })
   }
 
-  async getAircraftLatestFlights(aircraftId: string, pilot_id: string) {
+  async getAircraftLatestFlights(aircraftId: string, pilot_id: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND.message, errors.AIRCRAFT_NOT_FOUND.code);
-    if(aircraft.pilot_id.toString() !== pilot_id) {
-      console.log(aircraft.pilot_id.toString(), pilot_id, aircraft.pilot_id.toString() !== pilot_id)
-      throw new ForbiddenException(errors.PERMISSION_DENIED.message, errors.PERMISSION_DENIED.code);
+    if(aircraft.pilot_id !== pilot_id) {
+      throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
     if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER.message, errors.MISSING_TAIL_NUMBER.code);
     

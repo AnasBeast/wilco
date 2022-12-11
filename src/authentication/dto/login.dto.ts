@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsMongoId, IsNotEmpty, IsOptional, MinLength, Validate } from 'class-validator';
 import { Types } from 'mongoose';
-import { IsUserAlreadyExist } from 'src/modules/users/UserExists';
+import { IsUserAlreadyExist } from 'src/modules/pilots/UserExists';
 
 export class LoginDto {
 

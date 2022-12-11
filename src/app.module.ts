@@ -12,11 +12,11 @@ import { DeviceModule } from './modules/device/device.module';
 import { HashtagsModule } from './modules/hashtags/hashtags.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { UsersModule } from './modules/users/users.module';
+import { PilotsModule } from './modules/pilots/pilots.module';
 import { AuthorizationMiddleware } from './authentication/middlewares/authorization.middleware';
 import { AirCraftModule } from './modules/airCrafts/airCrafts.module';
 import { CommentsModule } from './modules/comments/comments.module';
-import { PilotsModule } from './modules/pilots/pilots.module';
+import { UsersModule } from './modules/users/users.module';
 
 
 @Module({
@@ -29,7 +29,6 @@ import { PilotsModule } from './modules/pilots/pilots.module';
     CommentsModule,
     CommunitiesModule,
     DeviceModule,
-    UsersModule, 
     CertificateModule,
     HashtagsModule,
     AppConfigModule, 
@@ -47,8 +46,7 @@ export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
       consumer
       .apply(AuthorizationMiddleware)
-      .exclude({ path: "/api/v1/auth/register", method: RequestMethod.POST })
-      .exclude({ path: "/api/v1/auth/login", method: RequestMethod.POST })
+      .exclude({ path: "/api/v1/auth/login", method: RequestMethod.POST }, { path: "/api/v1/auth/register", method: RequestMethod.POST })
       .forRoutes('*')
           //.exclude('*')
     }

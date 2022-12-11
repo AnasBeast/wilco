@@ -13,13 +13,12 @@ const fb_admin = admin.initializeApp(firebaseConfig, "test-wilco")
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // versioning
-  
+  app.setGlobalPrefix('/api');
+
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-  app.setGlobalPrefix('api');
+    defaultVersion: '1'
+  })
   
   // Globally Set EveryEndpoint to use validation on inputs
   app.useGlobalPipes(new ValidationPipe());
@@ -29,9 +28,6 @@ async function bootstrap() {
   //so there is no use for using json as a middleware
   // app.use(json({ limit: '50mb' }));
   // app.use(urlencoded({ extended: true, limit: '50mb' }));
-
-
-
 
   const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
