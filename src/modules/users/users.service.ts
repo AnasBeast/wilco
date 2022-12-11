@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ObjectId, Types, UpdateQuery } from 'mongoose';
 import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
 import { RoleEntity } from 'src/common/entities/role.entity';
 import { UserEntity } from 'src/common/entities/user.entity';
 import { User, UserDocument } from 'src/database/mongo/models/user.model';
+import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import fb_admin from 'src/main';
 import admin from 'src/main';
@@ -34,7 +35,7 @@ export class UsersService {
     return await this.usersRepository.getMeByEmail(email);
   }
 
-  async getUserById(id: string): Promise<UserEntity> {
+  async getUserById(id: string): Promise<User> {
     return await this.usersRepository.getUserById(id);
   }
 
@@ -142,6 +143,20 @@ export class UsersService {
 
     return await this.usersRepository.deleteUserByEmail(userId);
   }
+
+  async addAirportsToPilot(id: string, airports: string[], userEmail: string) {
+    const pilot = await this.usersRepository.getUserDocumentByFilter({ _id: id });
+    if (!pilot) {
+      throw new NotFoundException(errors.PILOT_NOT_FOUND);
+    }
+    if (pilot.email !== userEmail) {
+      throw new ForbiddenException(errors.PERMISSION_DENIED);
+    }
+    const FoundAirports = await this.airportService.getAirportsByFilter({ icao: { $in : airports } }, ["_id"]);
+    pilot.preferred_airports = FoundAirports.map(airport => airport._id);
+    return await pilot.save();
+  }
+
 
   
   async searchByName(pattern: string) {

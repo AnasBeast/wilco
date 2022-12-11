@@ -8,19 +8,19 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { Airport } from 'src/database/mongo/models/airport.model';
 
-@ApiTags('Airports')
+@ApiTags('Airport')
 @Controller('airports')
 export class AirportsController {
   constructor(private airportsService: AirportsService) {}
 
-  @Post('/')
-  @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'Airport has been successfully created.', type: AirportEntity })
-  @ApiForbiddenResponse({ description: 'Forbidden.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ResponseMessage(CREATED)
-  @UseInterceptors(TransformationInterceptor)
-  async createAirport(@Body() body: CreateAirportDto): Promise<AirportEntity> {
-    return await this.airportsService.createAirport(body);
-  }
+  // @Post('/')
+  // @ApiBearerAuth()
+  // @ApiCreatedResponse({ description: 'Airport has been successfully created.', type: AirportEntity })
+  // @ApiForbiddenResponse({ description: 'Forbidden.' })
+  // @HttpCode(HttpStatus.CREATED)
+  // @ResponseMessage(CREATED)
+  // @UseInterceptors(TransformationInterceptor)
+  // async createAirport(@Body() body: CreateAirportDto): Promise<AirportEntity> {
+  //   return await this.airportsService.createAirport(body);
+  // }
 }
