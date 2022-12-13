@@ -10,8 +10,9 @@ export class Role {
   name: string;
 
   @ApiProperty()
-  @Prop({ required: false })
+  @Prop({ default: true })
   custom: boolean;
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);
+

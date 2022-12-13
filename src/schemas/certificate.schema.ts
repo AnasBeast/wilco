@@ -9,7 +9,7 @@ export class Certificate {
   id: string;
 
   @Prop({ required: true })
-  name?: string;
+  name: string;
 }
 
 export const CertificateSchema = SchemaFactory.createForClass(Certificate);

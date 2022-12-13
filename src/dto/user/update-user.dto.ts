@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsMongoId, IsNotEmpty, IsOptional, IsPositive } from "class-validator";
+import { IsMongoId, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPositive, IsString } from "class-validator";
 import { Types } from "mongoose";
 
 export class EditUserDto {
@@ -14,46 +14,45 @@ export class EditUserDto {
     readonly last_name: string;
     
     @IsOptional()
-    @IsMongoId({ each: true })
-    @ApiProperty({ example: 'pilot role(s) id(s) | exp ["635820733ce0994a2711582a"]' })
-    readonly roles: Types.ObjectId[];
+    @IsNotEmpty()
+    readonly description: string;
 
     @IsOptional()
-    @IsNotEmpty()
-    readonly banner: string;
-  
+    @IsNumberString()
+    readonly total_hours: string;
+
     @IsOptional()
-    @IsNotEmpty()
+    @IsNumber()
+    readonly primary_aircraft_id;
+
+    @IsOptional()
+    @IsNumber()
+    readonly certificate_ids: number[]
+
+    @IsOptional()
+    @IsNumber()
+    readonly rating_ids: number[]
+
+    @IsOptional()
+    @IsString({ each: true })
+    readonly communities_tags: string[]
+
+    @IsOptional()
+    @IsNumber()
+    @ApiProperty({ example: 'pilot role(s) id(s)' })
+    readonly roles: number[];
+
+    @IsOptional()
+    @IsString({ each: true })
     @ApiProperty({ example: 'role(s) seperated by commas' })
-    readonly custom_roles: string;
+    readonly custom_roles: string[];
 
     // Pilot Info
     @IsOptional()
-    @IsMongoId()
-    readonly home_airport: Types.ObjectId;
+    @IsNumber()
+    readonly home_airport_id: number;
     
     @IsOptional()
-    @IsMongoId({ each: true })
-    readonly aircrafts: Types.ObjectId[];
-
-    @IsOptional()
-    @IsMongoId()
-    readonly primary_aircraft;
-
-    @IsOptional()
-    @IsMongoId({ each: true })
-    communities: Types.ObjectId[]
-
-    // credentials
-    @IsOptional()
-    @IsMongoId({ each: true })
-    certificates: Types.ObjectId[]
-
-    @IsOptional()
-    @IsMongoId({ each: true })
-    ratings: Types.ObjectId[]
-
-    @IsOptional()
-    @IsPositive()
-    total_hours: number;
+    @IsNumber()
+    readonly aircraft_ids: number[];
   }
