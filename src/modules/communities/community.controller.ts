@@ -23,7 +23,7 @@ export class CommunityController {
   constructor(private readonly service: CommunityService) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get List of Communities' })
+  @ApiOperation({ summary: 'Get List of Communities' ,description:"Gets all communities"})
   @ApiResponse({
     status: 200,
     description: 'The records found',

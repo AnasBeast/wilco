@@ -24,7 +24,7 @@ export class PilotsController {
   // map to GET /1/pilots/ in old api
   @ApiTags('Pilots')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all pilots' })
+  @ApiOperation({ summary: 'Get all pilots' , description:"Gets all pilots" })
   @ApiParam({ name:'page', description: "Number of page requested. Starts from 1." })
   @ApiParam({ name:'per_page', description: "Number of pilots returned per page. Cannot exceed 25" })
   @Pagination(true)
@@ -52,7 +52,7 @@ export class PilotsController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
-  @ApiOperation({ summary: 'Get Pilot By ID' })
+  @ApiOperation({ summary: 'Get Pilot By ID' , description:"Gets a pilot by ID" })
   async getPilotById(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.getPilotById(id, req.user.pilotId, req.user.email);
   }
@@ -62,15 +62,16 @@ export class PilotsController {
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
-  @ApiOperation({ summary: 'Edit Pilot Profile' })
+  @ApiOperation({ summary: 'Edit Pilot Profile' , description:"Gets pilot's profile" })
   async editPilotProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
     return await this.pilotsService.editPilotById(id, editUserDto, req.user.pilotId, file);
   }
 
   @ApiTags('Pilots')
+  @ApiParam({ name: "id", description: 'ID of the pilot. "me" may be used to refer to the current pilot.'  })
   @ApiBearerAuth()
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete Pilot' })
+  @ApiOperation({ summary: 'Delete Pilot' , description:"Deletes a pilot. Users can only delete themselves"})
   async deletePilot(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.deletePilotById(id, req.user.pilotId);
   }
@@ -121,7 +122,7 @@ export class PilotsController {
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(ADDED)
-  @ApiOperation({ summary: 'Creates a aircraft' })
+  @ApiOperation({ summary: 'Creates a aircraft' ,description:"Creates an aircraft"})
   @Post("/me/aircrafts")
   async create(@Body() body: CreateAirCraftDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
     return await this.pilotsService.createAircraft(body, req.user.pilotId, file);
