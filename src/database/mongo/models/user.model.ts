@@ -20,10 +20,7 @@ export class User {
   email: string;
 
   @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.Number,
-    ref: 'Pilot'
-  })
+  @Prop()
   pilot_id: number;
 
   @ApiProperty()
@@ -32,3 +29,10 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('pilot', {
+  ref: 'Pilot',
+  localField: 'pilot_id',
+  foreignField: 'id',
+  justOne: true
+})

@@ -1,6 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { errors } from "src/common/helpers/responses/error.helper";
 import { Comment, CommentDocument } from "src/database/mongo/models/comment.model";
 import { CommentReply, CommentReplyDocument } from "src/database/mongo/models/commentReply.model";
 import { PostsService } from "../posts/posts.service";
@@ -110,7 +111,11 @@ export class CommentService {
         return false
     }
 
-    async getCommentsByPostId(postId: string) {
-        return await this.commentModel.find({ post: postId }).populate("replies");
+    async getCommentsByPostId(postId: string, pilotId: number) {
+        // const post = await this.commentModel.find({ post: postId });
+        // if(!post) throw new NotFoundException(errors.POST_NOT_FOUND);
+
+        // if (post)
+
     }
 }

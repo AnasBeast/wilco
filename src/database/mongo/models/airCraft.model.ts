@@ -30,7 +30,7 @@ export class AirCraft {
 
   @ApiProperty()
   @Prop({ default: false })
-  removed: boolean;
+  removed?: boolean;
 }
 
 export const AirCraftSchema = SchemaFactory.createForClass(AirCraft);

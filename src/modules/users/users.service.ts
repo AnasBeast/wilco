@@ -20,10 +20,10 @@ export class UsersService {
     return pilotRoleExist;
   }
 
-  async getPopulatedUserById(id: string, userId: string) {
-    if (id === "me" || id === userId) {
-     // return await this.PilotsRepository.getMe(userId);
-    }
+  async getPopulatedUserById(id: string /*, userId: string */) {
+    // if (id === "me" || id === userId) {
+    //  // return await this.PilotsRepository.getMe(userId);
+    // }
     return await this.usersRepository.getPopulatedUserById(id);
   }
 

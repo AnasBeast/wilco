@@ -1,13 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsMongoId, IsNotEmpty, IsNotEmptyObject, IsObject, IsOptional, ValidateNested } from 'class-validator';
 import { Types } from "mongoose";
 
-export class CreateAirCraftDto {
-  @IsOptional()
-  @IsMongoId()
-  @ApiProperty({ example: 'pilot id' })
-  readonly pilot_id: Types.ObjectId
-
+export class AircraftObjectDTO {
   @IsNotEmpty()
   @ApiProperty({ example: 'make and model example' })
   readonly make_and_model: string;
@@ -17,16 +13,30 @@ export class CreateAirCraftDto {
   readonly tail_number: string;
 }
 
-export class UpdateAirCraftDto {
+export class CreateAirCraftDto {
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => AircraftObjectDTO)
+  readonly aircraft: AircraftObjectDTO
+}
+
+export class UpdateAircraftObjectDTO {
   @IsOptional()
   @IsNotEmpty()
   @ApiProperty({ example: 'make and model example' })
-  readonly make_and_model: string;
+  make_and_model: string;
 
   @IsOptional()
   @IsNotEmpty()
   @ApiProperty({ example: 'tail number example' })
-  readonly tail_number: string;
+  tail_number: string;
+}
+
+export class UpdateAirCraftDto {
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => UpdateAircraftObjectDTO)
+  readonly aircraft: UpdateAircraftObjectDTO
 }
 
 export class CreateAirCraftPictureDto extends CreateAirCraftDto {

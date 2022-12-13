@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Date, Schema as MongooseSchema } from 'mongoose';
 import { AirCraft } from './airCraft.model';
 import { Airport } from './airport.model';
 
-export type FlightDocument = Flight & Document;
+export type FlightDocument = Post_Flights & Document;
 
 @Schema({ timestamps: true })
-export class Flight {
+export class Post_Flights {
   @ApiProperty()
   @Prop({ required: true })
   from: string;
@@ -17,24 +17,40 @@ export class Flight {
   to: string;
 
   @ApiProperty()
-  @Prop({ required: true })
-  departure_date: Date;
+  @Prop({ required: true, type: [Date] })
+  departure_time: Date;
+
+  @ApiProperty()
+  @Prop({ required: true, type: [Date] })
+  arrival_time: Date;
 
   @ApiProperty()
   @Prop({ required: true })
-  arrival_date: Date;
+  max_speed: number
+
+  
+  @ApiProperty()
+  @Prop({ required: true })
+  max_altitude: number
 
   @ApiProperty()
   @Prop({ required: true })
   distance: number;
 
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'AirCraft', required: false })
-  airCraft: AirCraft;
+  @Prop({ required: true })
+  aircraft_id: number;
 
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Airport' })
-  airportPath: Airport;
+  @Prop({ required: true })
+  track_url: string;
 }
 
-export const FlightSchema = SchemaFactory.createForClass(Flight);
+export const FlightSchema = SchemaFactory.createForClass(Post_Flights);
+
+FlightSchema.virtual('aircraft', {
+  ref: 'AirCraft',
+  localField: 'aircraft_id',
+  foreignField: 'id',
+  justOne: true
+})

@@ -16,8 +16,8 @@ export class AirCraftsRepository {
     return await this.airCraftModel.findOne(filter).exec();
   }
 
-  async getAirCraftById(id: string): Promise<AirCraft> {
-    return await this.airCraftModel.findById(id).lean();
+  async getAirCraftById(id: number): Promise<AirCraft> {
+    return await this.airCraftModel.findOne({ id }).lean();
   }
 
   async getAirCraftsByFilter(filter: FilterQuery<AirCraft>) {
@@ -25,15 +25,14 @@ export class AirCraftsRepository {
   }
 
   async create(body: AirCraftCreate): Promise<AirCraft & { _id: Types.ObjectId }> {
-    const data = await this.airCraftModel.create(body);
-    return data
+    return await this.airCraftModel.create(body);
   }
 
-  async editAircraftById(id: string, editedAircraft: UpdateQuery<AirCraft>, options: QueryOptions) {
-    return await this.airCraftModel.findByIdAndUpdate(id, editedAircraft, options).lean();
+  async editAircraftById(id: number, editedAircraft: UpdateQuery<AirCraft>, options: QueryOptions) {
+    return await this.airCraftModel.findOneAndUpdate({ id }, editedAircraft, options).lean();
   }
 
-  async removeAircraftByPilotId(id: string) {
-    return await this.airCraftModel.findByIdAndUpdate(id, { removed: true }, { returnDocument: 'after' });
+  async removeAircraft(id: number) {
+    return await this.airCraftModel.findOneAndUpdate({id}, { removed: true }, { returnDocument: 'after' });
   }
 }
