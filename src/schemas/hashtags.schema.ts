@@ -9,7 +9,9 @@ export class Hashtags {
   id: string;
 
   @Prop({ required: true })
-  text?: string;
+  text: string;
 }
 
 export const HashtagsSchema = SchemaFactory.createForClass(Hashtags);
+
+HashtagsSchema.index({ name: 'text', 'text': 'text' })

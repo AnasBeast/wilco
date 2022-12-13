@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -13,7 +14,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Pagination } from 'src/common/decorators/response/pagination.decorator';
 import { BaseHashtags } from 'src/dto/hashtags/base-hashtags.dto';
+import { PaginationDTO, PaginationDTOWithSearch } from 'src/dto/pagination.dto';
 import { HashtagsService } from './hashtags.service';
 
 @Controller('hashtags')
@@ -21,7 +24,6 @@ import { HashtagsService } from './hashtags.service';
 export class HashtagsController {
   constructor(private readonly service: HashtagsService) {}
 
-  @Get()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get List of Hashtagss' })
   @ApiResponse({
@@ -29,7 +31,9 @@ export class HashtagsController {
     description: 'The records found',
     type: [BaseHashtags],
   })
-  async index() {
-    return await this.service.findAll();
+  @Get()
+  @Pagination(true)
+  async getHashtags(@Query() { page, per_page, search }: PaginationDTOWithSearch) {
+    return await this.service.getHashtags(Number.parseInt(page), Number.parseInt(per_page), search);
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDefined, IsNotEmpty, IsNumber, IsPositive, Validate } from "class-validator";
+import { IsDefined, IsNotEmpty, IsNumber, IsOptional, IsPositive, Validate } from "class-validator";
 import { ValidatePagePagination } from "src/modules/posts/pagination";
 
 export class PaginationDTO {
@@ -12,4 +12,11 @@ export class PaginationDTO {
     @Validate(ValidatePagePagination, [false], { message: 'per_page cannot exceed 25' })
     @ApiProperty()
     per_page: string;
+}
+
+export class PaginationDTOWithSearch extends PaginationDTO {
+    @IsOptional()
+    @IsNotEmpty()
+    @ApiProperty()
+    search?: string;
 }

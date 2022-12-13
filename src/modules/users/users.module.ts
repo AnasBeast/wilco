@@ -9,8 +9,9 @@ import { UsersService } from './users.service';
 import { User, UserSchema } from 'src/database/mongo/models/user.model';
 import { AirportsModule } from '../airports/airports.module';
 import { CommunitiesModule } from '../communities/communities.module';
+import { DeviceModule } from '../device/device.module';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), RolesModule, S3Module, AirportsModule, CommunitiesModule],
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), DeviceModule],
   controllers: [UsersController],
   providers: [UsersRepository, UsersService],
   exports: [UsersRepository, UsersService],

@@ -12,7 +12,8 @@ export class CommunityService {
   ) {}
 
   async findAll(): Promise<Community[]> {
-    return await this.model.find().exec();
+    const communities = await this.model.find();
+    return communities.map((community) => ({ id: community.id, name: community.name }))
   }
 
   async findOne(id: string): Promise<Community> {

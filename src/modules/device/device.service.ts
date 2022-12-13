@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseDevice } from 'src/dto/device/base-device.dto';
@@ -10,6 +10,25 @@ export class DeviceService {
     @InjectModel(Device.name)
     private readonly model: Model<DeviceDocument>,
   ) {}
+  
+  async createOrUpdateDevice(user_id: number, token: string) {
+    console.log(user_id);
+    const device = await this.model.findOne({ user_id });
+    if(!device) {
+      const device = await this.model.create({ token, user_id })
+      return { id: device.id, token: device.token }
+    };
+    device.token = token;
+    await device.save();
+    return { id: device.id, token } 
+  }
+
+  async deleteDevice(user_id: number) {
+    const device = await this.model.findOne({ user_id });
+    if (!device) throw new NotFoundException();
+    await device.delete();
+    return { id: device.id, token: device.token };
+  }
 
   async findAll(): Promise<Device[]> {
     return await this.model.find().exec();

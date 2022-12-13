@@ -18,6 +18,20 @@ export class RolesRepository {
     return await this.roleModel.find(filter, projection).lean();
   }
 
+  async getPaginatedDefaultRoles(page: number, per_page: number) {
+    const roles = await this.roleModel.find({ custom: false }, {}, { limit: per_page, skip: (page - 1) * per_page });
+    const count = await this.roleModel.find({ custom: false }).count();
+    return {
+      data: roles,
+      pagination: {
+        current: (page - 1) * per_page + roles.length,
+        pages: Math.ceil(count/per_page),
+        first_page: (page - 1) * per_page === 0,
+        last_page: count < (page - 1) * per_page + per_page
+      }
+    }
+  }
+
   async createRole(name: String, custom?: boolean): Promise<RoleEntity> {
     return await this.roleModel.create({ name, custom });
   }

@@ -14,7 +14,7 @@ export class AuthorizationMiddleware implements NestMiddleware  {
         .then(async (user) => {
             //user.email_verified ? next() : next()
             const me = await this.usersRepositoty.getMe(user.email);
-            req.user = { email: user.email, firebase_uid: user.uid, userId: me._id.toString(), pilotId: me.pilot_id }
+            req.user = { email: user.email, firebase_uid: user.uid, userId: me.id, pilotId: me.pilot_id }
             next();
         }).catch((_) => {res.status(401).send({ statusCode:401, message: "token error", error: "Unauthorized" })});
     }

@@ -1,3 +1,15 @@
-import { BaseDevice } from './base-device.dto';
+import { IsNotEmpty, IsNotEmptyObject, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 
-export class CreateDeviceDto extends BaseDevice {}
+class DeviceDto {
+    @IsNotEmpty()
+    token: string;
+}
+
+export class CreateDeviceDto {
+    @IsNotEmptyObject()
+    @ValidateNested()
+    @Type(() => DeviceDto)
+    device: DeviceDto;
+}
+

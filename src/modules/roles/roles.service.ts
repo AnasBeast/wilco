@@ -18,6 +18,10 @@ export class RolesService {
     return await this.rolesRepository.getRolesByFilter(filter, projection);
   }
 
+  async getDefaultRoles(page: number, per_page: number) {
+    return await this.rolesRepository.getPaginatedDefaultRoles(page, per_page);
+  }
+
   async createRole({ name }: CreateRoleDto): Promise<RoleEntity> {
     const roleExist = await this.rolesRepository.getRoleByFilter({ name });
     if (roleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);

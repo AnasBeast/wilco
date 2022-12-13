@@ -21,29 +21,29 @@ import { DeviceService } from './device.service';
 export class DeviceController {
   constructor(private readonly service: DeviceService) {}
 
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get List of Devices' })
-  @ApiResponse({
-    status: 200,
-    description: 'The records found',
-    type: [BaseDevice],
-  })
-  @Get()
-  async index() {
-    return await this.service.findAll();
-  }
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get List of Devices' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The records found',
+  //   type: [BaseDevice],
+  // })
+  // @Get()
+  // async index() {
+  //   return await this.service.findAll();
+  // }
 
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get Device' })
-  @ApiResponse({
-    status: 200,
-    description: 'The record found',
-    type: BaseDevice,
-  })
-  @Get(':id')
-  async find(@Param('id') id: string) {
-    return await this.service.findOne(id);
-  }
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get Device' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The record found',
+  //   type: BaseDevice,
+  // })
+  // @Get(':id')
+  // async find(@Param('id') id: string) {
+  //   return await this.service.findOne(id);
+  // }
 
 
   @ApiBearerAuth()

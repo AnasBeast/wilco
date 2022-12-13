@@ -1,20 +1,32 @@
 import { FETCHED } from '../../common/constants/response.constants';
-import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { EditUserDto } from 'src/dto/user/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
+import { CreateDeviceDto } from 'src/dto/device/create-device.dto';
+import { DeviceService } from '../device/device.service';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private deviceService: DeviceService) {}
 
-  @Get("/me")
-  async getMe(@Req() req) {
-    return await this.usersService.getPopulatedUserById(req.user.userId);
+  @Put('/me/device')
+  async CreateOrUpdateDevice(@Req() req, @Body() { device }: CreateDeviceDto) {
+    return await this.deviceService.createOrUpdateDevice(req.user.userId, device.token);
   }
+
+  @Delete('/me/device')
+  async DeleteDevice(@Req() req) {
+    return await this.deviceService.deleteDevice(req.user.userId);
+  }
+
+  // @Get("/me")
+  // async getMe(@Req() req) {
+  //   return await this.usersService.getPopulatedUserById(req.user.userId);
+  // }
   /*
   @ApiBearerAuth()
   @Get()

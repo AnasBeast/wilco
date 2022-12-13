@@ -6,10 +6,10 @@ export type DeviceDocument = Device & Document;
 @Schema()
 export class Device {
   @Prop({ required: true })
-  id: string;
+  user_id: number;
 
   @Prop({ required: true })
-  token?: string;
+  token: string;
 }
 
 export const DeviceSchema = SchemaFactory.createForClass(Device);
