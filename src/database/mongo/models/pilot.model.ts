@@ -28,20 +28,12 @@ export class Pilot {
   description: string;
 
   @ApiProperty()
-  @Prop({
-    type: [MongooseSchema.Types.ObjectId],
-    ref: 'Role',
-    required: true,
-    autopopulate: true
-  })
-  roles: Types.ObjectId[]
+  @Prop({ required: true })
+  roles_ids: number[]
   
   @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Aircraft',
-  })
-  primary_aircraft_id: Types.ObjectId;
+  @Prop({})
+  primary_aircraft_id: number;
 
   @ApiProperty()
   @Prop()
@@ -55,53 +47,29 @@ export class Pilot {
   })
   latest_flights: Types.ObjectId[]
 
-  // @ApiProperty()
-  // @Prop({
-  //   type: MongooseSchema.Types.ObjectId,
-  //   ref: 'Aircraft',
-  //   autopopulate: true
-  // })
-  // aircrafts: Types.ObjectId[];
+  @ApiProperty()
+  @Prop()
+  certificate_ids: number[];
 
   @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Certificate',
-    autopopulate: true
-  })
-  certificates: Types.ObjectId[];
+  @Prop({})
+  rating_ids: number[];
 
   @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Rating',
-    autopopulate: true
-  })
-  ratings: Types.ObjectId[];
-
-  @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Community',
-    autopopulate: true
-  })
-  community_tags: Types.ObjectId[];
+  @Prop({})
+  communities_tags: string[];
 
   @ApiProperty()
   @Prop()
-  home_airport: string;
+  home_airport_id: number;
 
   @ApiProperty()
-  @Prop({
-    type: [MongooseSchema.Types.ObjectId],
-    ref: 'Airport',
-    autopopulate: true
-  })
-  airports: Types.ObjectId[];
+  @Prop({})
+  airport_ids: number[];
 
   @ApiProperty()
   @Prop()
-  total_hours: number;
+  total_hours: string;
 
   @Prop()
   profile_picture_key: string;
@@ -116,3 +84,41 @@ PilotSchema.virtual('aircrafts', {
   foreignField: 'pilot_id',
   autopopulate: true
 })
+
+PilotSchema.virtual('certificates', {
+  ref: 'Certificate',
+  localField: 'certificate_ids',
+  foreignField: 'id',
+  autopopulate: true
+})
+
+PilotSchema.virtual('roles', {
+  ref: 'Role',
+  localField: 'roles_ids',
+  foreignField: 'id',
+  autopopulate: true
+})
+
+PilotSchema.virtual('ratings', {
+  ref: 'Rating',
+  localField: 'tatings_ids',
+  foreignField: 'id',
+  autopopulate: true
+})
+
+PilotSchema.virtual('community_tags', {
+  ref: 'Community_tag',
+  localField: 'community_tags_ids',
+  foreignField: 'id',
+  autopopulate: true
+})
+
+PilotSchema.virtual('airports', {
+  ref: 'Airport',
+  localField: 'airports_ids',
+  foreignField: 'id',
+  autopopulate: true
+})
+
+
+

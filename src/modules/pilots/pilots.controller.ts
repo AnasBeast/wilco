@@ -1,4 +1,4 @@
-import { ADDED, FETCHED } from '../../common/constants/response.constants';
+import { ADDED, FETCHED, REGISTERED } from '../../common/constants/response.constants';
 import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiParam, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
@@ -14,12 +14,15 @@ import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
 import { Pilot } from 'src/database/mongo/models/pilot.model';
 import { PaginationDTO } from 'src/dto/pagination.dto';
 import { Pagination } from 'src/common/decorators/response/pagination.decorator';
+import { SignUpDto } from 'src/authentication/dto/sign-up.dto';
+import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 
 @Controller('pilots')
 export class PilotsController {
   constructor(private pilotsService: PilotsService) {}
   
   // map to GET /1/pilots/ in old api
+  @ApiTags('Pilots')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all pilots' })
   @ApiParam({ name:'page', description: "Number of page requested. Starts from 1." })
@@ -29,6 +32,17 @@ export class PilotsController {
   async getPilots(@Query() { page, per_page }: PaginationDTO) {
     console.log(page, per_page);
     return await this.pilotsService.getPilots(Number.parseInt(page), Number.parseInt(per_page));
+  }
+
+  @ApiTags('Pilots')
+  @Post()
+  @ApiCreatedResponse({ description: 'Pilot has been successfully created.' })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage(REGISTERED)
+  @ApiOperation({ summary: 'Create new pilot' })
+  async createPilot(@Body() body: CreatePilotDto) {
+    return await this.pilotsService.createPilot(body);
   }
 
   // map to GET /1/pilots/{id} in old api
@@ -57,7 +71,7 @@ export class PilotsController {
   @ApiBearerAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Pilot' })
-  async deleteUser(@Param('id') id: string, @Req() req) {
+  async deletePilot(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.deletePilotById(id, req.user.pilotId);
   }
 
@@ -80,6 +94,7 @@ export class PilotsController {
     return await this.pilotsService.searchByName(pattern);
   }
 
+  @ApiTags('Pilots')
   @Get('/searchByHomeAirPort/:airport_code')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)

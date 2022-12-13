@@ -9,7 +9,7 @@ export class PilotsRepository {
   constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>) {}
 
   async getMeById(id: number): Promise<PilotDocument> {
-    return await this.pilotModel.findOne({ id }, {}, { populate: [{ path:'aircrafts', strictPopulate: false }] }).lean()
+    return await this.pilotModel.findOne({ id }, {}, { populate: [{ path:'aircrafts', strictPopulate: false }, { path:'certificates', strictPopulate: false }] }).lean()
   }
 
   async getMeByEmail(email: string): Promise<PilotDocument> {
@@ -49,8 +49,8 @@ export class PilotsRepository {
     return await this.pilotModel.find(filter).lean().exec();
   }
 
-  async createNewUser(user): Promise<Pilot> {
-    return await this.pilotModel.create(user);
+  async createPilot(pilot): Promise<Pilot> {
+    return await this.pilotModel.create(pilot);
   }
 
   async editPilot(id: number, updatedUser: UpdateQuery<Pilot>) {

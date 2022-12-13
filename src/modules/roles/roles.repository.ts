@@ -22,7 +22,7 @@ export class RolesRepository {
     return await this.roleModel.create({ name, custom });
   }
 
-  async createRoles(roles: CreateRoleDto[]): Promise<RoleEntity[]> {
-    return await this.roleModel.create(roles) as RoleEntity[];
+  async createRoles(roles: string[]): Promise<Role[]> {
+    return await this.roleModel.create(roles);
   }
 }

@@ -25,24 +25,17 @@ export class RolesService {
     return await this.rolesRepository.createRole(name);
   }
 
-  async createCustomRoles(roles: CreateRoleDto[], rolesFilterArray: string[]): Promise<RoleEntity[]> {
-    const newFilteredRoles = [];
-    const rolesExist = await this.rolesRepository.getRolesByFilter({ name: { $in: rolesFilterArray } }, "_id name");
-    if (rolesExist.length === rolesFilterArray.length) {
-      return rolesExist;
-    } else if (rolesExist.length < rolesFilterArray.length) {
-      for(let i = 0; i < roles.length; i++) {
-        for(let k = 0; k < rolesExist.length; k++) {
-          if(rolesExist[k].name === roles[i].name) {
-            break
-          } else if (k === rolesExist.length - 1 && rolesExist[k].name !== roles[i].name) {
-            newFilteredRoles.push(roles[i]);
-          }
-        }
-      }
+  async createCustomRoles(custom_roles: string[]) {
+    const existingRoles = await this.rolesRepository.getRolesByFilter({ name : { $in: custom_roles } }, "name id");
+    let FilterdRoles;
+    if(existingRoles.length > 0) {
+      const existingFilter = existingRoles.map((element) => element.name); 
+      FilterdRoles = custom_roles.filter((element) => {
+        return !existingFilter.includes(element);
+      })
     }
-
-    const customCreatedRoles = await this.rolesRepository.createRoles(newFilteredRoles);
-    return [...customCreatedRoles, ...rolesExist];
+    FilterdRoles = FilterdRoles ? FilterdRoles : custom_roles;
+    FilterdRoles = FilterdRoles.map((element) => ({ name: element }))
+    return [...await this.rolesRepository.createRoles(FilterdRoles), ...existingRoles];
   }
 }

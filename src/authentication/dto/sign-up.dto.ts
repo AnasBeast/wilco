@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsMongoId, IsNotEmpty, IsOptional, MinLength, Validate } from 'class-validator';
+import { IsEmail, IsMongoId, IsNotEmpty, IsNumber, IsOptional, MinLength, Validate } from 'class-validator';
 import { Types } from 'mongoose';
 import { IsUserAlreadyExist } from 'src/modules/pilots/UserExists';
 
@@ -21,9 +21,9 @@ export class SignUpDto {
   @ApiProperty({ example: 'qwerty123'})
   readonly password: string;
 
-  @IsMongoId({ each: true })
+  @IsNumber({}, { each: true })
   @ApiProperty({ example: 'pilot role(s) id(s) | exp ["635820733ce0994a2711582a"]' })
-  readonly roles: Types.ObjectId[];
+  readonly roles: number[];
 
   @IsOptional()
   @IsNotEmpty()

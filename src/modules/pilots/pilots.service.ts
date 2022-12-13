@@ -1,4 +1,12 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ObjectId, Types, UpdateQuery } from 'mongoose';
 import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
 import { RoleEntity } from 'src/common/entities/role.entity';
@@ -21,24 +29,52 @@ import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
 import { AirCraftService } from '../airCrafts/airCrafts.service';
+import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 
 @Injectable()
 export class PilotsService {
-  constructor(private pilotsRepository: PilotsRepository, private rolesService: RolesService, private s3Service: S3Service, private airportService: AirportsService, private communityService: CommunityService, private usersRepository: UsersRepository, private aircraftsService: AirCraftService) { }
+  constructor(
+    private pilotsRepository: PilotsRepository,
+    private rolesService: RolesService,
+    private s3Service: S3Service,
+    private airportService: AirportsService,
+    private communityService: CommunityService,
+    private usersRepository: UsersRepository,
+    private aircraftsService: AirCraftService,
+  ) {}
 
   // GET ALL WITH PAGINATION
   async getPilots(page: number, per_page: number) {
-    console.log("dididodo", page, per_page);
     const pilots = await this.pilotsRepository.getPilots(page, per_page);
     const count = await this.pilotsRepository.countPilots();
-    return { data: pilots, pagination: { current: (page - 1) * per_page + pilots.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page } }
+    return {
+      data: pilots,
+      pagination: {
+        current: (page - 1) * per_page + pilots.length,
+        pages: Math.ceil(count / per_page),
+        first_page: (page - 1) * per_page === 0,
+        last_page: count < (page - 1) * per_page + per_page,
+      },
+    };
   }
-  
+
+  // CREATE PILOT
+  async createPilot({ pilot }: CreatePilotDto) {
+    const roleExist = await this.rolesService.getRolesByFilter({ id: { $in: pilot.roles } }, { select: 'id' });
+    if (!roleExist || pilot.roles.length !== roleExist.length) throw new BadRequestException(errors.ROLE_NOT_EXIST);
+
+    const createdRoles = await this.rolesService.createCustomRoles(pilot.custom_roles);
+    return await this.pilotsRepository.createPilot({
+      ...{ first_name: pilot.first_name, last_name: pilot.last_name },
+      roles_ids: [...pilot.roles, ...createdRoles.map((role: any) => role.id)],
+    });
+  }
+
   // GET PILOT BY ID OR EMAIL
   async getPilotById(id: string, pilotId: number, email: string) {
-    if (id === "me") {
+    if (id === 'me') {
       const pilot = await this.pilotsRepository.getMeById(pilotId);
-      return { pilot, user: {email: email } }
+      return { pilot, user: { email: email } };
     }
     return await this.pilotsRepository.getPilotById(Number.parseInt(id));
   }
@@ -60,27 +96,31 @@ export class PilotsService {
   // }
 
   async editPilotById(id: string, editedUser: UpdateQuery<User>, pilotId: number, file?: Express.Multer.File) {
-    if (id !== "me" && Number.parseInt(id) !== pilotId) {
+    if (id !== 'me' && Number.parseInt(id) !== pilotId) {
       throw new UnauthorizedException();
     }
     const pilot = await this.pilotsRepository.getMeById(pilotId);
-    if(file) {
+    if (file) {
       if (pilot.profile_picture_key) {
         await this.s3Service.deleteFile(pilot.profile_picture_key);
       }
       const resUpload = await this.s3Service.uploadFile(file);
       if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
-      const updatedPilot = await this.pilotsRepository.editPilot(pilotId, { ...editedUser, profile_picture_key: resUpload.key, profile_picture_url: resUpload.location })
-      return { pilot: updatedPilot }
+      const updatedPilot = await this.pilotsRepository.editPilot(pilotId, {
+        ...editedUser,
+        profile_picture_key: resUpload.key,
+        profile_picture_url: resUpload.location,
+      });
+      return { pilot: updatedPilot };
     }
-    
+
     const updatedPilot = await this.pilotsRepository.editPilot(pilotId, editedUser);
-    return { pilot: updatedPilot }
+    return { pilot: updatedPilot };
   }
 
   //delete all data!
   async deletePilotById(id: string, pilotId: number) {
-    if (id !== "me" && Number.parseInt(id) !== pilotId) {
+    if (id !== 'me' && Number.parseInt(id) !== pilotId) {
       throw new UnauthorizedException();
     }
 
@@ -88,20 +128,18 @@ export class PilotsService {
   }
 
   async addAirportsToPilot(id: number, airports: string[], pilotId: number) {
-    if(id !== pilotId) {
+    if (id !== pilotId) {
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
     const pilot = await this.pilotsRepository.getPilotDocumentById(id);
     if (!pilot) {
       throw new NotFoundException(errors.PILOT_NOT_FOUND);
     }
-    const FoundAirports = await this.airportService.getAirportsByFilter({ icao: { $in : airports } }, ["icao"]);
-    pilot.airports = FoundAirports.map(airport => airport.icao);
+    const FoundAirports = await this.airportService.getAirportsByFilter({ icao: { $in: airports } }, ['icao']);
+    //pilot.airports = FoundAirports.map((airport) => airport.icao);
     return await pilot.save();
   }
 
-
-  
   async searchByName(pattern: string) {
     // const pilotRoleExist = await this.rolesService.getRoleByFilter({ name: 'pilot' });
     // if (!pilotRoleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);
@@ -113,12 +151,12 @@ export class PilotsService {
 
   async searchByHomeAirPort(airport_code: string) {
     const airport = await this.airportService.getAirportByFilter({ icao: airport_code });
-    return await this.pilotsRepository.getPilotsByFilter({ home_airport: airport.icao })
+    return await this.pilotsRepository.getPilotsByFilter({ home_airport: airport.icao });
   }
 
   async searchByCommunities(name: string) {
     const community = await this.communityService.findCommunityByFilter({ name });
-    return await this.pilotsRepository.getPilotsByFilter({ communities: { $in: [community._id] } })
+    return await this.pilotsRepository.getPilotsByFilter({ communities: { $in: [community._id] } });
   }
 
   // aircrafts
@@ -126,8 +164,7 @@ export class PilotsService {
   // create aircraft
   async createAircraft(body: CreateAirCraftDto, pilotId: number, file?: Express.Multer.File) {
     const aircraft = await this.aircraftsService.create(body, pilotId, file);
-    if(!aircraft) throw new BadRequestException();
+    if (!aircraft) throw new BadRequestException();
     return await this.pilotsRepository.getMeById(pilotId);
   }
-
 }
