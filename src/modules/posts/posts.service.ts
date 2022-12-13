@@ -1,6 +1,7 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { errors } from 'src/common/helpers/responses/error.helper';
 import { Post, PostDocument } from 'src/database/mongo/models/post.model';
 import { CreateCommentDTO } from 'src/dto/comment/create-comment.dto';
 import { BasePost } from 'src/dto/post/base-post.dto';
@@ -17,11 +18,14 @@ export class PostsService {
         private readonly commentsService: CommentService
       ) {}
     
-      async getFeedPosts(page: number, per_page: number, userId: string, feed?: boolean, community_tags?: string[], hashtags?: string[]): Promise<Post[]> {
+      async getFeedPosts(page: number, per_page: number, pilotId: number, feed?: boolean, community_tags?: string[], hashtags?: string[]) {
         if (!feed) {
-          return await this.postsModel.find({ creator: userId }, {}, { limit: per_page, skip: page * per_page }).lean().exec();
+          const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot", populate: "aircrafts"}, { path: "flight", populate: "aircraft"}] }).lean();
+          const count = await this.postsModel.find({ pilot_id: pilotId }).count();
+          return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
+          
         }
-        return await this.postsModel.find({ post_communities: {$in: community_tags} }, {}, { limit: per_page, skip: page * per_page }).lean().exec();
+        // return await this.postsModel.find({ community_tags: {$in: community_tags} }, {}, { limit: per_page, skip: (page - 1) * per_page }).lean().exec();
       }
     
       async findOne(id: string) {
@@ -69,7 +73,10 @@ export class PostsService {
       }
 
       //get comments
-      async getComments(postId: string, userId: string) {
-        return await this.commentsService.getCommentsByPostId(postId);
+      async getComments(postId: string, page: number, per_page: number, pilotId: number) {
+        const post = await this.postsModel.findById(postId);
+        if(!post) throw new NotFoundException(errors.POST_NOT_FOUND);
+        if (post.visibility !== "public" && post)
+        return await this.commentsService.getCommentsByPostId(postId, pilotId);
       }
 }

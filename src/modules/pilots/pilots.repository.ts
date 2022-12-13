@@ -9,7 +9,7 @@ export class PilotsRepository {
   constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>) {}
 
   async getMeById(id: number): Promise<PilotDocument> {
-    return await this.pilotModel.findOne({ "id": id });
+    return await this.pilotModel.findOne({ id }, {}, { populate: [{ path:'aircrafts', strictPopulate: false }] }).lean()
   }
 
   async getMeByEmail(email: string): Promise<PilotDocument> {
@@ -17,15 +17,20 @@ export class PilotsRepository {
   }
 
   async getPilots(page: number, per_page: number) {
-    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1)*per_page }).lean();
+    console.log("dididodo", page, per_page);
+    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1) * per_page }).lean()
   }
 
-  async getPilotById(id: string) {
-    return await this.pilotModel.findById(id).lean();
+  async countPilots() {
+    return await this.pilotModel.count();
   }
 
-  async getPilotDocumentById(id: string) {
-    return await this.pilotModel.findById(id);
+  async getPilotById(id: number) {
+    return await this.pilotModel.findOne({ id }).lean();
+  }
+
+  async getPilotDocumentById(id: number) {
+    return await this.pilotModel.findOne({ id });
   }
 
   // async getPopulatedUserById(id: string) {
@@ -40,16 +45,16 @@ export class PilotsRepository {
     return await this.pilotModel.findOne(filter);
   }
 
-  async getPilotsByFilter(filter: object, projectionFields: ProjectionFields<Pilot>): Promise<Pilot[]> {
-    return await this.pilotModel.find(filter).select(projectionFields).exec();
+  async getPilotsByFilter(filter: object): Promise<Pilot[]> {
+    return await this.pilotModel.find(filter).lean().exec();
   }
 
   async createNewUser(user): Promise<Pilot> {
     return await this.pilotModel.create(user);
   }
 
-  async editPilot(id: string, updatedUser: UpdateQuery<Pilot>) {
-    return await this.pilotModel.findByIdAndUpdate(id, updatedUser, { returnDocument: "after" }).lean();
+  async editPilot(id: number, updatedUser: UpdateQuery<Pilot>) {
+    return await this.pilotModel.findOneAndUpdate({ id }, updatedUser, { returnDocument: "after" }).lean();
   }
 
   async deletePilot(id: number) {

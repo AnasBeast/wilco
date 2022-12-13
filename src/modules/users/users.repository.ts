@@ -34,7 +34,8 @@ export class UsersRepository {
   }
 */
   async getPopulatedUserById(id: string) {
-    return this.userModel.findOne({id: id}).populate("primary_aircraft").lean();
+    console.log(id);
+    return await this.userModel.findOne({id: id}).populate("pilot").lean();
   }
 /*
   async getUserByFilter(filter: object, projectionFields: ProjectionFields<User>): Promise<UserEntity> {

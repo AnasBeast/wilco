@@ -6,10 +6,12 @@ import { S3Module } from '../files/s3.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AirCraft, AirCraftSchema } from 'src/database/mongo/models/airCraft.model';
 import { UsersModule } from '../users/users.module';
+import { PilotsModule } from '../pilots/pilots.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: AirCraft.name, schema: AirCraftSchema }]), S3Module, UsersModule],
+  imports: [MongooseModule.forFeature([{ name: AirCraft.name, schema: AirCraftSchema }]), S3Module],
   controllers: [AirCraftController],
   providers: [AirCraftService, AirCraftsRepository],
+  exports: [AirCraftService]
 })
 export class AirCraftModule {}

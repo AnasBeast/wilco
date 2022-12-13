@@ -19,6 +19,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { UsersModule } from './modules/users/users.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformationInterceptor } from './authentication/interceptors/transform.interceptor';
+import { FlightModule } from './modules/flights/flights.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { TransformationInterceptor } from './authentication/interceptors/transfo
     }),
     AirCraftModule,
     AirportsModule,
+    PostsModule,
     CommentsModule,
     CommunitiesModule,
     DeviceModule,
@@ -39,7 +41,7 @@ import { TransformationInterceptor } from './authentication/interceptors/transfo
     PilotsModule,
     AuthModule, 
     RolesModule, 
-    PostsModule,
+    FlightModule,
     MongoDBModule, 
 
   ],

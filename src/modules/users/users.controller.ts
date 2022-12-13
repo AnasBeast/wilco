@@ -10,6 +10,11 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Get("/me")
+  async getMe(@Req() req) {
+    return await this.usersService.getPopulatedUserById(req.user.userId);
+  }
   /*
   @ApiBearerAuth()
   @Get()

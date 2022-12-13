@@ -55,13 +55,13 @@ export class Pilot {
   })
   latest_flights: Types.ObjectId[]
 
-  @ApiProperty()
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Aircraft',
-    autopopulate: true
-  })
-  aircrafts: Types.ObjectId[];
+  // @ApiProperty()
+  // @Prop({
+  //   type: MongooseSchema.Types.ObjectId,
+  //   ref: 'Aircraft',
+  //   autopopulate: true
+  // })
+  // aircrafts: Types.ObjectId[];
 
   @ApiProperty()
   @Prop({
@@ -109,3 +109,10 @@ export class Pilot {
 
 
 export const PilotSchema = SchemaFactory.createForClass(Pilot);
+
+PilotSchema.virtual('aircrafts', {
+  ref: 'AirCraft',
+  localField: 'id',
+  foreignField: 'pilot_id',
+  autopopulate: true
+})

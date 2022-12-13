@@ -12,10 +12,11 @@ import { PilotsController } from './pilots.controller';
 import { PilotsRepository } from './pilots.repository';
 import { UsersModule } from '../users/users.module';
 import { Pilot, PilotSchema } from 'src/database/mongo/models/pilot.model';
+import { AirCraftModule } from '../airCrafts/airCrafts.module';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Pilot.name, schema: PilotSchema }]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule],
+  imports: [MongooseModule.forFeature([{ name: Pilot.name, schema: PilotSchema }]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule],
   controllers: [PilotsController],
   providers: [PilotsService, PilotsRepository, IsUserAlreadyExist],
-  exports: [PilotsService],
+  exports: [PilotsService, PilotsRepository],
 })
 export class PilotsModule {}

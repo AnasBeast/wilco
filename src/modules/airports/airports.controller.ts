@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, 
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
 import { Airport } from 'src/database/mongo/models/airport.model';
 
-@ApiTags('Airport')
+@ApiTags('Airports')
 @Controller('airports')
 export class AirportsController {
   constructor(private airportsService: AirportsService) {}

@@ -1,14 +1,11 @@
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import axios from "axios";
+import { Types } from "mongoose";
 import { errors } from 'src/common/helpers/responses/error.helper';
+import { PilotsRepository } from '../pilots/pilots.repository';
 import { S3Service } from './../files/s3.service';
 import { AirCraftCreate, AirCraftsRepository } from './airCrafts.repository';
-import { Injectable, HttpException, HttpStatus, Res, BadRequestException, NotFoundException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import { CreateAirCraftDto, UpdateAirCraftDto } from './dto/create.dto';
-import { UsersService } from '../users/users.service';
-import { ObjectId, Types } from "mongoose";
-import axios from "axios";
-import { gunzip, gzip } from 'zlib';
-import { response } from 'express';
-import { request } from 'http';
+import { CreateAirCraftDto, UpdateAirCraftDto, UpdateAircraftObjectDTO } from './dto/create.dto';
 
 const api = axios.create({
   baseURL: "https://aeroapi.flightaware.com/aeroapi",
@@ -21,29 +18,27 @@ const api = axios.create({
 
 @Injectable()
 export class AirCraftService {
-  constructor(private airCraftsRepository: AirCraftsRepository,/* private usersService: UsersService , */private s3Service: S3Service) {}
+  constructor(private airCraftsRepository: AirCraftsRepository, private s3Service: S3Service) {}
 
-  // async create(body: CreateAirCraftDto, pilot_id: string ,file?: Express.Multer.File) {
-  //   const aircraftInput: AirCraftCreate = {
-  //     pilot_id,
-  //     ...body
-  //   };
+  async create(body: CreateAirCraftDto, pilot_id: number, file?: Express.Multer.File) {
+    const aircraftInput: AirCraftCreate = {
+      pilot_id,
+      ...body.aircraft
+    };
     
-  //   if(file) {
-  //     const resUpload = await this.s3Service.uploadFile(file);
-  //     if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
-  //     aircraftInput.aicraft_picture = resUpload.location
-  //     aircraftInput.aircraft_picture_key = resUpload.key
-  //   }
-
-  //   const data = await this.airCraftsRepository.create(aircraftInput);
-  //   await this.usersService.editPilotById(pilot_id, { $push: { aircrafts: data._id } }, pilot_id)
-  //   return data;
-  // }
+    if(file) {
+      const resUpload = await this.s3Service.uploadFile(file);
+      if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
+      aircraftInput.aicraft_picture = resUpload.location
+      aircraftInput.aircraft_picture_key = resUpload.key
+    }
+ 
+    return await this.airCraftsRepository.create(aircraftInput);
+  }
 
   // async getAircraftsByPilotEmail(email: string) {
   //   //TODO: Change this to save on firebase
-  //   const { _id } = await this.usersService.getUserByEmail(email);
+  //   const { _id } = await this.pilotsService.getUserByEmail(email);
 
   //   return await this.airCraftsRepository.getAirCraftByFilter({
   //     pilot_id: _id
@@ -56,13 +51,13 @@ export class AirCraftService {
     })
   }
 
-  async getAircraftLatestFlights(aircraftId: string, pilot_id: number) {
+  async getAircraftLatestFlights(aircraftId: number, pilot_id: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) {
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
-    if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER.message, errors.MISSING_TAIL_NUMBER.code);
+    if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER);
     
     // const data = await axios.get(`https://flighttracking-production.up.railway.app/api/v1/flightsTrack/${aircraft.tail_number}`);
     // let maxSpeed = 0;
@@ -99,24 +94,35 @@ export class AirCraftService {
     
   }
 
-  async editAircraft({ make_and_model, tail_number }: UpdateAirCraftDto, aircraftId: string, pilot_id: Types.ObjectId, file?: Express.Multer.File) {
+  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number, file?: Express.Multer.File) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
+    if(aircraft.pilot_id !== pilot_id) throw new ForbiddenException();
+
+    const newUpdatedAircarft: UpdateAircraftObjectDTO = {} as UpdateAircraftObjectDTO;
     
+    if (updatedAircraft.make_and_model) {
+      newUpdatedAircarft.make_and_model = updatedAircraft.make_and_model;
+    }
+
+    if (updatedAircraft.tail_number) {
+      newUpdatedAircarft.tail_number = updatedAircraft.tail_number;
+    }
+
     if(file) {
       if(aircraft.aircraft_picture_key) {
         await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
       }
       const resUpload = await this.s3Service.uploadFile(file);
-      if (!resUpload) throw new HttpException(errors.FILE_UPLOAD_ERROR, HttpStatus.BAD_REQUEST);
-      return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, make_and_model, tail_number, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
+      if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
+      return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
     }
 
-    return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, make_and_model, tail_number }, { returnDocument: 'after' });
+    return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft }, { returnDocument: 'after' });
   }
 
   //TODO: ASK ABOUT AIRCRAFT DELETION
-  async removeAircraftFromPilot(id: string, pilotId: number) {
+  async removeAircraftFromPilot(id: number, pilotId: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(id);
     if (!aircraft) {
       throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
@@ -128,6 +134,6 @@ export class AirCraftService {
       throw new BadRequestException(errors.AIRCRAFT_ALREADY_REMOVED);
     }
 
-    return await this.airCraftsRepository.removeAircraftByPilotId(id);
+    return await this.airCraftsRepository.removeAircraft(id);
   }
 }
