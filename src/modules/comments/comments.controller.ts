@@ -12,7 +12,7 @@ export class CommentController {
     ) {}
 
     @Delete(":id")
-    @ApiOperation({ summary: 'Delete a comment' })
+    @ApiOperation({ summary: 'Delete a comment' ,description:"Deletes a comment. Users can only delete their own comments."})
     async deleteComment(@Param('id') commentId: string) {
         return await this.commentService.deleteComment(commentId);
     }

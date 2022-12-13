@@ -23,7 +23,7 @@ export class CommunityController {
   constructor(private readonly service: CommunityService) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get List of Communities' })
+  @ApiOperation({ summary: 'Get List of Communities' ,description:"Gets all communities"})
   @ApiResponse({
     status: 200,
     description: 'The records found',
@@ -35,7 +35,7 @@ export class CommunityController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get Community' })
+  @ApiOperation({ summary: 'Get Community byID', description :"Get community byID" })
   @ApiResponse({
     status: 200,
     description: 'The record found',
@@ -47,7 +47,7 @@ export class CommunityController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create Community' })
+  @ApiOperation({ summary: 'Create Community', description :"Create a community" })
   @ApiResponse({
     status: 200,
     description: 'The record found',
@@ -59,7 +59,7 @@ export class CommunityController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update Community' })
+  @ApiOperation({ summary: 'Update Community' , description :"Update a community"})
   @ApiResponse({
     status: 200,
     description: 'The record updated',
@@ -74,7 +74,7 @@ export class CommunityController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete Community' })
+  @ApiOperation({ summary: 'Delete Community', description :"Update a community" })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',

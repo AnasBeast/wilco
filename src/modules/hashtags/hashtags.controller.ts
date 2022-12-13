@@ -23,7 +23,7 @@ export class HashtagsController {
 
   @Get()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get List of Hashtagss' })
+  @ApiOperation({ summary: 'Get List of Hashtags' , description:"Gets a list of Hashtags" })
   @ApiResponse({
     status: 200,
     description: 'The records found',

@@ -22,7 +22,7 @@ export class DeviceController {
   constructor(private readonly service: DeviceService) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get List of Devices' })
+  @ApiOperation({ summary: 'Get List of Devices' , description:"Get all list of devices"})
   @ApiResponse({
     status: 200,
     description: 'The records found',
@@ -34,7 +34,7 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get Device' })
+  @ApiOperation({ summary: 'Get Device' , description:"Get device byID" })
   @ApiResponse({
     status: 200,
     description: 'The record found',
@@ -47,7 +47,7 @@ export class DeviceController {
 
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create Device' })
+  @ApiOperation({ summary: 'Create Device' , description:"Create a new device" })
   @ApiResponse({
     status: 200,
     description: 'The record found',
@@ -59,7 +59,7 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update Device' })
+  @ApiOperation({ summary: 'Update Device' , description:"Update an existing device" })
   @ApiResponse({
     status: 200,
     description: 'The record updated',
@@ -71,7 +71,7 @@ export class DeviceController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete Device' })
+  @ApiOperation({ summary: 'Delete Device' , description:"Delete an existing device" })
   @ApiResponse({
     status: 200,
     description: 'The record deleted',

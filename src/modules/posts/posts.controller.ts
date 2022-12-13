@@ -37,7 +37,7 @@ export class PostsController {
     //TODO implement pagination
     @ApiTags("Posts")
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get List of Posts' })
+    @ApiOperation({ summary: 'Get List of Posts' , description:"Gets the most recent posts with pagination. The \"liked\" property of each returned post indicates whether the post is liked by the current pilot or not."})
     @ApiResponse({
         status: 200,
         description: 'The records found',
@@ -51,7 +51,7 @@ export class PostsController {
 
     @ApiTags("Posts")
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get Post' })
+    @ApiOperation({ summary: 'Get Post' , description:"Gets a post by its ID. The \"liked\" property indicates whether the post is liked by the current pilot or not."})
     @ApiResponse({
         status: 200,
         description: 'The record found',
@@ -64,7 +64,7 @@ export class PostsController {
 
     @ApiTags("Posts")
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create Post' })
+    @ApiOperation({ summary: 'Create Post' , description:"Creates a post" })
     @ApiResponse({
         status: 200,
         description: 'The record found',
@@ -79,7 +79,7 @@ export class PostsController {
     @ApiTags("Posts")
     @Patch(':id')
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update Post' })
+    @ApiOperation({ summary: 'Edit Post' , description:"Edits a post. Can only edit title, text, visibility and add or delete photos"})
     @ApiResponse({
         status: 200,
         description: 'The record updated',
@@ -92,7 +92,7 @@ export class PostsController {
     @ApiTags("Posts")
     @Delete(':id')
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Delete Post' })
+    @ApiOperation({ summary: 'Delete Post' , description:"Deletes a post. Users can only delete their own posts." })
     @ApiResponse({
         status: 200,
         description: 'The record deleted',
@@ -112,7 +112,7 @@ export class PostsController {
 
     @ApiTags('Comments')
     @Post("/:id/comments")
-    @ApiOperation({ summary: 'Post a comment' })
+    @ApiOperation({ summary: 'Post a comment' ,description:"Creates a comment to a post"})
     async createComment(@Param('id') postId: string, @Body() createCommentDTO: CreateCommentDTO, @Req() req) {
         return await this.postsService.createComment(postId, createCommentDTO, req.user._id);
     }
