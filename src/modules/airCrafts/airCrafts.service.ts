@@ -55,6 +55,7 @@ export class AirCraftService {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) {
+      console.log(aircraft);
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
     if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER);

@@ -9,12 +9,8 @@ import { Types } from "mongoose";
 
 export type PilotDocument = HydratedDocument<Pilot>;
 
-@Schema({ timestamps: true })
-export class Pilot {
-  @ApiProperty()
-  @Prop()
-  id: number;
-
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
+export class Pilot {  
   @ApiProperty()
   @Prop({ required: true })
   first_name: string;
@@ -39,13 +35,13 @@ export class Pilot {
   @Prop()
   profile_picture_url: string;
 
-  @ApiProperty()
-  @Prop({
-    type: [MongooseSchema.Types.ObjectId],
-    ref: 'Flight',
-    autopopulate: true
-  })
-  latest_flights: Types.ObjectId[]
+  // @ApiProperty()
+  // @Prop({
+  //   type: [MongooseSchema.Types.ObjectId],
+  //   ref: 'Flight',
+  //   autopopulate: true
+  // })
+  // latest_flights: Types.ObjectId[]
 
   @ApiProperty()
   @Prop()

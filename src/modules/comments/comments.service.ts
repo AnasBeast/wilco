@@ -35,28 +35,28 @@ export class CommentService {
     }
 
     async deleteComment(commentId: string) {
-        const comment = await this.getCommentById(new Types.ObjectId(commentId));
-        const reply = await this.getReplyById(new Types.ObjectId(commentId));
-        if(!comment && !reply) throw new BadRequestException();
+        // const comment = await this.getCommentById(new Types.ObjectId(commentId));
+        // const reply = await this.getReplyById(new Types.ObjectId(commentId));
+        // if(!comment && !reply) throw new BadRequestException();
 
-        if (!comment) {
-            const parentComment = await this.getCommentById(reply.parentCommentId);
-            parentComment.replies.filter((reply) => reply !== new Types.ObjectId(commentId));
-            parentComment.save();
-            const post = await this.postsService.findOne(reply.post);
-            post.number_of_comments--;
-            post.save();
-            return await this.commentReplyModel.deleteOne({ _id: commentId });
-        }
+        // if (!comment) {
+        //     const parentComment = await this.getCommentById(reply.parentCommentId);
+        //     parentComment.replies.filter((reply) => reply !== new Types.ObjectId(commentId));
+        //     parentComment.save();
+        //     const post = await this.postsService.findOne(reply.post);
+        //     post.number_of_comments--;
+        //     post.save();
+        //     return await this.commentReplyModel.deleteOne({ _id: commentId });
+        // }
 
-        const post = await this.postsService.findOne(comment.post);
-        post.comments.filter((comment) => comment !== new Types.ObjectId(commentId));
-        post.number_of_comments -= comment.replies.length + 1;
-        post.save();
-        if (comment.replies.length > 0) {
-            this.commentReplyModel.deleteMany({ _id: { $in: comment.replies } })
-        }
-        return await this.commentModel.deleteOne({ _id: commentId });
+        // const post = await this.postsService.findOne(comment.post);
+        // post.comments.filter((comment) => comment !== new Types.ObjectId(commentId));
+        // post.number_of_comments -= comment.replies.length + 1;
+        // post.save();
+        // if (comment.replies.length > 0) {
+        //     this.commentReplyModel.deleteMany({ _id: { $in: comment.replies } })
+        // }
+        // return await this.commentModel.deleteOne({ _id: commentId });
     }
 
     async likeComment(commentId: string, userId: string) {
@@ -113,7 +113,7 @@ export class CommentService {
 
     async getCommentsByPostId(postId: string, pilotId: number) {
         // const post = await this.commentModel.find({ post: postId });
-        // if(!post) throw new NotFoundException(errors.POST_NOT_FOUND);
+        // 
 
         // if (post)
 

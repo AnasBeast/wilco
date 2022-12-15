@@ -6,7 +6,7 @@ import { Airport } from './airport.model';
 
 export type FlightDocument = Post_Flights & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Post_Flights {
   @ApiProperty()
   @Prop({ required: true })

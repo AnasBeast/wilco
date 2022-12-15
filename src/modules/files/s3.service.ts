@@ -1,5 +1,5 @@
 import { AWSConfigService } from './../../config/aws/config.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { Credentials } from 'aws-sdk';
 import { DeleteObjectRequest } from 'aws-sdk/clients/s3';
@@ -18,10 +18,20 @@ export class S3Service {
     }),
   });
 
-  async uploadFile(file) {
-    const { originalname } = file;
+  async parseFile(file) {
+    try {
+      return { 
+        mimetype: file.split(';')[0].split('/')[1],
+        buffer: Buffer.from(file.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+      };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 
-    return await this.s3_upload(file.buffer, this.awsConfigService.awsBucketName, originalname, file.mimetype);
+  async uploadFile(fileToParse) {
+    const file = await this.parseFile(fileToParse);
+    return await this.s3_upload(file.buffer, this.awsConfigService.awsBucketName, file.mimetype);
   }
 
   async uploadFiles(files) {
@@ -42,10 +52,10 @@ export class S3Service {
     }
   }
 
-  async s3_upload(file, bucket, name, mimetype) {
+  async s3_upload(file, bucket, mimetype) {
     const uploadParams = {
       Bucket: bucket,
-      Key: String(new Date().getTime() + name.replace(/\s/g, '')),
+      Key: String(new Date().getTime() + Math.floor(Math.random() * 100 + 1)) + "." + mimetype,
       Body: file,
       ACL: 'public-read',
       ContentType: mimetype,

@@ -48,7 +48,7 @@ import { FlightModule } from './modules/flights/flights.module';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: TransformationInterceptor
+      useClass: TransformationInterceptor,
     }
   ]
 })

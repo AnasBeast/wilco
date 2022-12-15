@@ -9,7 +9,7 @@ import { Contribution } from './contribution.model';
 
 export type PostDocument = Post & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Post {
   @ApiProperty()
   @Prop({ required: true })

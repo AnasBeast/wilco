@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
@@ -23,25 +23,31 @@ export class PostsService {
           const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot", populate: "aircrafts"}, { path: "flight", populate: "aircraft"}] }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
           return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
-          
         }
-        // return await this.postsModel.find({ community_tags: {$in: community_tags} }, {}, { limit: per_page, skip: (page - 1) * per_page }).lean().exec();
+        const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot", populate: "aircrafts"}, { path: "flight", populate: "aircraft"}] }).lean();
+        const count = await this.postsModel.find({ visibility: "public" }).count();
+        return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
       }
     
-      async findOne(id: string) {
-        return await this.postsModel.findById(id);
+      async getPostById(id: number, pilotId: number) {
+        const post = await this.postsModel.findOne({ id }, {}, { populate: [{ path: 'pilot', populate: "aircrafts certificates ratings community_tags roles" }, { path: 'flight', populate: "aircraft" }] });
+        if(post.visibility !== "public" && post.pilot_id !== pilotId) {
+          throw new ForbiddenException(errors.PERMISSION_DENIED);
+        }
+        return post;
       }
     
-      async create(createTodoDto: CreatePostDTO, userId: string, files?: Express.Multer.File[]): Promise<Post> {
+      async create(createTodoDto: CreatePostDTO, pilot_id: string): Promise<Post> {
         const postData = {
-          ...createTodoDto,
-          creator: userId
+          ...createTodoDto.post,
+          pilot_id
         }
         
-        if (files) {
-          const filesArr = await this.s3service.uploadFiles(files);
-          postData["post_media"] = filesArr;
+        if (postData.photos) {
+          const filesArr = await this.s3service.uploadFiles(postData.photos);
+          postData.photos = filesArr;
         }
+
         return await this.postsModel.create(postData);
       }
     

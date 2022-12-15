@@ -28,13 +28,13 @@ import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { FeedDTO } from 'src/dto/post/feed.dto';
 import { PostsService } from './posts.service';
+import { Buffer } from 'node:buffer';
 
 @Controller('posts')
 export class PostsController {
 
     constructor(private readonly postsService: PostsService) { }
 
-    //TODO implement pagination
     @ApiTags("Posts")
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get List of Posts' , description:"Gets the most recent posts with pagination. The \"liked\" property of each returned post indicates whether the post is liked by the current pilot or not."})
@@ -58,8 +58,8 @@ export class PostsController {
         type: BasePost,
     })
     @Get(':id')
-    async find(@Param('id') id: string) {
-        return await this.postsService.findOne(id);
+    async getPost(@Param('id') id: number, @Req() req) {
+        return await this.postsService.getPostById(id, req.user.pilotId);
     }
 
     @ApiTags("Posts")
@@ -71,9 +71,8 @@ export class PostsController {
         type: BasePost,
     })
     @Post()
-    @UseInterceptors(FilesInterceptor('files'))
-    async create(@Body() createPostDto: CreatePostDTO, @Req() req, @UploadedFiles() files?: Express.Multer.File[]) {
-        return await this.postsService.create(createPostDto, req.user._id, files);
+    async create(@Body() createPostDto: CreatePostDTO, @Req() req) {
+        return await this.postsService.create(createPostDto, req.user.pilotId);
     }
 
     @ApiTags("Posts")

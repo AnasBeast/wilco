@@ -1,27 +1,72 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { Type } from "class-transformer";
+import { ValidateNested } from "class-validator";
 
 type Visibility = "public" | "only_me";
 
-export class CreatePostDTO {
+class FlightDTO {
+  @ApiProperty()
+  from: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  departure_time: string;
+
+  @ApiProperty()
+  arrival_time: string;
+
+  @ApiProperty()
+  aircraft_id: number;
+
+  @ApiProperty()
+  max_speed: number;
+  
+  @ApiProperty()
+  max_altitude: number;
+
+  @ApiProperty()
+  distance: number;
+
+  @ApiProperty()
+  track: string;
+}
+
+class PostDTO {
   @ApiProperty()
   title: string;
 
   @ApiProperty()
-  message: string;
+  text: string;
 
   @ApiProperty()
   visibility: Visibility;
 
   @ApiProperty()
-  flight?: Types.ObjectId;
+  community_tags: string[];
 
   @ApiProperty()
-  post_communities?: Types.ObjectId[];
+  airports: string[];
 
   @ApiProperty()
-  mentioned_users?: Types.ObjectId[]
+  mentions_ids: number[];
 
   @ApiProperty()
-  contribution?: Types.ObjectId;
+  hashtags: string[]
+
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => FlightDTO)
+  flight: FlightDTO;
+
+  @ApiProperty()
+  photos: string[];
+}
+
+export class CreatePostDTO {
+  @ValidateNested()
+  @Type(() => PostDTO)
+  post: PostDTO;
 }

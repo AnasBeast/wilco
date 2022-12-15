@@ -19,7 +19,7 @@ export class AirCraftController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: "Get aircraft's latest flights", description: "Responds with an array containing the latest flights of the given aircraft" })
-  @ApiOkResponse({ description: "Latest flights returned" ,type: FlightEntity})
+  @ApiOkResponse({ description: "Latest flights returned" , type: FlightEntity})
   @Get('/:aircraft_id/latest_flights')
   async getAircraftLatestFlights(@Param('aircraft_id') aircraft_id: number, @Req() req) {
     return await this.airCraftService.getAircraftLatestFlights(aircraft_id, req.user.pilotId);
