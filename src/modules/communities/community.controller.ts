@@ -16,7 +16,7 @@ import {
 import { BaseCommunity } from 'src/dto/communities/base-community.dto';
 import { CommunityService } from './community.service';
 
-@Controller('community')
+@Controller('communities')
 @ApiBearerAuth()
 @ApiTags('Communities')
 export class CommunityController {
