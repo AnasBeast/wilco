@@ -52,7 +52,7 @@ export class PilotsService {
     return {
       data: pilots,
       pagination: {
-        current: (page - 1) * per_page + pilots.length,
+        current: page,
         pages: Math.ceil(count / per_page),
         first_page: (page - 1) * per_page === 0,
         last_page: count < (page - 1) * per_page + per_page,

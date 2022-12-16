@@ -17,8 +17,7 @@ export class PilotsRepository {
   }
 
   async getPilots(page: number, per_page: number) {
-    console.log("dididodo", page, per_page);
-    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1) * per_page }).lean()
+    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1) * per_page }).populate({ path: "aircrafts", select: "-_id" }).select("-_id");
   }
 
   async countPilots() {

@@ -9,7 +9,7 @@ export type AirCraftDocument = AirCraft & Document;
 @Schema({ timestamps: true })
 export class AirCraft {
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.Number, ref: 'Pilot', required: true,  })
+  @Prop({ type: MongooseSchema.Types.Number, ref: 'Pilot', required: true })
   pilot_id: number
 
   @ApiProperty()
@@ -25,11 +25,11 @@ export class AirCraft {
   aicraft_picture?: string;
 
   @ApiProperty()
-  @Prop()
+  @Prop({ select: false })
   aircraft_picture_key?: string;
 
   @ApiProperty()
-  @Prop({ default: false })
+  @Prop({ default: false, select: false })
   removed?: boolean;
 }
 
