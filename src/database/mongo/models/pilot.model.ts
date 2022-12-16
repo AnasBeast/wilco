@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument } from 'mongoose';
+import { AirCraft } from './airCraft.model';
 
-export type PilotDocument = HydratedDocument<Pilot>;
+export type PilotDocument = HydratedDocument<Pilot, {}, { aircrafts?: (AirCraft & { id: number })[] }>;
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Pilot {  

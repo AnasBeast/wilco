@@ -24,7 +24,7 @@ export class FlightService {
     }
 
     async getLatestFlights(aircraft_ids: number[]) {
-        return await this.flightModel.find({ aircraft_id: { $in: aircraft_ids } }).populate("aircraft");
+        return await this.flightModel.find({ aircraft_id: { $in: aircraft_ids } }).populate({ path: "aircraft", select:"-_id" }).select("-_id");
     }
 
     async getTrack(id: string, height: number, width: number) {

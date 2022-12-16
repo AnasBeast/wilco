@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { DeviceService } from './device.service';
-import { DeviceController } from './device.controller';
 
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Device, DeviceSchema } from 'src/schemas/device.schema';
@@ -23,7 +22,6 @@ import * as AutoIncrementFactory from 'mongoose-sequence';
     ]),
   ],
   providers: [DeviceService],
-  controllers: [DeviceController],
   exports: [DeviceService]
 })
 export class DeviceModule {}

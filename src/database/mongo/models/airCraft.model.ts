@@ -1,10 +1,10 @@
 import { Type } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Schema as MongooseSchema, Types } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { bool } from 'aws-sdk/clients/signer';
 
-export type AirCraftDocument = AirCraft & Document;
+export type AirCraftDocument = HydratedDocument<AirCraft>;
 
 @Schema({ timestamps: true })
 export class AirCraft {
