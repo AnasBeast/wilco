@@ -1,13 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
-import { AirportEntity } from 'src/common/entities/airport.entity';
-import { CommunityEntity } from 'src/common/entities/community.entity';
-import { RoleEntity } from 'src/common/entities/role.entity';
-import { Types } from "mongoose";
+import { HydratedDocument } from 'mongoose';
+import { AirCraft } from './airCraft.model';
 
-export type PilotDocument = HydratedDocument<Pilot>;
+export type PilotDocument = HydratedDocument<Pilot, {}, { aircrafts?: (AirCraft & { id: number })[] }>;
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Pilot {  
@@ -20,7 +16,7 @@ export class Pilot {
   last_name: string;
 
   @ApiProperty()
-  @Prop()
+  @Prop({ default: null })
   description: string;
 
   @ApiProperty()
@@ -28,11 +24,11 @@ export class Pilot {
   roles_ids: number[]
   
   @ApiProperty()
-  @Prop({})
+  @Prop({ default: null })
   primary_aircraft_id: number;
 
   @ApiProperty()
-  @Prop()
+  @Prop({ default: null })
   profile_picture_url: string;
 
   @ApiProperty()
@@ -48,7 +44,7 @@ export class Pilot {
   communities_tags: string[];
 
   @ApiProperty()
-  @Prop()
+  @Prop({ default: null })
   home_airport: string;
 
   @ApiProperty()
@@ -56,7 +52,7 @@ export class Pilot {
   airports: string[];
 
   @ApiProperty()
-  @Prop()
+  @Prop({ default: null })
   total_hours: string;
 
   @Prop({ select: false })
@@ -84,7 +80,7 @@ PilotSchema.virtual('roles', {
   ref: 'Role',
   localField: 'roles_ids',
   foreignField: 'id',
-  autopopulate: true
+  autopopulate: true,
 })
 
 PilotSchema.virtual('ratings', {

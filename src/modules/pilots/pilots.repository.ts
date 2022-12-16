@@ -8,7 +8,7 @@ import { User } from '../../database/mongo/models/user.model';
 export class PilotsRepository {
   constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>) {}
 
-  async getMeById(id: number): Promise<PilotDocument> {
+  async getMeById(id: number) {
     return await this.pilotModel.findOne({ id }, {}, { populate: ["aircrafts", "certificates", "ratings", "roles"] }).select("-_id -__v").lean()
   }
 
@@ -17,8 +17,7 @@ export class PilotsRepository {
   }
 
   async getPilots(page: number, per_page: number) {
-    console.log("dididodo", page, per_page);
-    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1) * per_page }).lean()
+    return await this.pilotModel.find({}, {}, { limit: per_page, skip: (page - 1) * per_page }).populate({ path: "aircrafts", select: "-_id" }).select("-_id");
   }
 
   async countPilots() {
@@ -26,7 +25,7 @@ export class PilotsRepository {
   }
 
   async getPilotById(id: number) {
-    return await this.pilotModel.findOne({ id });
+    return await this.pilotModel.findOne({ id }).populate({ path:"aircrafts", select: "-_id" }).select("-_id -__v").lean();
   }
 
   async getPilotDocumentById(id: number) {

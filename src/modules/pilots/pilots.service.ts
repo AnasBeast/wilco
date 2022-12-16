@@ -52,7 +52,7 @@ export class PilotsService {
     return {
       data: pilots,
       pagination: {
-        current: (page - 1) * per_page + pilots.length,
+        current: page,
         pages: Math.ceil(count / per_page),
         first_page: (page - 1) * per_page === 0,
         last_page: count < (page - 1) * per_page + per_page,
@@ -76,11 +76,16 @@ export class PilotsService {
   async getPilotById(id: string, pilotId: number, email: string) {
     if (id === 'me') {
       const pilot = await this.pilotsRepository.getMeById(pilotId);
-      //@ts-ignore
-      const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts.map((aircraft) => aircraft.id));
+      const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
       return { ...pilot, latest_flights, user: { email: email } };
     }
-    return await this.pilotsRepository.getPilotById(Number.parseInt(id));
+    const parsedId = parseInt(id, 10);
+    if(isNaN(parsedId)) {
+      throw new BadRequestException()
+    }
+    const pilot = await this.pilotsRepository.getPilotById(parsedId);
+    const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
+    return { ...pilot, latest_flights };
   }
 
   // async getPopulatedUserByEmail(email: string): Promise<UserDocument> {
@@ -155,12 +160,18 @@ export class PilotsService {
 
   async searchByHomeAirPort(airport_code: string) {
     const airport = await this.airportService.getAirportByFilter({ icao: airport_code });
+    if(!airport) {
+      throw new NotFoundException();
+    }
     return await this.pilotsRepository.getPilotsByFilter({ home_airport: airport.icao });
   }
 
   async searchByCommunities(name: string) {
     const community = await this.communityService.findCommunityByFilter({ name });
-    return await this.pilotsRepository.getPilotsByFilter({ communities: { $in: [community._id] } });
+    if (!community) {
+      throw new NotFoundException()
+    }
+    return await this.pilotsRepository.getPilotsByFilter({ communities_tags: { $in: [community.name] } });
   }
 
   // aircrafts
