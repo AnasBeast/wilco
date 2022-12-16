@@ -17,18 +17,17 @@ export class Post_Flights {
   to: string;
 
   @ApiProperty()
-  @Prop({ required: true, type: [Date] })
+  @Prop({ required: true, type: Date })
   departure_time: Date;
 
   @ApiProperty()
-  @Prop({ required: true, type: [Date] })
+  @Prop({ required: true, type: Date })
   arrival_time: Date;
 
   @ApiProperty()
   @Prop({ required: true })
   max_speed: number
 
-  
   @ApiProperty()
   @Prop({ required: true })
   max_altitude: number
@@ -40,6 +39,10 @@ export class Post_Flights {
   @ApiProperty()
   @Prop({ required: true })
   aircraft_id: number;
+
+  @ApiProperty()
+  @Prop({ required: true })
+  post_id: number;
 
   @ApiProperty()
   @Prop({ required: true })

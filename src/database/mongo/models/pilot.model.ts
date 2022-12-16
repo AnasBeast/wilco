@@ -24,7 +24,7 @@ export class Pilot {
   description: string;
 
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop({ required: true, select: false })
   roles_ids: number[]
   
   @ApiProperty()
@@ -35,39 +35,31 @@ export class Pilot {
   @Prop()
   profile_picture_url: string;
 
-  // @ApiProperty()
-  // @Prop({
-  //   type: [MongooseSchema.Types.ObjectId],
-  //   ref: 'Flight',
-  //   autopopulate: true
-  // })
-  // latest_flights: Types.ObjectId[]
-
   @ApiProperty()
-  @Prop()
+  @Prop({ default: [], select: false })
   certificate_ids: number[];
 
   @ApiProperty()
-  @Prop({})
+  @Prop({ default: [], select: false })
   rating_ids: number[];
 
   @ApiProperty()
-  @Prop({})
+  @Prop({ default: [] })
   communities_tags: string[];
 
   @ApiProperty()
   @Prop()
-  home_airport_id: number;
+  home_airport: string;
 
   @ApiProperty()
-  @Prop({})
-  airport_ids: number[];
+  @Prop({ default: [] })
+  airports: string[];
 
   @ApiProperty()
   @Prop()
   total_hours: string;
 
-  @Prop()
+  @Prop({ select: false })
   profile_picture_key: string;
 }
 
@@ -79,7 +71,7 @@ PilotSchema.virtual('aircrafts', {
   localField: 'id',
   foreignField: 'pilot_id',
   autopopulate: true
-})
+}) 
 
 PilotSchema.virtual('certificates', {
   ref: 'Certificate',
@@ -97,21 +89,7 @@ PilotSchema.virtual('roles', {
 
 PilotSchema.virtual('ratings', {
   ref: 'Rating',
-  localField: 'tatings_ids',
-  foreignField: 'id',
-  autopopulate: true
-})
-
-PilotSchema.virtual('community_tags', {
-  ref: 'Community_tag',
-  localField: 'community_tags_ids',
-  foreignField: 'id',
-  autopopulate: true
-})
-
-PilotSchema.virtual('airports', {
-  ref: 'Airport',
-  localField: 'airports_ids',
+  localField: 'rating_ids',
   foreignField: 'id',
   autopopulate: true
 })

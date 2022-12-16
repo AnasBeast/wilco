@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export type RoleDocument = Role & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Role {
   @ApiProperty()
   @Prop({ unique: true, required: true })

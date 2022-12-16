@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
@@ -8,6 +8,8 @@ import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { CommentService } from '../comments/comments.service';
 import { S3Service } from '../files/s3.service';
+import { FlightService } from '../flights/flights.service';
+import { Post_Airports_Service } from '../post_airports/post-airports.service';
 
 @Injectable()
 export class PostsService {
@@ -15,10 +17,12 @@ export class PostsService {
         @InjectModel(Post.name)
         private readonly postsModel: Model<PostDocument>,
         private readonly s3service: S3Service,
-        private readonly commentsService: CommentService
+        private readonly commentsService: CommentService,
+        private readonly postAirportsService: Post_Airports_Service,
+        private readonly postFlightService: FlightService
       ) {}
     
-      async getFeedPosts(page: number, per_page: number, pilotId: number, feed?: boolean, community_tags?: string[], hashtags?: string[]) {
+      async getFeedPosts(page: number, per_page: number, pilotId: number, feed: boolean = true, community_tags?: string[], hashtags?: string[]) {
         if (!feed) {
           const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot", populate: "aircrafts"}, { path: "flight", populate: "aircraft"}] }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
@@ -48,6 +52,10 @@ export class PostsService {
           postData.photos = filesArr;
         }
 
+        if (postData.flight) {
+          this.postFlightService.createPostFlight(postData.flight);
+        }
+
         return await this.postsModel.create(postData);
       }
     
@@ -61,21 +69,21 @@ export class PostsService {
 
       // comments
       async createComment(postId: string, commentInput: CreateCommentDTO, userId: string) {
-        const post = await this.postsModel.findById(postId);
-        if(!post) throw new BadRequestException();
-        if (!commentInput.parentCommentId) {
-          const comment = await this.commentsService.createComment({ ...commentInput, creator: userId, post: postId })
-          post.number_of_comments++;
-          post.comments.push(comment._id);
-          return post.save();
-        }
-        const parentComment = await this.commentsService.getCommentById(commentInput.parentCommentId);
-        if(!parentComment) throw new BadRequestException();
-        const reply = await this.commentsService.createReply({ ...commentInput, creator: userId, post: postId });
-        post.number_of_comments++;
-        parentComment.replies.push(reply._id);
-        parentComment.save();
-        return post.save();
+        // const post = await this.postsModel.findById(postId);
+        // if(!post) throw new BadRequestException();
+        // if (!commentInput.parentCommentId) {
+        //   const comment = await this.commentsService.createComment({ ...commentInput, creator: userId, post: postId })
+        //   post.number_of_comments++;
+        //   post.comments.push(comment._id);
+        //   return post.save();
+        // }
+        // const parentComment = await this.commentsService.getCommentById(commentInput.parentCommentId);
+        // if(!parentComment) throw new BadRequestException();
+        // const reply = await this.commentsService.createReply({ ...commentInput, creator: userId, post: postId });
+        // post.number_of_comments++;
+        // parentComment.replies.push(reply._id);
+        // parentComment.save();
+        // return post.save();
       }
 
       //get comments

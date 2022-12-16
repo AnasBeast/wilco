@@ -15,6 +15,7 @@ import { AirCraftModule } from '../airCrafts/airCrafts.module';
 import { Connection } from 'mongoose';
 import * as AutoIncrementFactory from "mongoose-sequence";
 import { Pilot, PilotSchema } from 'src/database/mongo/models/pilot.model';
+import { FlightModule } from '../flights/flights.module';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -27,7 +28,7 @@ import { Pilot, PilotSchema } from 'src/database/mongo/models/pilot.model';
       },
       inject: [getConnectionToken()]
     }
-  ]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule],
+  ]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule, FlightModule],
   controllers: [PilotsController],
   providers: [PilotsService, PilotsRepository, IsUserAlreadyExist],
   exports: [PilotsService, PilotsRepository],

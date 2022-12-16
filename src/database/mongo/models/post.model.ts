@@ -39,10 +39,6 @@ export class Post {
   @Prop({ required: true })
   pilot_id: number;
 
-  // @ApiProperty()
-  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Flight' })
-  // flight: Types.ObjectId;
-
   @ApiProperty()
   @Prop({ default: [] })
   photo_urls: string[];
@@ -52,43 +48,16 @@ export class Post {
   photo_preview_urls: string[];
 
   @ApiProperty()
-  @Prop({
-    type: [{ type: [MongooseSchema.Types.ObjectId], ref: 'Community' }],
-    default: [],
-  })
-  community_tags: Types.ObjectId[];
-
-  // @ApiProperty()
-  // @Prop({ required: true })
-  // post_type: string;
-
-
+  @Prop({ default: [] })
+  community_tags: string[];
 
   @ApiProperty()
-  @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Comment' }],
-    default: [],
-  })
-  comments: Types.ObjectId[];
+  @Prop({ default: [] })
+  airports: string[];
 
   @ApiProperty()
-  @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Like' }],
-    default: [],
-  })
-  Likes: Like[];
-
-  @ApiProperty()
-  @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
-    default: [],
-  })
-  mentioned_users: User[];
-
-  @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Contribution' })
-  contribution: Contribution;
-
+  @Prop({ default: [] })
+  hashtags: string[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -106,5 +75,12 @@ PostSchema.virtual('flight', {
   localField: 'id',
   foreignField: 'post_id',
   justOne: true,
+  autopopulate: true
+})
+
+PostSchema.virtual('first_comments', {
+  ref: 'Comment',
+  localField: 'id',
+  foreignField: 'post_id',
   autopopulate: true
 })

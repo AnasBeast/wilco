@@ -8,6 +8,8 @@ import { S3Module } from '../files/s3.module';
 import { CommentsModule } from '../comments/comments.module';
 import { Connection } from 'mongoose';
 import * as AutoIncrementFactory from "mongoose-sequence";
+import { Post_Airports_Module } from '../post_airports/post-airpots.module';
+import { FlightModule } from '../flights/flights.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import * as AutoIncrementFactory from "mongoose-sequence";
       }
     ]),
     S3Module,
+    Post_Airports_Module,
+    FlightModule,
     forwardRef(() => CommentsModule) 
   ],
   providers: [PostsService],

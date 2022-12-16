@@ -30,6 +30,7 @@ import { UsersRepository } from '../users/users.repository';
 import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
 import { AirCraftService } from '../airCrafts/airCrafts.service';
 import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
+import { FlightService } from '../flights/flights.service';
 
 @Injectable()
 export class PilotsService {
@@ -41,6 +42,7 @@ export class PilotsService {
     private communityService: CommunityService,
     private usersRepository: UsersRepository,
     private aircraftsService: AirCraftService,
+    private flightsService: FlightService
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -74,7 +76,9 @@ export class PilotsService {
   async getPilotById(id: string, pilotId: number, email: string) {
     if (id === 'me') {
       const pilot = await this.pilotsRepository.getMeById(pilotId);
-      return { pilot, user: { email: email } };
+      //@ts-ignore
+      const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts.map((aircraft) => aircraft.id));
+      return { ...pilot, latest_flights, user: { email: email } };
     }
     return await this.pilotsRepository.getPilotById(Number.parseInt(id));
   }
