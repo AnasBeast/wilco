@@ -30,7 +30,6 @@ export class PilotsController {
   @Pagination(true)
   @Get()
   async getPilots(@Query() { page, per_page }: PaginationDTO) {
-    console.log(page, per_page);
     return await this.pilotsService.getPilots(Number.parseInt(page), Number.parseInt(per_page));
   }
 

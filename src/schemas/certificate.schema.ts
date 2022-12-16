@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type CertificateDocument = Certificate & Document;
 
-@Schema()
+@Schema({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Certificate {
   @Prop({ required: true })
   id: string;

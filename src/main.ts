@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { AppConfigService } from './config/app/config.service';
 import { firebaseConfig } from './providers/firebase/config';
 import { swaggerConfig } from './providers/swagger/config';
+import { transfromErrors } from './validation-pipe-options';
 
 const fb_admin = admin.initializeApp(firebaseConfig, "test-wilco")
 
