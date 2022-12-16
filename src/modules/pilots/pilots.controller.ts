@@ -80,8 +80,8 @@ export class PilotsController {
   @ApiParam({ name: "id", description: 'ID of the pilot. "me" may be used to refer to the current pilot.'  })
   @ApiBearerAuth()
   @Post(':id/airports')
-  async addAirportsToPilot(@Param('id') id: number, @Body() addAirportsToPilotDTO: AddAirportsToPilotDTO , @Req() req) {
-    return await this.pilotsService.addAirportsToPilot(id, addAirportsToPilotDTO.preferred_airport_names, req.user.pilotId);
+  async addAirportsToPilot(@Param('id') id: string, @Body() addAirportsToPilotDTO: AddAirportsToPilotDTO , @Req() req) {
+    return await this.pilotsService.addAirportsToPilot(Number.parseInt(id), addAirportsToPilotDTO.preferred_airport_names, req.user.pilotId);
   }
 
   @ApiTags('Pilots')
