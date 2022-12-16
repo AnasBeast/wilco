@@ -75,3 +75,8 @@ export class Comment {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+CommentSchema.virtual("pilot", {
+  ref: "Pilot",
+  localField: ""
+})
