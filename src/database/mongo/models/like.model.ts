@@ -1,20 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Schema as MongooseSchema } from 'mongoose';
-import { Post } from './post.model';
-import { User } from './user.model';
+import { HydratedDocument } from 'mongoose';
 
-export type LikeDocument = Like & Document;
+export type LikeDocument = HydratedDocument<Like>;
 
 @Schema({ timestamps: true })
 export class Like {
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  pilot: User;
+  @Prop({ required: true })
+  pilot_id: number;
 
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Post', required: true })
-  post: Post;
+  @Prop({ required: true })
+  post_id: number;
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

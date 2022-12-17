@@ -101,6 +101,16 @@ export class PostsController {
         return await this.postsService.delete(id);
     }
 
+    @Post(':post_id/like')
+    async likePost(@Param('post_id') post_id: string, @Req() req) {
+      return await this.postsService.likePost(post_id, req.user.pilotId);
+    }
+
+    @Post(':post_id/unlike')
+    async unlikePost(@Param('post_id') post_id: string, @Req() req) {
+      return await this.postsService.unlikePost(post_id, req.user.pilotId);
+    }
+
     // commentes
     @ApiTags('Comments')
     @Get("/:post_id/comments")

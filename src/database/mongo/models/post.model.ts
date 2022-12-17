@@ -1,13 +1,13 @@
 import { User } from './user.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Schema as MongooseSchema, Types } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { Comment } from './comment.model';
 import { Like } from './like.model';
 import { Community } from './community.model';
 import { Contribution } from './contribution.model';
 
-export type PostDocument = Post & Document;
+export type PostDocument = HydratedDocument<Post, {}, { likes: number[] }>;
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Post {
@@ -26,10 +26,6 @@ export class Post {
   @ApiProperty()
   @Prop({ default: 0 })
   number_of_comments: number;
-
-  @ApiProperty()
-  @Prop({ default: false })
-  liked: boolean;
 
   @ApiProperty()
   @Prop({ required: true })
@@ -83,4 +79,10 @@ PostSchema.virtual('first_comments', {
   localField: 'id',
   foreignField: 'post_id',
   autopopulate: true
+})
+
+PostSchema.virtual('likes', {
+  ref: 'Like',
+  localField: 'id',
+  foreignField: 'post_id'
 })

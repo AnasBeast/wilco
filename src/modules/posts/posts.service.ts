@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
@@ -10,6 +10,7 @@ import { CommentService } from '../comments/comments.service';
 import { S3Service } from '../files/s3.service';
 import { FlightService } from '../flights/flights.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
+import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
 
 @Injectable()
 export class PostsService {
@@ -19,7 +20,9 @@ export class PostsService {
         private readonly s3service: S3Service,
         private readonly commentsService: CommentService,
         private readonly postAirportsService: Post_Airports_Service,
-        private readonly postFlightService: FlightService
+        private readonly postFlightService: FlightService,
+        @InjectModel(Like.name)
+        private readonly likeModel: Model<LikeDocument>
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: boolean = true, community_tags?: string[], hashtags?: string[]) {
@@ -65,6 +68,30 @@ export class PostsService {
     
       async delete(id: string): Promise<Post> {
         return await this.postsModel.findByIdAndDelete(id).exec();
+      }
+
+      async likePost(id: string, pilot_id: number) {
+        const post = await this.postsModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        if(!post) {
+          throw new NotFoundException();
+        }
+        if(!post.likes.includes(pilot_id)) {
+          await this.likeModel.create({ pilot_id, post_id: post.id });
+          const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes + 1 }, { returnDocument: 'after' });
+          return { ...updatedPost, liked: true }
+        } else {
+          throw new UnprocessableEntityException();
+        }
+      }
+
+      async unlikePost(id: string, pilot_id: number) {
+        const post = await this.postsModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        if(!post || !post.likes.includes(pilot_id)) {
+          throw new NotFoundException();
+        }
+        await this.likeModel.findOneAndDelete({ pilot_id, post_id: post.id });
+        const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes - 1 }, { returnDocument: 'after' });
+        return { ...updatedPost, liked: false }
       }
 
       // comments
