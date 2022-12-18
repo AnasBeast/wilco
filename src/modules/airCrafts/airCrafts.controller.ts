@@ -1,16 +1,9 @@
-import { ADDED } from './../../common/constants/response.constants';
-import { AirCraftEntity } from './../../common/entities/airCraft.entity';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiAcceptedResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
-import { CreateAirCraftDto, UpdateAirCraftDto } from './dto/create.dto';
-import { AirCraftService } from './airCrafts.service';
-import { Response } from 'express';
-import { Types } from 'mongoose';
-import { AirCraft } from 'src/database/mongo/models/airCraft.model';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FlightEntity } from 'src/common/entities/flight.entity';
-import { errors } from 'src/common/helpers/responses/error.helper';
+import { AirCraftService } from './airCrafts.service';
+import { UpdateAirCraftDto } from './dto/create.dto';
 
 @ApiTags('Aircrafts')
 @Controller('aircrafts')

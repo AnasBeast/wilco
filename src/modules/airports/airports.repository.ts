@@ -10,7 +10,6 @@ export class AirportsRepository {
   constructor(@InjectModel(Airport.name) private airportModel: Model<AirportDocument>) {}
 
   async getAirportByFilter(filter: FilterQuery<Airport>): Promise<AirportEntity> {
-    console.log(filter);
     return await this.airportModel.findOne(filter).lean();
   }
 

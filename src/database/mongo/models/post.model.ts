@@ -1,11 +1,6 @@
-import { User } from './user.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
-import { Comment } from './comment.model';
-import { Like } from './like.model';
-import { Community } from './community.model';
-import { Contribution } from './contribution.model';
+import { HydratedDocument } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post, {}, { likes: number[] }>;
 

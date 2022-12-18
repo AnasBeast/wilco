@@ -26,7 +26,7 @@ import { PilotsRepository } from './pilots.repository';
 import { Pilot } from 'src/schemas/pilot.schema';
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
-import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
+import { AircraftObjectDTO, CreateAirCraftDto } from '../airCrafts/dto/create.dto';
 import { AirCraftService } from '../airCrafts/airCrafts.service';
 import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 import { FlightService } from '../flights/flights.service';
@@ -178,9 +178,13 @@ export class PilotsService {
   // aircrafts
 
   // create aircraft
-  async createAircraft(body: CreateAirCraftDto, pilotId: number) {
+  async createAircraft(body: AircraftObjectDTO, pilotId: number) {
+    const aircraftExist = await this.aircraftsService.getAircraftByFilter({ tail_number: body.tail_number });
+    if(aircraftExist) {
+      throw new BadRequestException();
+    }
     const aircraft = await this.aircraftsService.create(body, pilotId);
     if (!aircraft) throw new BadRequestException();
-    return await this.pilotsRepository.getMeById(pilotId);
+    return aircraft;
   }
 }

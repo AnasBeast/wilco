@@ -111,7 +111,6 @@ export class PilotsController {
 
   @ApiTags('Aircrafts')
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('base_64_picture'))
   @ApiCreatedResponse({ description: 'AirCraft has been successfully created.', type: AirCraftEntity })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @HttpCode(HttpStatus.OK)
@@ -119,6 +118,6 @@ export class PilotsController {
   @ApiOperation({ summary: 'Creates a aircraft' ,description:"Creates an aircraft"})
   @Post("/me/aircrafts")
   async create(@Body() body: CreateAirCraftDto, @Req() req) {
-    return await this.pilotsService.createAircraft(body, req.user.pilotId);
+    return await this.pilotsService.createAircraft(body.aircraft, req.user.pilotId);
   }
 }

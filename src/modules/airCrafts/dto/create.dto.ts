@@ -1,16 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsMongoId, IsNotEmpty, IsNotEmptyObject, IsObject, IsOptional, ValidateNested } from 'class-validator';
-import { Types } from "mongoose";
+import { IsBase64, IsNotEmpty, IsNotEmptyObject, IsOptional, Validate, ValidateNested } from 'class-validator';
+import { IsValidTailNumber } from './validate-tail-number';
 
 export class AircraftObjectDTO {
   @IsNotEmpty()
   @ApiProperty({ example: 'make and model example' })
   readonly make_and_model: string;
 
+  @Validate(IsValidTailNumber)
   @IsNotEmpty()
   @ApiProperty({ example: 'tail number example' })
   readonly tail_number: string;
+
+  @IsOptional()
+  @IsBase64()
+  readonly base_64_picture: string;
 }
 
 export class CreateAirCraftDto {
@@ -28,6 +33,7 @@ export class UpdateAircraftObjectDTO {
 
   @IsOptional()
   @IsNotEmpty()
+  @Validate(IsValidTailNumber)
   @ApiProperty({ example: 'tail number example' })
   tail_number: string;
 }

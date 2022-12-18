@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Date, Schema as MongooseSchema } from 'mongoose';
-import { AirCraft } from './airCraft.model';
-import { Airport } from './airport.model';
+import { Date } from 'mongoose';
+
 
 export type FlightDocument = Post_Flights & Document;
 
