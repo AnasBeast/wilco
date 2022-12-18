@@ -2,7 +2,6 @@ import { FETCHED } from '../../common/constants/response.constants';
 import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
-import { EditUserDto } from 'src/dto/user/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { CreateDeviceDto } from 'src/dto/device/create-device.dto';

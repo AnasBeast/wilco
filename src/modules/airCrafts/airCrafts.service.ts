@@ -1,11 +1,11 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from "axios";
-import { Types } from "mongoose";
 import { errors } from 'src/common/helpers/responses/error.helper';
-import { PilotsRepository } from '../pilots/pilots.repository';
 import { S3Service } from './../files/s3.service';
 import { AirCraftCreate, AirCraftsRepository } from './airCrafts.repository';
-import { CreateAirCraftDto, UpdateAirCraftDto, UpdateAircraftObjectDTO } from './dto/create.dto';
+import { AircraftObjectDTO, UpdateAirCraftDto, UpdateAircraftObjectDTO } from './dto/create.dto';
+import { FilterQuery } from 'mongoose';
+import { AirCraft } from 'src/database/mongo/models/airCraft.model';
 
 const api = axios.create({
   baseURL: "https://aeroapi.flightaware.com/aeroapi",
@@ -20,20 +20,24 @@ const api = axios.create({
 export class AirCraftService {
   constructor(private airCraftsRepository: AirCraftsRepository, private s3Service: S3Service) {}
 
-  async create(body: CreateAirCraftDto, pilot_id: number, file?: Express.Multer.File) {
+  async create(aircraft: AircraftObjectDTO, pilot_id: number) {
     const aircraftInput: AirCraftCreate = {
       pilot_id,
-      ...body.aircraft
+      ...aircraft
     };
     
-    if(file) {
-      const resUpload = await this.s3Service.uploadFile(file);
+    if(aircraft.base_64_picture) {
+      const resUpload = await this.s3Service.uploadFile(aircraft.base_64_picture);
       if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
       aircraftInput.aicraft_picture = resUpload.location
       aircraftInput.aircraft_picture_key = resUpload.key
     }
  
     return await this.airCraftsRepository.create(aircraftInput);
+  }
+
+  async getAircraftByFilter(filter: FilterQuery<AirCraft>) {
+    return await this.airCraftsRepository.getAirCraftByFilter(filter);
   }
 
   // async getAircraftsByPilotEmail(email: string) {
@@ -55,7 +59,6 @@ export class AirCraftService {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) {
-      console.log(aircraft);
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
     if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER);
@@ -95,7 +98,7 @@ export class AirCraftService {
     
   }
 
-  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number, file?: Express.Multer.File) {
+  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) throw new ForbiddenException();
@@ -110,14 +113,14 @@ export class AirCraftService {
       newUpdatedAircarft.tail_number = updatedAircraft.tail_number;
     }
 
-    if(file) {
-      if(aircraft.aircraft_picture_key) {
-        await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
-      }
-      const resUpload = await this.s3Service.uploadFile(file);
-      if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
-      return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
-    }
+    // if(file) {
+    //   if(aircraft.aircraft_picture_key) {
+    //     await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
+    //   }
+    //   const resUpload = await this.s3Service.uploadFile(file);
+    //   if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
+    //   return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
+    // }
 
     return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft }, { returnDocument: 'after' });
   }

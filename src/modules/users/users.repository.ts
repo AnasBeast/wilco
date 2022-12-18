@@ -34,7 +34,6 @@ export class UsersRepository {
   }
 */
   async getPopulatedUserById(id: string) {
-    console.log(id);
     return await this.userModel.findOne({id: id}).populate("pilot").lean();
   }
 /*

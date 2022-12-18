@@ -12,7 +12,6 @@ export class DeviceService {
   ) {}
   
   async createOrUpdateDevice(user_id: number, token: string) {
-    console.log(user_id);
     const device = await this.model.findOne({ user_id });
     if(!device) {
       const device = await this.model.create({ token, user_id })
