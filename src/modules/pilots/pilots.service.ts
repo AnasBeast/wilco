@@ -141,13 +141,19 @@ export class PilotsService {
     if (id != pilotId) {
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
-    const pilot = await this.pilotsRepository.getPilotDocumentById(id);
+    const pilot = await this.pilotsRepository.getPilotById(id);
     if (!pilot) {
       throw new NotFoundException(errors.PILOT_NOT_FOUND);
     }
     const FoundAirports = await this.airportService.getAirportsByFilter({ icao: { $in: airports } }, ['icao']);
-    pilot.airports = FoundAirports.map((airport) => airport.icao);
-    return await pilot.save();
+    FoundAirports.map((airport) => {
+      if (!pilot.airports.includes(airport.icao)) {
+        pilot.airports.push(airport.icao);
+      }
+    })
+    const updatedPilot = await this.pilotsRepository.editPilot(pilotId, { airports: pilot.airports });
+    const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
+    return { ...updatedPilot, latest_flights };
   }
 
   async searchByName(pattern: string) {
