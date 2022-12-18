@@ -1,21 +1,17 @@
-import { ADDED, FETCHED, REGISTERED } from '../../common/constants/response.constants';
-import { Body, Controller, Request, Delete, Get, HttpCode, HttpStatus, Param, Patch, Req, UploadedFile, UseInterceptors, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiParam, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
-import { EditUserDto } from 'src/dto/user/update-user.dto';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Req, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
-import { GetPilotsDTO } from 'src/dto/pilot/get-pilots.dto';
-import { PilotsService } from './pilots.service';
-import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
-import { AirCraftService } from '../airCrafts/airCrafts.service';
-import { AirCraft } from 'src/database/mongo/models/airCraft.model';
-import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
-import { Pilot } from 'src/database/mongo/models/pilot.model';
-import { PaginationDTO } from 'src/dto/pagination.dto';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Pagination } from 'src/common/decorators/response/pagination.decorator';
-import { SignUpDto } from 'src/authentication/dto/sign-up.dto';
+import { ResponseMessage } from 'src/common/decorators/response/response.decorator';
+import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
+import { PaginationDTO } from 'src/dto/pagination.dto';
+import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
 import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
+import { EditPilotDto, PilotPatchDto } from 'src/dto/user/update-user.dto';
+import { ADDED, FETCHED, REGISTERED } from '../../common/constants/response.constants';
+import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
+import { PilotsService } from './pilots.service';
 
 @Controller('pilots')
 export class PilotsController {
@@ -59,11 +55,10 @@ export class PilotsController {
   // map to PATCH /1/pilots/{id} in old api
   @ApiTags('Pilots')
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   @ApiOperation({ summary: 'Edit Pilot Profile' , description:"Gets pilot's profile" })
-  async editPilotProfile(@Param('id') id: string, @Body() editUserDto: EditUserDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    return await this.pilotsService.editPilotById(id, editUserDto, req.user.pilotId, file);
+  async editPilotProfile(@Param('id') id: string, @Body() editUserDto: EditPilotDto, @Req() req) {
+    return await this.pilotsService.editPilotById(id, plainToClass(PilotPatchDto, editUserDto.pilot, { strategy: "excludeAll" }), req.user.pilotId);
   }
 
   @ApiTags('Pilots')
@@ -123,7 +118,7 @@ export class PilotsController {
   @ResponseMessage(ADDED)
   @ApiOperation({ summary: 'Creates a aircraft' ,description:"Creates an aircraft"})
   @Post("/me/aircrafts")
-  async create(@Body() body: CreateAirCraftDto, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    return await this.pilotsService.createAircraft(body, req.user.pilotId, file);
+  async create(@Body() body: CreateAirCraftDto, @Req() req) {
+    return await this.pilotsService.createAircraft(body, req.user.pilotId);
   }
 }

@@ -1,8 +1,6 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from "axios";
-import { Types } from "mongoose";
 import { errors } from 'src/common/helpers/responses/error.helper';
-import { PilotsRepository } from '../pilots/pilots.repository';
 import { S3Service } from './../files/s3.service';
 import { AirCraftCreate, AirCraftsRepository } from './airCrafts.repository';
 import { CreateAirCraftDto, UpdateAirCraftDto, UpdateAircraftObjectDTO } from './dto/create.dto';
@@ -95,7 +93,7 @@ export class AirCraftService {
     
   }
 
-  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number, file?: Express.Multer.File) {
+  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number) {
     const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) throw new ForbiddenException();
@@ -110,14 +108,14 @@ export class AirCraftService {
       newUpdatedAircarft.tail_number = updatedAircraft.tail_number;
     }
 
-    if(file) {
-      if(aircraft.aircraft_picture_key) {
-        await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
-      }
-      const resUpload = await this.s3Service.uploadFile(file);
-      if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
-      return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
-    }
+    // if(file) {
+    //   if(aircraft.aircraft_picture_key) {
+    //     await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
+    //   }
+    //   const resUpload = await this.s3Service.uploadFile(file);
+    //   if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
+    //   return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
+    // }
 
     return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft }, { returnDocument: 'after' });
   }

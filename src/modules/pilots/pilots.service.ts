@@ -14,7 +14,6 @@ import { UserEntity } from 'src/common/entities/user.entity';
 import { User, UserDocument } from 'src/database/mongo/models/user.model';
 import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
 import { GetPilotsDTO } from 'src/dto/pilot/get-pilots.dto';
-import { EditUserDto } from 'src/dto/user/update-user.dto';
 import fb_admin from 'src/main';
 import admin from 'src/main';
 import { AirportsService } from '../airports/airports.service';
@@ -31,6 +30,7 @@ import { CreateAirCraftDto } from '../airCrafts/dto/create.dto';
 import { AirCraftService } from '../airCrafts/airCrafts.service';
 import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 import { FlightService } from '../flights/flights.service';
+import { PilotPatchDto } from 'src/dto/user/update-user.dto';
 
 @Injectable()
 export class PilotsService {
@@ -104,27 +104,28 @@ export class PilotsService {
   //   return await this.pilotsRepository.getUserDocumentByFilter({ email });
   // }
 
-  async editPilotById(id: string, editedUser: UpdateQuery<User>, pilotId: number, file?: Express.Multer.File) {
+  async editPilotById(id: string, editedUser: PilotPatchDto, pilotId: number) {
     if (id !== 'me' && Number.parseInt(id) !== pilotId) {
       throw new UnauthorizedException();
     }
     const pilot = await this.pilotsRepository.getMeById(pilotId);
-    if (file) {
+    if (editedUser.profile_picture_base64) {
       if (pilot.profile_picture_key) {
         await this.s3Service.deleteFile(pilot.profile_picture_key);
       }
-      const resUpload = await this.s3Service.uploadFile(file);
+      const resUpload = await this.s3Service.uploadFile(editedUser.profile_picture_base64);
       if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
       const updatedPilot = await this.pilotsRepository.editPilot(pilotId, {
         ...editedUser,
         profile_picture_key: resUpload.key,
         profile_picture_url: resUpload.location,
       });
-      return { pilot: updatedPilot };
+      const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
+      return {...updatedPilot, latest_flights};
     }
-
     const updatedPilot = await this.pilotsRepository.editPilot(pilotId, editedUser);
-    return { pilot: updatedPilot };
+    const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
+    return {...updatedPilot, latest_flights};
   }
 
   //delete all data!
@@ -177,8 +178,8 @@ export class PilotsService {
   // aircrafts
 
   // create aircraft
-  async createAircraft(body: CreateAirCraftDto, pilotId: number, file?: Express.Multer.File) {
-    const aircraft = await this.aircraftsService.create(body, pilotId, file);
+  async createAircraft(body: CreateAirCraftDto, pilotId: number) {
+    const aircraft = await this.aircraftsService.create(body, pilotId);
     if (!aircraft) throw new BadRequestException();
     return await this.pilotsRepository.getMeById(pilotId);
   }

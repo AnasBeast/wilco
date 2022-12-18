@@ -35,8 +35,8 @@ export class AirCraftController {
   @Patch('/:id')
   @UseInterceptors(FileInterceptor('base_64_picture'))
   @ApiOperation({ summary: 'Edit Pilot Aircraft', description:"Edits the pilot's aircraft." })
-  async editAircraft(@Body() body: UpdateAirCraftDto, @Param('id') id: number, @Req() req, @UploadedFile() file?: Express.Multer.File) {
-    return await this.airCraftService.editAircraft(body, id, req.user.pilotId, file);
+  async editAircraft(@Body() body: UpdateAirCraftDto, @Param('id') id: number, @Req() req) {
+    return await this.airCraftService.editAircraft(body, id, req.user.pilotId);
   }
 
   @Post(':id/remove')

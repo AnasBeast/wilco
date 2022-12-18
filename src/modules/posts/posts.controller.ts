@@ -45,8 +45,8 @@ export class PostsController {
     })
     @Pagination(true)
     @Get()
-    async getFeedPosts(@Body() { feed, community_tags, hashtags }: FeedDTO, @Query() { page, per_page }: PaginationDTO, @Req() req) {
-        return await this.postsService.getFeedPosts(Number.parseInt(page), Number.parseInt(per_page), req.user.pilotId, feed, community_tags, hashtags);;
+    async getFeedPosts(@Query() { feed, community_tags, hashtags }: FeedDTO, @Query() { page, per_page }: PaginationDTO, @Req() req) {
+        return await this.postsService.getFeedPosts(Number.parseInt(page), Number.parseInt(per_page), req.user.pilotId, feed, community_tags, hashtags);
     }
 
     @ApiTags("Posts")
