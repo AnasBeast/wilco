@@ -9,7 +9,7 @@ export class PilotsRepository {
   constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>) {}
 
   async getMeById(id: number) {
-    return await this.pilotModel.findOne({ id }, {}, { populate: ["aircrafts", "certificates", "ratings", "roles"] }).select("-_id -__v")
+    return await this.pilotModel.findOne({ id }, {}, { populate: ["aircrafts", "certificates", "ratings", "roles"] }).select("-_id -__v").lean()
   }
 
   async getMeByEmail(email: string): Promise<PilotDocument> {
