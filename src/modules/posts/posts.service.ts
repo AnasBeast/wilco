@@ -1,9 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
 import { Post, PostDocument } from 'src/database/mongo/models/post.model';
-import { CreateCommentDTO } from 'src/dto/comment/create-comment.dto';
+import { CommentBodyDTO, CreateCommentDTO } from 'src/dto/comment/create-comment.dto';
 import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { CommentService } from '../comments/comments.service';
@@ -11,6 +11,7 @@ import { S3Service } from '../files/s3.service';
 import { FlightService } from '../flights/flights.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
 import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PostsService {
@@ -22,7 +23,8 @@ export class PostsService {
         private readonly postAirportsService: Post_Airports_Service,
         private readonly postFlightService: FlightService,
         @InjectModel(Like.name)
-        private readonly likeModel: Model<LikeDocument>
+        private readonly likeModel: Model<LikeDocument>,
+        private readonly notificationService: NotificationsService
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
@@ -76,8 +78,9 @@ export class PostsService {
           throw new NotFoundException();
         }
         if(!post.likes.includes(pilot_id)) {
-          await this.likeModel.create({ pilot_id, post_id: post.id });
-          const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes + 1 }, { returnDocument: 'after' });
+          const like = await this.likeModel.create({ pilot_id, post_id: post.id });
+          await this.notificationService.pushNotification("Like", like.id, post.pilot_id, 1);
+          const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes + 1 }, { returnDocument: 'after' }).lean();
           return { ...updatedPost, liked: true }
         } else {
           throw new UnprocessableEntityException();
@@ -90,34 +93,35 @@ export class PostsService {
           throw new NotFoundException();
         }
         await this.likeModel.findOneAndDelete({ pilot_id, post_id: post.id });
-        const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes - 1 }, { returnDocument: 'after' });
+        const updatedPost = await this.postsModel.findByIdAndUpdate(post._id, { number_of_likes: post.number_of_likes - 1 }, { returnDocument: 'after' }).lean();
         return { ...updatedPost, liked: false }
       }
 
       // comments
-      async createComment(postId: string, commentInput: CreateCommentDTO, userId: string) {
-        // const post = await this.postsModel.findById(postId);
-        // if(!post) throw new BadRequestException();
-        // if (!commentInput.parentCommentId) {
-        //   const comment = await this.commentsService.createComment({ ...commentInput, creator: userId, post: postId })
-        //   post.number_of_comments++;
-        //   post.comments.push(comment._id);
-        //   return post.save();
-        // }
-        // const parentComment = await this.commentsService.getCommentById(commentInput.parentCommentId);
-        // if(!parentComment) throw new BadRequestException();
-        // const reply = await this.commentsService.createReply({ ...commentInput, creator: userId, post: postId });
-        // post.number_of_comments++;
-        // parentComment.replies.push(reply._id);
-        // parentComment.save();
-        // return post.save();
+      async createComment(id: string, commentInput: CommentBodyDTO, pilot_id: number) {
+        const post = await this.postsModel.findOne({ id }).lean();
+        if(!post) throw new NotFoundException();
+        if (!commentInput.parent_comment_id) {
+          const comment = await this.commentsService.createComment({ ...commentInput, pilot_id, post_id: post.id });
+          const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
+          const populatedComment = await this.commentsService.getCommentById(comment.id);
+          return { ...populatedComment, post: updatedPost };
+        }
+        const parentComment = await this.commentsService.getCommentById(commentInput.parent_comment_id);
+        if(!parentComment) throw new NotFoundException();
+        const reply = await this.commentsService.createReply({ ...commentInput, pilot_id, post_id: post.id });
+        const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
+        const populatedComment = await this.commentsService.getCommentById(reply.id);
+        return { ...populatedComment, post: updatedPost };
       }
 
       //get comments
-      async getComments(postId: string, page: number, per_page: number, pilotId: number) {
-        const post = await this.postsModel.findById(postId);
+      async getComments(id: string, page: number, per_page: number, pilot_id: number) {
+        const post = await this.postsModel.findOne({ id });
         if(!post) throw new NotFoundException(errors.POST_NOT_FOUND);
-        if (post.visibility !== "public" && post)
-        return await this.commentsService.getCommentsByPostId(postId, pilotId);
+        const comments = await this.commentsService.getCommentsByPostId(id, page, per_page);
+        const count = await this.commentsService.getCommentsCountByPostId(id);
+        const pages = Math.ceil(count / per_page)
+        return await { data: comments, pagination: { current: page, pages, first_page: (page - 1) * per_page === 0, last_page: page === pages } }
       }
 }

@@ -1,16 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Types } from "mongoose";
+import { Type } from "class-transformer";
+import { IsNotEmpty, IsNumber, IsOptional, ValidateNested } from "class-validator";
 
-export class CreateCommentDTO {
+export class CommentBodyDTO {
     @ApiProperty()
+    @IsNotEmpty()
     text: string;
 
     @ApiProperty()
-    parentCommentId?: Types.ObjectId;
-    
-    @ApiProperty()
-    hashtags?: Types.ObjectId[];
+    @IsOptional()
+    @IsNumber()
+    parent_comment_id?: number;
+}
 
+export class CreateCommentDTO {
     @ApiProperty()
-    mentioned_users?: Types.ObjectId[];
+    @ValidateNested()
+    @Type(() => CommentBodyDTO)
+    comment: CommentBodyDTO;
 }

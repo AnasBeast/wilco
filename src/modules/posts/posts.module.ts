@@ -12,6 +12,7 @@ import { Post_Airports_Module } from '../post_airports/post-airpots.module';
 import { FlightModule } from '../flights/flights.module';
 import { Like, LikeSchema } from 'src/database/mongo/models/like.model';
 import { AirCraft } from 'src/database/mongo/models/airCraft.model';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AirCraft } from 'src/database/mongo/models/airCraft.model';
         inject: [getConnectionToken()]
       }
     ]),
+    NotificationsModule,
     S3Module,
     Post_Airports_Module,
     FlightModule,

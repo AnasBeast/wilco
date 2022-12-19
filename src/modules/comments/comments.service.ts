@@ -1,10 +1,12 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { errors } from "src/common/helpers/responses/error.helper";
 import { Comment, CommentDocument } from "src/database/mongo/models/comment.model";
 import { CommentReply, CommentReplyDocument } from "src/database/mongo/models/commentReply.model";
 import { PostsService } from "../posts/posts.service";
+import { CommentLike, CommentLikeDocument } from "src/database/mongo/models/comment-like.model";
+import { CommentDislike, CommentDislikeDocument } from "src/database/mongo/models/comment-dislike.model";
 
 
 @Injectable()
@@ -15,7 +17,11 @@ export class CommentService {
         @InjectModel(CommentReply.name)
         private readonly commentReplyModel: Model<CommentReplyDocument>,
         @Inject(forwardRef(() => PostsService))
-        private readonly postsService: PostsService
+        private readonly postsService: PostsService,
+        @InjectModel(CommentLike.name)
+        private readonly commentLikeModel: Model<CommentLikeDocument>,
+        @InjectModel(CommentDislike.name)
+        private readonly commentDislikeModel: Model<CommentDislikeDocument>
     ) {}
 
     async createComment(input) {
@@ -26,14 +32,15 @@ export class CommentService {
         return await this.commentReplyModel.create(input);
     }
 
-    async getCommentById(commentId: Types.ObjectId) {
-        return await this.commentModel.findById(commentId);
+    async getCommentById(id: number) {
+        return await this.commentModel.findOne({ id }).populate("pilot").lean();
     }
 
-    async getReplyById(replyId: Types.ObjectId) {
-        return await this.commentReplyModel.findById(replyId);
+    async getReplyById(id: number) {
+        return await this.commentReplyModel.findOne({ id });
     }
 
+    // TODO: fix
     async deleteComment(commentId: string) {
         // const comment = await this.getCommentById(new Types.ObjectId(commentId));
         // const reply = await this.getReplyById(new Types.ObjectId(commentId));
@@ -59,63 +66,54 @@ export class CommentService {
         // return await this.commentModel.deleteOne({ _id: commentId });
     }
 
-    async likeComment(commentId: string, userId: string) {
-        const comment = await this.commentModel.findById(commentId);
-        const reply = await this.commentReplyModel.findById(commentId);
+    async likeComment(id: string, pilot_id: number) {
+        const comment = await this.commentModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        const reply = await this.commentReplyModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
 
-        if((reply && this.arrayHasValue(reply.likes, userId)) || (comment && this.arrayHasValue(comment.likes, userId))) {
-            return comment ? comment : reply;
+        if (!comment && !reply) {
+            throw new NotFoundException();
         }
 
-        if(!comment && reply && !this.arrayHasValue(reply.likes, userId)) {
-            reply.number_of_likes++;
-            reply.likes.push(new Types.ObjectId(userId));
-            return reply.save();
-        } else if (!reply && comment && !this.arrayHasValue(comment.likes, userId)) {
-            comment.number_of_likes++;
-            comment.likes.push(new Types.ObjectId(userId));
-            return comment.save();
+        if(comment && !comment.likes.includes(pilot_id)) {
+            await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            console.log(comment.number_of_likes, typeof comment.number_of_likes);
+            return await this.commentModel.findOneAndUpdate({ id }, { number_of_likes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
         }
 
-        throw new NotFoundException();
+        if(reply && !reply.likes.includes(pilot_id)) {
+            await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            return await this.commentReplyModel.findOneAndUpdate({ id }, { number_of_likes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
+        }
+
+        throw new UnprocessableEntityException();
     }
 
-    async dislikeComment(commentId: string, userId: string) {
-        const comment = await this.commentModel.findById(commentId);
-        const reply = await this.commentReplyModel.findById(commentId);
+    async dislikeComment(id: string, pilot_id: number) {
+        const comment = await this.commentModel.findOne({ id }, {}, { populate: { path: "dislikes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        const reply = await this.commentReplyModel.findOne({ id }, {}, { populate: { path: "dislikes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
 
-        if((reply && this.arrayHasValue(reply.dislikes, userId)) || (comment && this.arrayHasValue(comment.dislikes, userId))) {
-            return comment ? comment : reply;
+        if (!comment && !reply) {
+            throw new NotFoundException();
         }
 
-        if(!comment && reply) {
-            reply.number_of_dislikes++;
-            reply.dislikes.push(new Types.ObjectId(userId));
-            return reply.save();
-        } else if (!reply && comment) {
-            comment.number_of_dislikes++;
-            comment.dislikes.push(new Types.ObjectId(userId));
-            return comment.save();
+        if(comment && !comment.dislikes.includes(pilot_id)) {
+            await this.commentDislikeModel.create({ pilot_id, comment_id: comment.id });
+            return await this.commentModel.findOneAndUpdate({ id }, { number_of_dislikes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
         }
 
-        throw new NotFoundException();
+        if(reply && !reply.dislikes.includes(pilot_id)) {
+            await this.commentDislikeModel.create({ pilot_id, comment_id: comment.id });
+            return await this.commentReplyModel.findOneAndUpdate({ id }, { number_of_dislikes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
+        }
+
+        throw new UnprocessableEntityException();
     }
 
-    arrayHasValue(array: Types.ObjectId[], value: string) {
-        for(let i = 0; i < array.length; i++) {
-            if (array[i].toString() === value) {
-                return true
-            }
-        }
-
-        return false
+    async getCommentsByPostId(post_id: string, page: number, per_page: number) {
+        return await this.commentModel.find({ post_id }, {}, { skip: (page - 1) * per_page, limit: per_page, populate: "pilot" }).lean();
     }
 
-    async getCommentsByPostId(postId: string, pilotId: number) {
-        // const post = await this.commentModel.find({ post: postId });
-        // 
-
-        // if (post)
-
+    async getCommentsCountByPostId(post_id: string) {
+        return await this.commentModel.find({ post_id }).count();
     }
 }

@@ -11,21 +11,22 @@ export class CommentController {
         private readonly commentService: CommentService
     ) {}
 
-    @Delete(":id")
-    @ApiOperation({ summary: 'Delete a comment' ,description:"Deletes a comment. Users can only delete their own comments."})
-    async deleteComment(@Param('id') commentId: string) {
-        return await this.commentService.deleteComment(commentId);
+    @Delete(":comment_id")
+    @ApiOperation({ summary: 'Delete a comment', description:"Deletes a comment. Users can only delete their own comments."})
+    async deleteComment(@Param('comment_id') comment_id: string) {
+        return await this.commentService.deleteComment(comment_id);
     }
 
-    @Post("/:id/like")
+    @Post("/:comment_id/like")
     @ApiOperation({ summary: 'Like a comment' })
-    async likeComment(@Param("id") commentId: string, @Req() req) {
-        return await this.commentService.likeComment(commentId, req.user._id);
+    async likeComment(@Param("comment_id") comment_id: string, @Req() req) {
+        console.log(comment_id);
+        return await this.commentService.likeComment(comment_id, req.user.pilotId);
     }
 
-    @Post("/:id/dislike")
+    @Post("/:comment_id/dislike")
     @ApiOperation({ summary: 'Disike a comment' })
-    async dislikeComment(@Param("id") commentId: string, @Req() req) {
-        return await this.commentService.dislikeComment(commentId, req.user._id);
+    async dislikeComment(@Param("comment_id") comment_id: string, @Req() req) {
+        return await this.commentService.dislikeComment(comment_id, req.user.pilotId);
     }
 }
