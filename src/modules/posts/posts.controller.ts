@@ -113,17 +113,18 @@ export class PostsController {
 
     // commentes
     @ApiTags('Comments')
-    @Get("/:post_id/comments")
     @ApiOperation({ summary: "Get post's comments", description: "Gets a post's comments with pagination" })
-    async getComments(@Param('post_id') post_id: string, @Query('page') page: number, @Query('per_page') per_page: number, @Req() req) {
-        return await this.postsService.getComments(post_id, page, per_page, req.user.pilotId);
+    @Get("/:post_id/comments")
+    @Pagination(true)
+    async getComments(@Param('post_id') post_id: string, @Query('page') page: string, @Query('per_page') per_page: string, @Req() req) {
+        return await this.postsService.getComments(post_id, Number.parseInt(page), Number.parseInt(per_page), req.user.pilotId);
     }
 
     @ApiTags('Comments')
     @Post("/:id/comments")
-    @ApiOperation({ summary: 'Post a comment' ,description:"Creates a comment to a post"})
+    @ApiOperation({ summary: 'Post a comment', description:"Creates a comment to a post"})
     async createComment(@Param('id') postId: string, @Body() createCommentDTO: CreateCommentDTO, @Req() req) {
-        return await this.postsService.createComment(postId, createCommentDTO, req.user._id);
+        return await this.postsService.createComment(postId, createCommentDTO.comment, req.user.pilotId);
     }
 
 }

@@ -21,6 +21,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformationInterceptor } from './authentication/interceptors/transform.interceptor';
 import { FlightModule } from './modules/flights/flights.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 
 @Module({
@@ -43,6 +44,7 @@ import { CredentialsModule } from './modules/credentials/credentials.module';
     AuthModule, 
     RolesModule, 
     FlightModule,
+    NotificationsModule,
     CredentialsModule,
     MongoDBModule, 
   ],
