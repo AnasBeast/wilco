@@ -8,9 +8,28 @@ import { Types } from 'mongoose';
 import { Pilot } from 'src/database/mongo/models/pilot.model';
 import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
 import fb_admin from 'src/main';
+import { SignUpDto } from 'src/authentication/dto/sign-up.dto';
 
 @Injectable()
 export class UsersService {
+
+  constructor(private usersRepository: UsersRepository) {}
+
+  async register({ email, password }: SignUpDto) {
+    let firebase_uid: string;
+    try {
+      const user = await fb_admin.auth().createUser({
+        email,
+        password
+      });
+      firebase_uid = user.uid;
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    const newUser = await this.usersRepository.createNewUser({ email, firebase_uid });
+    return newUser;
+  }
 
   async login(token: string): Promise<TokenResponseDto> {
     let firebase_uid: string;

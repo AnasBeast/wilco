@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type AirCraftDocument = HydratedDocument<AirCraft>;
 
 @Schema({ timestamps: true })
 export class AirCraft {
   @ApiProperty()
-  @Prop({ type: MongooseSchema.Types.Number, ref: 'Pilot', required: true })
+  @Prop({ required: true })
   pilot_id: number
 
   @ApiProperty()
@@ -19,7 +19,7 @@ export class AirCraft {
   tail_number: string;
 
   @ApiProperty()
-  @Prop()
+  @Prop({ default: null })
   aicraft_picture?: string;
 
   @ApiProperty()

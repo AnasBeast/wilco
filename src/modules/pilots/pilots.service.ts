@@ -61,15 +61,27 @@ export class PilotsService {
   }
 
   // CREATE PILOT
-  async createPilot({ pilot }: CreatePilotDto) {
+  async createPilot({ pilot }: CreatePilotDto, userId: number) {
     const roleExist = await this.rolesService.getRolesByFilter({ id: { $in: pilot.roles } }, { select: 'id' });
     if (!roleExist || pilot.roles.length !== roleExist.length) throw new BadRequestException(errors.ROLE_NOT_EXIST);
 
-    const createdRoles = await this.rolesService.createCustomRoles(pilot.custom_roles);
-    return await this.pilotsRepository.createPilot({
-      ...{ first_name: pilot.first_name, last_name: pilot.last_name },
-      roles_ids: [...pilot.roles, ...createdRoles.map((role: any) => role.id)],
-    });
+    let createdRoles;
+    let newPilot;
+    if (pilot.custom_roles) {
+      createdRoles = await this.rolesService.createCustomRoles(pilot.custom_roles);
+      newPilot = await this.pilotsRepository.createPilot({
+        ...{ first_name: pilot.first_name, last_name: pilot.last_name },
+        roles_ids: [...pilot.roles, ...createdRoles.map((role: any) => role.id)],
+      });
+    }else {
+      newPilot = await this.pilotsRepository.createPilot({
+        ...{ first_name: pilot.first_name, last_name: pilot.last_name },
+        roles_ids: [...pilot.roles],
+      });
+    }
+    
+    await this.usersRepository.addPilotIdToUser(userId, newPilot.id);
+    return newPilot;
   }
 
   // GET PILOT BY ID OR EMAIL

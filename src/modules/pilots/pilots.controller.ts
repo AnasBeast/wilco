@@ -36,8 +36,8 @@ export class PilotsController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(REGISTERED)
   @ApiOperation({ summary: 'Create new pilot' })
-  async createPilot(@Body() body: CreatePilotDto) {
-    return await this.pilotsService.createPilot(body);
+  async createPilot(@Body() body: CreatePilotDto, @Req() req) {
+    return await this.pilotsService.createPilot(body, req.user.userId);
   }
 
   // map to GET /1/pilots/{id} in old api
