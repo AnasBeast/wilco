@@ -1,21 +1,18 @@
-import { PilotsService } from './pilots.service';
-import { S3Module } from '../files/s3.module';
-import { RolesModule } from '../roles/roles.module';
-import { User, UserSchema } from '../../database/mongo/models/user.model';
-import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
-import { IsUserAlreadyExist } from './UserExists';
-import { AirportsModule } from '../airports/airports.module';
-import { CommunitiesModule } from '../communities/communities.module';
-import { CommunityService } from '../communities/community.service';
-import { PilotsController } from './pilots.controller';
-import { PilotsRepository } from './pilots.repository';
-import { UsersModule } from '../users/users.module';
-import { AirCraftModule } from '../airCrafts/airCrafts.module';
+import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import * as AutoIncrementFactory from "mongoose-sequence";
 import { Pilot, PilotSchema } from 'src/database/mongo/models/pilot.model';
+import { AirCraftModule } from '../airCrafts/airCrafts.module';
+import { AirportsModule } from '../airports/airports.module';
+import { CommunitiesModule } from '../communities/communities.module';
+import { S3Module } from '../files/s3.module';
 import { FlightModule } from '../flights/flights.module';
+import { RolesModule } from '../roles/roles.module';
+import { UsersModule } from '../users/users.module';
+import { PilotsController } from './pilots.controller';
+import { PilotsRepository } from './pilots.repository';
+import { PilotsService } from './pilots.service';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -30,7 +27,7 @@ import { FlightModule } from '../flights/flights.module';
     }
   ]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule, FlightModule],
   controllers: [PilotsController],
-  providers: [PilotsService, PilotsRepository, IsUserAlreadyExist],
+  providers: [PilotsService, PilotsRepository],
   exports: [PilotsService, PilotsRepository],
 })
 export class PilotsModule {}

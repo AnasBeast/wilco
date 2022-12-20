@@ -23,7 +23,7 @@ export class AirCraftService {
   async create(aircraft: AircraftObjectDTO, pilot_id: number) {
     const aircraftInput: AirCraftCreate = {
       pilot_id,
-      ...aircraft
+      ...aircraft,
     };
     
     if(aircraft.base_64_picture) {

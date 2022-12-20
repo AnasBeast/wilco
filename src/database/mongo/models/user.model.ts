@@ -7,11 +7,11 @@ export type UserDocument = HydratedDocument<User>;
 @Schema({ timestamps: true })
 export class User {
   @ApiProperty()
-  @Prop()
+  @Prop({ required: true })
   firebase_uid: string;
 
   @ApiProperty()
-  @Prop({ unique: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @ApiProperty()
@@ -30,5 +30,4 @@ UserSchema.virtual('pilot', {
   localField: 'pilot_id',
   foreignField: 'id',
   justOne: true,
-
 })

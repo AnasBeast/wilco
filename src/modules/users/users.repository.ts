@@ -20,6 +20,18 @@ export class UsersRepository {
     return await this.userModel.findById(id).lean();
   }
 
+  async getUserByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email }).lean();
+  }
+
+  async createNewUser(user): Promise<User> {
+    return await this.userModel.create(user);
+  }
+
+  async addPilotIdToUser(id: number, pilot_id: number) {
+    return await this.userModel.findOneAndUpdate({ id }, { pilot_id });
+  }
+
  /*
   async getMeByEmail(email: string): Promise<PilotDocument> {
     return await this.pilotModel.findOne({ email }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]);
@@ -49,9 +61,7 @@ export class UsersRepository {
     return await this.pilotModel.find(filter).select(projectionFields).populate('roles home_airport').exec();
   }
 
-  async createNewUser(user): Promise<UserEntity> {
-    return await this.pilotModel.create(user).then((user) => user.populate('roles home_airport'));
-  }
+
 
   async editUser(id: string, updatedUser: UpdateQuery<User>) {
     return await this.pilotModel.findByIdAndUpdate(id, updatedUser, { returnDocument: "after" }).populate(["roles", "home_airport", "aircrafts", "primary_aircraft", "communities"]).lean();

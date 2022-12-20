@@ -48,7 +48,7 @@ export class PilotsRepository {
     return await this.pilotModel.find(filter).lean().exec();
   }
 
-  async createPilot(pilot): Promise<Pilot> {
+  async createPilot(pilot): Promise<PilotDocument> {
     return await this.pilotModel.create(pilot);
   }
 
