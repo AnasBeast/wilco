@@ -6,7 +6,7 @@ export type CertificateDocument = Certificate & Document;
 @Schema({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Certificate {
   @Prop({ required: true })
-  id: string;
+  id: number;
 
   @Prop({ required: true })
   name: string;

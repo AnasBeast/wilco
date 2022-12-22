@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
+import { Community, CommunityDocument } from 'src/database/mongo/models/community.model';
 import { BaseCommunity } from 'src/dto/communities/base-community.dto';
-import { Community, CommunityDocument } from 'src/schemas/community.schema';
 
 @Injectable()
 export class CommunityService {

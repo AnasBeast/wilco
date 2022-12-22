@@ -137,11 +137,10 @@ export class PilotsService {
 
   async addAirportsToPilot(id: string, airports: string[], pilotId: number) {
     if(isNaN(+id)) throw new BadRequestException("pilot_id should be a number");
-    if (+id != pilotId) throw new ForbiddenException(errors.PERMISSION_DENIED);
     const pilot = await this.pilotsRepository.getPilotById(+id);
-    if (!pilot) {
-      throw new NotFoundException(errors.PILOT_NOT_FOUND);
-    }
+    if (!pilot) throw new NotFoundException(errors.PILOT_NOT_FOUND);
+    if (pilot.id !== pilotId) throw new ForbiddenException(errors.PERMISSION_DENIED);
+    
     const FoundAirports = await this.airportService.getAirportsByFilter({ icao: { $in: airports } }, ['icao']);
     FoundAirports.map((airport) => {
       if (!pilot.airports.includes(airport.icao)) {

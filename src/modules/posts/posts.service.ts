@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
@@ -123,9 +123,11 @@ export class PostsService {
 
       //get comments
       async getComments(id: string, page: number, per_page: number, pilot_id: number) {
-        const post = await this.postsModel.findOne({ id });
+        if(isNaN(+id)) throw new BadRequestException("post_id should be a number");
+        const post = await this.postsModel.findOne({ id: +id });
         if(!post) throw new NotFoundException(errors.POST_NOT_FOUND);
-        const comments = await this.commentsService.getCommentsByPostId(id, page, per_page);
+        if(post.visibility === "only_me" && post.pilot_id !== pilot_id) throw new UnauthorizedException(errors.PERMISSION_DENIED);
+        const comments = await this.commentsService.getCommentsByPostId(+id, page, per_page);
         const count = await this.commentsService.getCommentsCountByPostId(id);
         const pages = Math.ceil(count / per_page)
         return await { data: comments, pagination: { current: page, pages, first_page: (page - 1) * per_page === 0, last_page: page === pages } }

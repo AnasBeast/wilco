@@ -8,7 +8,6 @@ export type CommentDocument = HydratedDocument<Comment> & { likes?: number[], di
 
 @Schema({ timestamps: true })
 export class Comment {
-
   @ApiProperty()
   @Prop({ required: true })
   text: string;
@@ -49,4 +48,10 @@ CommentSchema.virtual("dislikes", {
   ref: "CommentDislike",
   localField: "id",
   foreignField: "comment_id",
+})
+
+CommentSchema.virtual("replies", {
+  ref: "CommentReply",
+  localField: "id",
+  foreignField: "parent_comment_id",
 })
