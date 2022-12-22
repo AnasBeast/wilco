@@ -15,16 +15,16 @@ export class AirCraft {
   make_and_model: string;
 
   @ApiProperty()
-  @Prop({ required: true, default: null })
+  @Prop({ default: null })
   tail_number: string;
 
   @ApiProperty()
   @Prop({ default: null })
-  aicraft_picture?: string;
+  picture_url?: string;
 
   @ApiProperty()
   @Prop({ select: false })
-  aircraft_picture_key?: string;
+  picture_url_key?: string;
 
   @ApiProperty()
   @Prop({ default: false, select: false })

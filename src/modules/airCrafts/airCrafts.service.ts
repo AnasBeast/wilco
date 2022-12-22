@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from "axios";
 import { FilterQuery } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
@@ -29,8 +29,8 @@ export class AirCraftService {
     if(aircraft.base_64_picture) {
       const resUpload = await this.s3Service.uploadFile(aircraft.base_64_picture);
       if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
-      aircraftInput.aicraft_picture = resUpload.location
-      aircraftInput.aircraft_picture_key = resUpload.key
+      aircraftInput.picture_url = resUpload.location
+      aircraftInput.picture_url_key = resUpload.key
     }
  
     return await this.airCraftsRepository.create(aircraftInput);
@@ -40,41 +40,23 @@ export class AirCraftService {
     return await this.airCraftsRepository.getAirCraftByFilter(filter);
   }
 
-  // async getAircraftsByPilotEmail(email: string) {
-  //   //TODO: Change this to save on firebase
-  //   const { _id } = await this.pilotsService.getUserByEmail(email);
-
-  //   return await this.airCraftsRepository.getAirCraftByFilter({
-  //     pilot_id: _id
-  //   })
-  // }
-
   async getAircraftsByPilotId(pilot_id: number) {
     return await this.airCraftsRepository.getAirCraftsByFilter({
       pilot_id
     })
   }
 
-  async getAircraftLatestFlights(aircraftId: number, pilot_id: number) {
-    const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
+  async getAircraftLatestFlights(aircraftId: string, pilot_id: number) {
+    if(isNaN(+aircraftId)){
+      throw new BadRequestException("aircraft_id should be a number");
+    }
+    const aircraft = await this.airCraftsRepository.getAirCraftById(+aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) {
       throw new ForbiddenException(errors.PERMISSION_DENIED);
     }
     if(!aircraft.tail_number) throw new BadRequestException(errors.MISSING_TAIL_NUMBER);
     
-    // const data = await axios.get(`https://flighttracking-production.up.railway.app/api/v1/flightsTrack/${aircraft.tail_number}`);
-    // let maxSpeed = 0;
-    // let maxAltitude = 0;
-    // try {
-    //   let track = await api.get(`/flights/${flight.fa_flight_id}/track`);
-    //   track.data.map(track => {
-    //     if (track.groundspeed > maxSpeed) maxSpeed = track.groundspeed;
-    //     if (track.altitude > maxAltitude) maxAltitude = track.altitude;
-    //   })
-    // } catch (error) {
-    //   console.log(error);
-    // }
     try {
       let data = await api.get(`/flights/${aircraft.tail_number}`)
       return data.data.flights.map(flight => ({
@@ -88,18 +70,15 @@ export class AirCraftService {
             distance: flight.route_distance
         }));
     } catch (error) {
-      console.log(error);
-      console.log("api key", process.env.API_KEY)
-      console.log(error.request?.headers)
-      console.error(error.response?.data)
+      throw new InternalServerErrorException()
     }
-    
-
-    
   }
 
-  async editAircraft({ aircraft: updatedAircraft }: UpdateAirCraftDto, aircraftId: number, pilot_id: number) {
-    const aircraft = await this.airCraftsRepository.getAirCraftById(aircraftId);
+  async editAircraft(updatedAircraft: UpdateAircraftObjectDTO, aircraftId: string, pilot_id: number) {
+    if(isNaN(+aircraftId)){
+      throw new BadRequestException("aircraft_id should be a number");
+    }
+    const aircraft = await this.airCraftsRepository.getAirCraftById(+aircraftId);
     if(!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
     if(aircraft.pilot_id !== pilot_id) throw new ForbiddenException();
 
@@ -113,31 +92,27 @@ export class AirCraftService {
       newUpdatedAircarft.tail_number = updatedAircraft.tail_number;
     }
 
-    // if(file) {
-    //   if(aircraft.aircraft_picture_key) {
-    //     await this.s3Service.deleteFile(aircraft.aircraft_picture_key);
-    //   }
-    //   const resUpload = await this.s3Service.uploadFile(file);
-    //   if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
-    //   return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft, aicraft_picture: resUpload.location, aircraft_picture_key: resUpload.key }, { returnDocument: 'after' });
-    // }
+    if(updatedAircraft.base_64_picture) {
+      if(aircraft.picture_url_key) {
+        await this.s3Service.deleteFile(aircraft.picture_url_key);
+      }
+      const resUpload = await this.s3Service.uploadFile(updatedAircraft.base_64_picture);
+      if (!resUpload) throw new BadRequestException(errors.FILE_UPLOAD_ERROR);
+      return await this.airCraftsRepository.editAircraftById(+aircraftId, { ...aircraft, ...updatedAircraft, picture_url: resUpload.location, picture_url_key: resUpload.key }, { returnDocument: 'after' });
+    }
 
-    return await this.airCraftsRepository.editAircraftById(aircraftId, { ...aircraft, ...updatedAircraft }, { returnDocument: 'after' });
+    return await this.airCraftsRepository.editAircraftById(+aircraftId, { ...aircraft, ...updatedAircraft }, { returnDocument: 'after' });
   }
 
-  //TODO: ASK ABOUT AIRCRAFT DELETION
-  async removeAircraftFromPilot(id: number, pilotId: number) {
-    const aircraft = await this.airCraftsRepository.getAirCraftById(id);
-    if (!aircraft) {
-      throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
+  async removeAircraftFromPilot(id: string, pilotId: number) {
+    if(isNaN(+id)){
+      throw new BadRequestException("aircraft_id should be a number");
     }
-    if (aircraft.pilot_id !== pilotId) {
-      throw new UnauthorizedException(errors.PERMISSION_DENIED);
-    }
-    if(aircraft.removed) {
-      throw new BadRequestException(errors.AIRCRAFT_ALREADY_REMOVED);
-    }
+    const aircraft = await this.airCraftsRepository.getAirCraftById(+id);
+    if (!aircraft) throw new NotFoundException(errors.AIRCRAFT_NOT_FOUND);
+    if (aircraft.pilot_id !== pilotId) throw new UnauthorizedException(errors.PERMISSION_DENIED);
+    if(aircraft.removed) throw new BadRequestException(errors.AIRCRAFT_ALREADY_REMOVED);
 
-    return await this.airCraftsRepository.removeAircraft(id);
+    return await this.airCraftsRepository.removeAircraft(+id);
   }
 }
