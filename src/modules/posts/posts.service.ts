@@ -40,7 +40,7 @@ export class PostsService {
       }
     
       async getPostById(id: number, pilotId: number) {
-        const post = await this.postsModel.findOne({ id }, {}, { populate: [{ path: 'pilot', populate: "aircrafts certificates ratings community_tags roles" }, { path: 'flight', populate: "aircraft" }] });
+        const post = await this.postsModel.findOne({ id }, {}, { populate: [{ path: 'pilot'}, { path: 'hashtags', populate: { path: 'hashtag'  }, transform: (doc) => doc && doc?.hashtag?.text }, {path:"community_tags", populate: { path:"community", }, transform: (doc) => doc && doc?.community?.name }] }).lean()
         if(post.visibility !== "public" && post.pilot_id !== pilotId) {
           throw new ForbiddenException(errors.PERMISSION_DENIED);
         }

@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post, {}, { likes: number[] }>;
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'edited_at' }, toJSON: { virtuals: true }, toObject: { virtuals: true } })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'edited_at' }, toJSON: { virtuals: true, transform: true }, toObject: { virtuals: true, transform: true } })
 export class Post {
   @ApiProperty()
   @Prop({ required: true })
@@ -40,15 +40,7 @@ export class Post {
 
   @ApiProperty()
   @Prop({ default: [] })
-  community_tags: string[];
-
-  @ApiProperty()
-  @Prop({ default: [] })
   airports: string[];
-
-  @ApiProperty()
-  @Prop({ default: [] })
-  hashtags: string[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -77,4 +69,17 @@ PostSchema.virtual('likes', {
   ref: 'Like',
   localField: 'id',
   foreignField: 'post_id'
+})
+
+PostSchema.virtual('hashtags', {
+  ref: 'Post_Hashtags',
+  localField: 'id',
+  foreignField: 'post_id'
+})
+
+PostSchema.virtual('community_tags', {
+  ref: 'Community_tags',
+  localField: 'id',
+  foreignField: 'taggable_id',
+  match: { taggable_type: "Post" }
 })

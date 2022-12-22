@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export type CommunityDocument = Community & Document;
 
-@Schema()
+@Schema({ toJSON: { virtuals: true, transform: true }, toObject: { virtuals: true, transform: true }, })
 export class Community {
   @ApiProperty()
   @Prop({ required: true, unique: true })
