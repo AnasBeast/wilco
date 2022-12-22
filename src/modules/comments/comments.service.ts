@@ -108,8 +108,8 @@ export class CommentService {
         throw new UnprocessableEntityException();
     }
 
-    async getCommentsByPostId(post_id: string, page: number, per_page: number) {
-        return await this.commentModel.find({ post_id }, {}, { skip: (page - 1) * per_page, limit: per_page, populate: "pilot" }).lean();
+    async getCommentsByPostId(post_id: number, page: number, per_page: number) {
+        return await this.commentModel.find({ post_id }, {}, { skip: (page - 1) * per_page, limit: per_page, populate: [ { path: "pilot" }, { path: "replies", populate: "pilot" } ] }).lean();
     }
 
     async getCommentsCountByPostId(post_id: string) {

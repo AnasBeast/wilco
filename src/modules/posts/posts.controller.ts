@@ -38,7 +38,7 @@ export class PostsController {
     @Pagination(true)
     @Get()
     async getFeedPosts(@Query() { feed, community_tags, hashtags }: FeedDTO, @Query() { page, per_page }: PaginationDTO, @Req() req) {
-        return await this.postsService.getFeedPosts(Number.parseInt(page), Number.parseInt(per_page), req.user.pilotId, feed, community_tags, hashtags);
+        return await this.postsService.getFeedPosts(+page, +per_page, req.user.pilotId, feed, community_tags, hashtags);
     }
 
     @ApiTags("Posts")
@@ -108,8 +108,8 @@ export class PostsController {
     @ApiOperation({ summary: "Get post's comments", description: "Gets a post's comments with pagination" })
     @Get("/:post_id/comments")
     @Pagination(true)
-    async getComments(@Param('post_id') post_id: string, @Query('page') page: string, @Query('per_page') per_page: string, @Req() req) {
-        return await this.postsService.getComments(post_id, Number.parseInt(page), Number.parseInt(per_page), req.user.pilotId);
+    async getComments(@Param('post_id') post_id: string, @Query() { page, per_page }: PaginationDTO, @Req() req) {
+        return await this.postsService.getComments(post_id, +page, +per_page, req.user.pilotId);
     }
 
     @ApiTags('Comments')

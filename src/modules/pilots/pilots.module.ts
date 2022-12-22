@@ -13,6 +13,11 @@ import { UsersModule } from '../users/users.module';
 import { PilotsController } from './pilots.controller';
 import { PilotsRepository } from './pilots.repository';
 import { PilotsService } from './pilots.service';
+import { Pilot_Certificates, PilotCertificatesSchema } from 'src/database/mongo/models/pilot-certificates.model';
+import { PilotRatingsSchema, Pilot_Ratings } from 'src/database/mongo/models/pilot-ratings.model';
+import { PI } from 'aws-sdk';
+import { PilotRolesSchema, Pilot_Roles } from 'src/database/mongo/models/pilot-roles.model';
+import { CommunityTagsSchema, Community_tags } from 'src/database/mongo/models/community_tags.model';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -21,6 +26,28 @@ import { PilotsService } from './pilots.service';
         const schema = PilotSchema;
         const autoIncrement = AutoIncrementFactory(connection);
         schema.plugin(autoIncrement, { id: "pilot_id_autoincrement", inc_field: 'id', start_seq: 517 })
+        return schema;
+      },
+      inject: [getConnectionToken()]
+    },
+    {
+      name: Pilot_Certificates.name,
+      useFactory: () => PilotCertificatesSchema
+    },
+    {
+      name: Pilot_Ratings.name,
+      useFactory: () => PilotRatingsSchema
+    },
+    {
+      name: Community_tags.name,
+      useFactory: () => CommunityTagsSchema
+    },
+    {
+      name: Pilot_Roles.name,
+      useFactory: (connection: Connection) => {
+        const schema = PilotRolesSchema;
+        const autoIncrement = AutoIncrementFactory(connection);
+        schema.plugin(autoIncrement, { id: 'pilot_roles_id_autoincrement', inc_field: 'id', start_seq: 519 });
         return schema;
       },
       inject: [getConnectionToken()]

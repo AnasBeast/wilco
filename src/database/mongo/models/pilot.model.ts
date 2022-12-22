@@ -32,18 +32,6 @@ export class Pilot {
   profile_picture_url: string;
 
   @ApiProperty()
-  @Prop({ default: [], select: false })
-  certificate_ids: number[];
-
-  @ApiProperty()
-  @Prop({ default: [], select: false })
-  rating_ids: number[];
-
-  @ApiProperty()
-  @Prop({ default: [] })
-  communities_tags: string[];
-
-  @ApiProperty()
   @Prop({ default: null })
   home_airport: string;
 
@@ -65,29 +53,32 @@ export const PilotSchema = SchemaFactory.createForClass(Pilot);
 PilotSchema.virtual('aircrafts', {
   ref: 'AirCraft',
   localField: 'id',
-  foreignField: 'pilot_id',
-  autopopulate: true
+  foreignField: 'pilot_id'
 }) 
 
 PilotSchema.virtual('certificates', {
-  ref: 'Certificate',
-  localField: 'certificate_ids',
-  foreignField: 'id',
-  autopopulate: true
+  ref: 'Pilot_Certificates',
+  localField: 'id',
+  foreignField: 'pilot_id'
 })
 
 PilotSchema.virtual('roles', {
-  ref: 'Role',
-  localField: 'roles_ids',
-  foreignField: 'id',
-  autopopulate: true,
+  ref: 'Pilot_Roles',
+  localField: 'id',
+  foreignField: 'pilot_id'
 })
 
 PilotSchema.virtual('ratings', {
-  ref: 'Rating',
-  localField: 'rating_ids',
-  foreignField: 'id',
-  autopopulate: true
+  ref: 'Pilot_Ratings',
+  localField: 'id',
+  foreignField: 'pilot_id'
+})
+
+PilotSchema.virtual('community_tags', {
+  ref: 'Community_tags',
+  localField: 'id',
+  foreignField: 'taggable_id',
+  match: { taggable_type: "Pilot" }
 })
 
 
