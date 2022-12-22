@@ -15,7 +15,7 @@ export class AirCraft {
   make_and_model: string;
 
   @ApiProperty()
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, default: null })
   tail_number: string;
 
   @ApiProperty()

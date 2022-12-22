@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ProjectionFields, UpdateQuery } from 'mongoose';
 import { Pilot, PilotDocument } from 'src/database/mongo/models/pilot.model';
-import { User } from '../../database/mongo/models/user.model';
 
 @Injectable()
 export class PilotsRepository {

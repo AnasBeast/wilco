@@ -11,7 +11,7 @@ import { Post_Airports_Service } from "./post-airports.service";
         useFactory: (connection: Connection) => {
             const schema = Post_Airports_Schema;
             const AutoIncrement = AutoIncrementFactory(connection);
-            schema.plugin(AutoIncrement, { id: 'post_airports_id_autoincrement', inc_field: 'id', start_seq: 1606 });
+            schema.plugin(AutoIncrement, { id: 'post_airports_id_autoincrement', inc_field: 'id', start_seq: 57 });
             return schema;
         },
         inject: [getConnectionToken()]

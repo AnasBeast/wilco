@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post, {}, { likes: number[] }>;
 
-@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'edited_at' }, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Post {
   @ApiProperty()
   @Prop({ required: true })
@@ -23,7 +23,7 @@ export class Post {
   number_of_comments: number;
 
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop({ required: true, enum: ["public", "only_me"] })
   visibility: string;
 
   @ApiProperty()
@@ -32,7 +32,7 @@ export class Post {
 
   @ApiProperty()
   @Prop({ default: [] })
-  photo_urls: string[];
+  photo_keys: string[];
 
   @ApiProperty()
   @Prop({ default: [] })
@@ -57,23 +57,20 @@ PostSchema.virtual('pilot', {
   ref: 'Pilot',
   localField: 'pilot_id',
   foreignField: 'id',
-  justOne: true,
-  autopopulate: true
+  justOne: true
 })
 
 PostSchema.virtual('flight', {
   ref: 'Post_Flights',
   localField: 'id',
   foreignField: 'post_id',
-  justOne: true,
-  autopopulate: true
+  justOne: true
 })
 
 PostSchema.virtual('first_comments', {
   ref: 'Comment',
   localField: 'id',
-  foreignField: 'post_id',
-  autopopulate: true
+  foreignField: 'post_id'
 })
 
 PostSchema.virtual('likes', {

@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
+import { MongooseModule, getConnectionToken } from "@nestjs/mongoose";
 import { Connection } from "mongoose";
-import { Post_Flights, FlightSchema } from "src/database/mongo/models/flight.model";
+import * as AutoIncrementFactory from "mongoose-sequence";
+import { FlightSchema, Post_Flights } from "src/database/mongo/models/flight.model";
 import { FlightController } from "./flights.controller";
 import { FlightService } from "./flights.service";
-import * as AutoIncrementFactory from "mongoose-sequence";
 
 
 @Module({
@@ -14,7 +14,7 @@ import * as AutoIncrementFactory from "mongoose-sequence";
             useFactory: (connection: Connection) => {
                 const schema = FlightSchema;
                 const AutoIncrement = AutoIncrementFactory(connection);
-                schema.plugin(AutoIncrement, { id: 'post_flights_id_auto_increment', inc_field: 'id', start_seq: 170 })
+                schema.plugin(AutoIncrement, { id: 'post_flights_id_auto_increment', inc_field: 'id', start_seq: 175 })
                 return schema;
             },
             inject: [getConnectionToken()]

@@ -20,7 +20,7 @@ import { PilotsService } from './pilots.service';
       useFactory: (connection: Connection) => {
         const schema = PilotSchema;
         const autoIncrement = AutoIncrementFactory(connection);
-        schema.plugin(autoIncrement, { id: "pilot_id_autoincrement", inc_field: 'id', start_seq: 446 })
+        schema.plugin(autoIncrement, { id: "pilot_id_autoincrement", inc_field: 'id', start_seq: 517 })
         return schema;
       },
       inject: [getConnectionToken()]

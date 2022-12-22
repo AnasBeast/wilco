@@ -6,15 +6,9 @@ import {
     Param,
     Patch,
     Post,
-    Put,
     Query,
-    Req,
-    Res,
-    UploadedFile,
-    UploadedFiles,
-    UseInterceptors,
+    Req
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
 import {
     ApiBearerAuth,
     ApiOperation,
@@ -28,12 +22,10 @@ import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { FeedDTO } from 'src/dto/post/feed.dto';
 import { PostsService } from './posts.service';
-import { Buffer } from 'node:buffer';
 
 @Controller('posts')
 export class PostsController {
-
-    constructor(private readonly postsService: PostsService) { }
+    constructor(private readonly postsService: PostsService) {}
 
     @ApiTags("Posts")
     @ApiBearerAuth()

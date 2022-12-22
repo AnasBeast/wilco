@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule, getConnectionToken } from "@nestjs/mongoose";
 import { Connection } from "mongoose";
-import { Notification, NotificationSchema } from "src/database/mongo/models/notification.model";
 import * as AutoIncrementFactory from "mongoose-sequence";
-import { NotificationsService } from "./notifications.service";
+import { Notification, NotificationSchema } from "src/database/mongo/models/notification.model";
 import { NotificationType } from "src/database/mongo/models/notification_type.model";
+import { NotificationsService } from "./notifications.service";
 
 @Module({
     imports: [MongooseModule.forFeatureAsync([
@@ -13,7 +13,7 @@ import { NotificationType } from "src/database/mongo/models/notification_type.mo
             useFactory: (connection: Connection) => {
                 const schema = NotificationSchema;
                 const autoIncrement = AutoIncrementFactory(connection);
-                schema.plugin(autoIncrement, { id: "notification_id_autoincrement", inc_field: 'id', start_seq: 4008 });
+                schema.plugin(autoIncrement, { id: "notification_id_autoincrement", inc_field: 'id', start_seq: 4078 });
                 return schema;
             },
             inject: [getConnectionToken()]

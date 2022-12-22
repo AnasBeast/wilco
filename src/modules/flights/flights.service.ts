@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import axios from "axios";
 import { Model } from "mongoose";
 import { FlightDocument, Post_Flights } from "src/database/mongo/models/flight.model";
 import { FlightDTO } from "src/dto/post/create-post.dto";
-import { PostFlightDocument } from "src/schemas/post-flight.schema";
-import axios from "axios";
 
 const api = axios.create({
     baseURL: "https://aeroapi.flightaware.com/aeroapi",

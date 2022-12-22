@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ProjectionFields, UpdateQuery } from 'mongoose';
-import { UserEntity } from 'src/common/entities/user.entity';
-import { SignUpDto } from '../../authentication/dto/sign-up.dto';
-import { Pilot, PilotDocument } from '../../database/mongo/models/pilot.model';
-import { Types } from "mongoose";
+import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/database/mongo/models/user.model';
 
 @Injectable()

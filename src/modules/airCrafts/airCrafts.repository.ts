@@ -1,10 +1,7 @@
-import { CreateAirCraftPictureDto, UpdateAirCraftDto } from './dto/create.dto';
-import { AirCraft, AirCraftDocument } from '../../database/mongo/models/airCraft.model';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DocumentDefinition, FilterQuery, Model, MongooseOptions, QueryOptions, UpdateQuery } from 'mongoose';
-import { AirCraftEntity } from 'src/common/entities/airCraft.entity';
-import { Types } from 'mongoose';
+import { DocumentDefinition, FilterQuery, Model, QueryOptions, Types, UpdateQuery } from 'mongoose';
+import { AirCraft, AirCraftDocument } from '../../database/mongo/models/airCraft.model';
 
 export type AirCraftCreate = DocumentDefinition<Omit<AirCraft, 'createdAt' | 'updatedAt'>>
 

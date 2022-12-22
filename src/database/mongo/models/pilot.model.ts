@@ -6,7 +6,7 @@ import { AirCraft } from './airCraft.model';
 export type PilotDocument = HydratedDocument<Pilot, {}, { aircrafts?: (AirCraft & { id: number })[] }>;
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
-export class Pilot {  
+export class Pilot {    
   @ApiProperty()
   @Prop({ required: true })
   first_name: string;

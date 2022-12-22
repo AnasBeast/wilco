@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Role } from 'aws-sdk/clients/budgets';
-import { ProjectionType, Types } from 'mongoose';
+import { ProjectionType } from 'mongoose';
+import { Role } from 'src/database/mongo/models/role.model';
 import { RoleEntity } from '../../common/entities/role.entity';
 import { errors } from './../../common/helpers/responses/error.helper';
 import { CreateRoleDto } from './dto/create.dto';

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, Req } from "@nestjs/common";
+import { Controller, Delete, Param, Post, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CommentService } from "./comments.service";
 

@@ -1,11 +1,11 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
+import * as AutoIncrementFactory from 'mongoose-sequence';
+import { Role, RoleSchema } from './../../database/mongo/models/role.model';
 import { RolesController } from './roles.controller';
 import { RolesRepository } from './roles.repository';
 import { RolesService } from './roles.service';
-import { Role, RoleSchema } from './../../database/mongo/models/role.model';
-import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
-import { Module } from '@nestjs/common';
-import { Connection } from 'mongoose';
-import * as AutoIncrementFactory from 'mongoose-sequence';
 
 @Module({
   imports: [MongooseModule.forFeatureAsync([
@@ -13,7 +13,7 @@ import * as AutoIncrementFactory from 'mongoose-sequence';
        useFactory: async (connection: Connection) => {
         const schema = RoleSchema;
         const autoIncrement = AutoIncrementFactory(connection);
-        schema.plugin(autoIncrement, { inc_field: 'id', start_seq: 61 })
+        schema.plugin(autoIncrement, { inc_field: 'id', start_seq: 67 })
         return schema;
     }, 
     inject: [getConnectionToken()] 

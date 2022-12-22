@@ -1,36 +1,22 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
-import { ObjectId, Types, UpdateQuery } from 'mongoose';
-import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
-import { RoleEntity } from 'src/common/entities/role.entity';
-import { UserEntity } from 'src/common/entities/user.entity';
-import { User, UserDocument } from 'src/database/mongo/models/user.model';
-import { AddAirportsToPilotDTO } from 'src/dto/pilot/add-airports-to-pilot.dto';
-import { GetPilotsDTO } from 'src/dto/pilot/get-pilots.dto';
-import fb_admin from 'src/main';
-import admin from 'src/main';
+import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
+import { PilotPatchDto } from 'src/dto/user/update-user.dto';
+import { errors } from '../../common/helpers/responses/error.helper';
+import { AirCraftService } from '../airCrafts/airCrafts.service';
+import { AircraftObjectDTO } from '../airCrafts/dto/create.dto';
 import { AirportsService } from '../airports/airports.service';
 import { CommunityService } from '../communities/community.service';
-import { SignUpDto } from '../../authentication/dto/sign-up.dto';
-import { errors } from '../../common/helpers/responses/error.helper';
 import { S3Service } from '../files/s3.service';
-import { RolesService } from '../roles/roles.service';
-import { PilotsRepository } from './pilots.repository';
-import { Pilot } from 'src/schemas/pilot.schema';
-import { UsersService } from '../users/users.service';
-import { UsersRepository } from '../users/users.repository';
-import { AircraftObjectDTO, CreateAirCraftDto } from '../airCrafts/dto/create.dto';
-import { AirCraftService } from '../airCrafts/airCrafts.service';
-import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 import { FlightService } from '../flights/flights.service';
-import { PilotPatchDto } from 'src/dto/user/update-user.dto';
+import { RolesService } from '../roles/roles.service';
+import { UsersRepository } from '../users/users.repository';
+import { PilotsRepository } from './pilots.repository';
 
 @Injectable()
 export class PilotsService {
