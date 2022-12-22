@@ -1,12 +1,7 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  Post,
-  Put,
-  Query,
+  Query
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -16,7 +11,7 @@ import {
 } from '@nestjs/swagger';
 import { Pagination } from 'src/common/decorators/response/pagination.decorator';
 import { BaseHashtags } from 'src/dto/hashtags/base-hashtags.dto';
-import { PaginationDTO, PaginationDTOWithSearch } from 'src/dto/pagination.dto';
+import { PaginationDTOWithSearch } from 'src/dto/pagination.dto';
 import { HashtagsService } from './hashtags.service';
 
 @Controller('hashtags')

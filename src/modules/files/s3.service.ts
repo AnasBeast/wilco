@@ -1,8 +1,7 @@
-import { AWSConfigService } from './../../config/aws/config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { Credentials } from 'aws-sdk';
-import { DeleteObjectRequest } from 'aws-sdk/clients/s3';
+import { AWSConfigService } from './../../config/aws/config.service';
 
 @Injectable()
 export class S3Service {

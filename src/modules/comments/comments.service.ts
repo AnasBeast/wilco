@@ -1,12 +1,11 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, UnprocessableEntityException, forwardRef } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { errors } from "src/common/helpers/responses/error.helper";
+import { Model } from "mongoose";
+import { CommentDislike, CommentDislikeDocument } from "src/database/mongo/models/comment-dislike.model";
+import { CommentLike, CommentLikeDocument } from "src/database/mongo/models/comment-like.model";
 import { Comment, CommentDocument } from "src/database/mongo/models/comment.model";
 import { CommentReply, CommentReplyDocument } from "src/database/mongo/models/commentReply.model";
 import { PostsService } from "../posts/posts.service";
-import { CommentLike, CommentLikeDocument } from "src/database/mongo/models/comment-like.model";
-import { CommentDislike, CommentDislikeDocument } from "src/database/mongo/models/comment-dislike.model";
 
 
 @Injectable()

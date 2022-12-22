@@ -1,14 +1,8 @@
-import { RoleEntity } from '../../common/entities/role.entity';
-import { PilotEntity } from '../../common/entities/pilot.entity';
-import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { errors } from 'src/common/helpers/responses/error.helper';
-import { RolesService } from '../roles/roles.service';
-import { UsersRepository } from './users.repository';
-import { Types } from 'mongoose';
-import { Pilot } from 'src/database/mongo/models/pilot.model';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { SignUpDto } from 'src/authentication/dto/sign-up.dto';
 import { TokenResponseDto } from 'src/authentication/dto/token.response.dto';
 import fb_admin from 'src/main';
-import { SignUpDto } from 'src/authentication/dto/sign-up.dto';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {

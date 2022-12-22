@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { HashtagsService } from './hashtags.service';
-import { HashtagsController } from './hashtags.controller';
-
 import { MongooseModule } from '@nestjs/mongoose';
 import { Hashtags, HashtagsSchema } from 'src/schemas/hashtags.schema';
+import { HashtagsController } from './hashtags.controller';
+import { HashtagsService } from './hashtags.service';
 
 @Module({
   imports: [

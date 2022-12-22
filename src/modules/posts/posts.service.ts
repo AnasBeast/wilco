@@ -1,17 +1,17 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
+import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
 import { Post, PostDocument } from 'src/database/mongo/models/post.model';
-import { CommentBodyDTO, CreateCommentDTO } from 'src/dto/comment/create-comment.dto';
+import { CommentBodyDTO } from 'src/dto/comment/create-comment.dto';
 import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { CommentService } from '../comments/comments.service';
 import { S3Service } from '../files/s3.service';
 import { FlightService } from '../flights/flights.service';
-import { Post_Airports_Service } from '../post_airports/post-airports.service';
-import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
 import { NotificationsService } from '../notifications/notifications.service';
+import { Post_Airports_Service } from '../post_airports/post-airports.service';
 
 @Injectable()
 export class PostsService {
@@ -28,6 +28,7 @@ export class PostsService {
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
+        console.log(pilotId);
         if (feed === 'false') {
           const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
@@ -52,16 +53,21 @@ export class PostsService {
           pilot_id
         }
         
+        let photo_keys = []
+        let photo_preview_urls = []
         if (postData.photos) {
           const filesArr = await this.s3service.uploadFiles(postData.photos);
-          postData.photos = filesArr;
+          filesArr.map((photo) => {
+            photo_keys.push(photo.key);
+            photo_preview_urls.push(photo.location);
+          })
         }
 
         if (postData.flight) {
           this.postFlightService.createPostFlight(postData.flight);
         }
 
-        return await this.postsModel.create(postData);
+        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls });
       }
     
       async update(id: string, updateTodoDto: BasePost): Promise<Post> {

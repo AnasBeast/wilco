@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { } from 'aws-sdk/clients/acm';
-import { FilterQuery, Model, ProjectionType, Types } from 'mongoose';
+import { FilterQuery, Model, ProjectionType } from 'mongoose';
 import { Role, RoleDocument } from 'src/database/mongo/models/role.model';
 import { RoleEntity } from '../../common/entities/role.entity';
-import { CreateRoleDto } from './dto/create.dto';
 
 @Injectable()
 export class RolesRepository {

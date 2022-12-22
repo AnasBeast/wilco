@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { CertificateService } from './certificate.service';
-import { CertificateController } from './certificate.controller';
-
 import { MongooseModule } from '@nestjs/mongoose';
 import { Certificate, CertificateSchema } from 'src/schemas/certificate.schema';
 
@@ -12,6 +10,6 @@ import { Certificate, CertificateSchema } from 'src/schemas/certificate.schema';
     ]),
   ],
   providers: [CertificateService],
-  controllers: [CertificateController],
+  exports: [CertificateService]
 })
 export class CertificateModule {}

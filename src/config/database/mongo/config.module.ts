@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import configuration from './configuration';
 import * as Joi from '@hapi/joi';
+import mongoose from 'mongoose';
+
+mongoose.set('debug', true);
 
 @Module({
   imports: [
