@@ -8,8 +8,8 @@ export class AircraftObjectDTO {
   @ApiProperty({ example: 'make and model example' })
   readonly make_and_model: string;
 
+  @IsOptional()
   @Validate(IsValidTailNumber)
-  @IsNotEmpty()
   @ApiProperty({ example: 'tail number example' })
   readonly tail_number: string;
 
@@ -36,6 +36,10 @@ export class UpdateAircraftObjectDTO {
   @Validate(IsValidTailNumber)
   @ApiProperty({ example: 'tail number example' })
   tail_number: string;
+
+  @IsOptional()
+  @IsBase64()
+  readonly base_64_picture: string;
 }
 
 export class UpdateAirCraftDto {

@@ -9,7 +9,7 @@ import { CreatePilotDto } from 'src/dto/pilot/create-pilot.dto';
 import { PilotPatchDto } from 'src/dto/user/update-user.dto';
 import { errors } from '../../common/helpers/responses/error.helper';
 import { AirCraftService } from '../airCrafts/airCrafts.service';
-import { AircraftObjectDTO } from '../airCrafts/dto/create.dto';
+import { AircraftObjectDTO, CreateAirCraftDto, UpdateAircraftObjectDTO } from '../airCrafts/dto/create.dto';
 import { AirportsService } from '../airports/airports.service';
 import { CommunityService } from '../communities/community.service';
 import { S3Service } from '../files/s3.service';
@@ -135,11 +135,10 @@ export class PilotsService {
     return await this.pilotsRepository.deletePilot(pilotId);
   }
 
-  async addAirportsToPilot(id: number, airports: string[], pilotId: number) {
-    if (id != pilotId) {
-      throw new ForbiddenException(errors.PERMISSION_DENIED);
-    }
-    const pilot = await this.pilotsRepository.getPilotById(id);
+  async addAirportsToPilot(id: string, airports: string[], pilotId: number) {
+    if(isNaN(+id)) throw new BadRequestException("pilot_id should be a number");
+    if (+id != pilotId) throw new ForbiddenException(errors.PERMISSION_DENIED);
+    const pilot = await this.pilotsRepository.getPilotById(+id);
     if (!pilot) {
       throw new NotFoundException(errors.PILOT_NOT_FOUND);
     }
@@ -180,13 +179,8 @@ export class PilotsService {
   }
 
   // aircrafts
-
   // create aircraft
   async createAircraft(body: AircraftObjectDTO, pilotId: number) {
-    const aircraftExist = await this.aircraftsService.getAircraftByFilter({ tail_number: body.tail_number });
-    if(aircraftExist) {
-      throw new BadRequestException();
-    }
     const aircraft = await this.aircraftsService.create(body, pilotId);
     if (!aircraft) throw new BadRequestException();
     return aircraft;
