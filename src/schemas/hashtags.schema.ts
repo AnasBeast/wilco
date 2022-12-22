@@ -3,15 +3,12 @@ import { Document } from 'mongoose';
 
 export type HashtagsDocument = Hashtags & Document;
 
-@Schema()
+@Schema({ timestamps: true, toJSON: { virtuals: true, transform: true }, toObject: { virtuals: true, transform: true } })
 export class Hashtags {
-  @Prop({ required: true })
-  id: string;
-
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   text: string;
 }
 
 export const HashtagsSchema = SchemaFactory.createForClass(Hashtags);
 
-HashtagsSchema.index({ name: 'text', 'text': 'text' })
+HashtagsSchema.index({ name: 'text', 'text': 'text' });
