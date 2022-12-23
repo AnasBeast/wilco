@@ -9,6 +9,13 @@ export type AirCraftCreate = DocumentDefinition<Omit<AirCraft, 'createdAt' | 'up
 export class AirCraftsRepository {
   constructor(@InjectModel(AirCraft.name) private airCraftModel: Model<AirCraftDocument>) {}
 
+  async fixAircrafts() {
+    const aircrafts = await this.airCraftModel.find();
+    aircrafts.map(async (aircraft) => {
+      await this.airCraftModel.findByIdAndUpdate(aircraft._id, { picture_url: null, picture_url_key: null })
+    })
+  }
+
   async getAirCraftByFilter(filter: FilterQuery<AirCraft>): Promise<AirCraft> {
     return await this.airCraftModel.findOne(filter).exec();
   }
@@ -30,6 +37,6 @@ export class AirCraftsRepository {
   }
 
   async removeAircraft(id: number) {
-    return await this.airCraftModel.findOneAndUpdate({id}, { removed: true }, { returnDocument: 'after' });
+    return await this.airCraftModel.findOneAndUpdate({id}, { removed: true }, { returnDocument: 'after', populate: "pilot" }).select("-_id -picture_url_key -updatedAt -removed").lean();
   }
 }

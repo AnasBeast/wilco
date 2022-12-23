@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { MongooseModule, getConnectionToken } from "@nestjs/mongoose";
 import { Connection } from "mongoose";
 import * as AutoIncrementFactory from "mongoose-sequence";
 import { Notification, NotificationSchema } from "src/database/mongo/models/notification.model";
 import { NotificationType } from "src/database/mongo/models/notification_type.model";
 import { NotificationsService } from "./notifications.service";
+import { PostsModule } from "../posts/posts.module";
 
 @Module({
     imports: [MongooseModule.forFeatureAsync([

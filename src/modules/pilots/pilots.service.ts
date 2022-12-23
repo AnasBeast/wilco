@@ -18,6 +18,7 @@ import { RolesService } from '../roles/roles.service';
 import { UsersRepository } from '../users/users.repository';
 import { PilotsRepository } from './pilots.repository';
 import { PostsService } from '../posts/posts.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PilotsService {
@@ -30,7 +31,8 @@ export class PilotsService {
     private usersRepository: UsersRepository,
     private aircraftsService: AirCraftService,
     private flightsService: FlightService,
-    private postsService: PostsService
+    private postsService: PostsService,
+    private notificationsService: NotificationsService
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -219,5 +221,14 @@ export class PilotsService {
     const aircraft = await this.aircraftsService.create(body, pilotId);
     if (!aircraft) throw new BadRequestException();
     return aircraft;
+  }
+
+  // notifications
+  async getNotificationsUnreadNumber(pilot_id: number) {
+    return await this.notificationsService.getUnreadNumber(pilot_id);
+  }
+
+  async getNotifications(pilot_id: number, page: number, per_page: number) {
+    return await this.notificationsService.getNotifications(pilot_id, page, per_page);
   }
 }

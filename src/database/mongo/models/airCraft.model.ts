@@ -23,12 +23,18 @@ export class AirCraft {
   picture_url?: string;
 
   @ApiProperty()
-  @Prop({ select: false })
+  @Prop()
   picture_url_key?: string;
 
   @ApiProperty()
-  @Prop({ default: false, select: false })
+  @Prop({ default: false })
   removed?: boolean;
 }
 
 export const AirCraftSchema = SchemaFactory.createForClass(AirCraft);
+
+AirCraftSchema.virtual('pilot', {
+  ref: 'Pilot',
+  localField: 'pilot_id',
+  foreignField: 'id'
+})

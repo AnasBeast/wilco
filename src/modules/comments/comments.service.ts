@@ -6,6 +6,7 @@ import { CommentLike, CommentLikeDocument } from "src/database/mongo/models/comm
 import { Comment, CommentDocument } from "src/database/mongo/models/comment.model";
 import { CommentReply, CommentReplyDocument } from "src/database/mongo/models/commentReply.model";
 import { PostsService } from "../posts/posts.service";
+import { NotificationsService } from "../notifications/notifications.service";
 
 
 @Injectable()
@@ -20,7 +21,8 @@ export class CommentService {
         @InjectModel(CommentLike.name)
         private readonly commentLikeModel: Model<CommentLikeDocument>,
         @InjectModel(CommentDislike.name)
-        private readonly commentDislikeModel: Model<CommentDislikeDocument>
+        private readonly commentDislikeModel: Model<CommentDislikeDocument>,
+        private readonly notificationService: NotificationsService
     ) {}
 
     async createComment(input) {
@@ -74,12 +76,14 @@ export class CommentService {
         }
 
         if(comment && !comment.likes.includes(pilot_id)) {
-            await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            const like = await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            await this.notificationService.pushNotification("Like", like.id, comment.pilot_id, 1);
             return await this.commentModel.findOneAndUpdate({ id }, { number_of_likes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
         }
 
         if(reply && !reply.likes.includes(pilot_id)) {
-            await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            const like = await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
+            await this.notificationService.pushNotification("Like", like.id, reply.pilot_id, 1);
             return await this.commentReplyModel.findOneAndUpdate({ id }, { number_of_likes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
         }
 
