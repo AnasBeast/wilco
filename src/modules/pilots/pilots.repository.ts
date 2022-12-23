@@ -41,12 +41,12 @@ export class PilotsRepository {
   }
 
   async getPilotsByCommnityTags(community_ids: number[], page: number, per_page: number) {
-    const pilot_ids = await this.communityTagsModel.find({ community_ids: { $in: community_ids }, taggable_type: "Pilot" },{}, { skip: (page - 1) * per_page, limit: per_page }).transform(res => res.map(doc => doc.taggable_id));
+    const pilot_ids = await this.communityTagsModel.find({ community_id: { $in: community_ids }, taggable_type: "Pilot" },{}, { skip: (page - 1) * per_page, limit: per_page }).transform(res => res.map(doc => doc.taggable_id));
     return await this.pilotModel.find({ id: { $in: pilot_ids } }).populate("aircrafts");
   }
 
   async getPilotsCountByCommnityTags(community_ids: number[]) {
-    return await this.communityTagsModel.find({ community_ids: { $in: community_ids }, taggable_type: "Pilot" }).count();
+    return await this.communityTagsModel.find({ community_id: { $in: community_ids }, taggable_type: "Pilot" }).count();
   }
 
   async getPilotDocumentByFilter(filter: FilterQuery<Pilot>): Promise<PilotDocument> {
