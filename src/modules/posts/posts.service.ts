@@ -14,6 +14,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
 import { AirportsService } from '../airports/airports.service';
 import { HashtagsService } from '../hashtags/hashtags.service';
+import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
 
 @Injectable()
 export class PostsService {
@@ -26,6 +27,8 @@ export class PostsService {
         private readonly postFlightService: FlightService,
         @InjectModel(Like.name)
         private readonly likeModel: Model<LikeDocument>,
+        @InjectModel(Mention.name)
+        private readonly mentionModel: Model<MentionDocument>,
         private readonly notificationService: NotificationsService,
         private readonly hashtagsService: HashtagsService
       ) {}
@@ -70,7 +73,7 @@ export class PostsService {
         return post;
       }
     
-      async create(createTodoDto: CreatePostDTO, pilot_id: string) {
+      async create(createTodoDto: CreatePostDTO, pilot_id: number) {
         const postData = {
           ...createTodoDto.post,
           pilot_id
@@ -95,7 +98,15 @@ export class PostsService {
           this.postFlightService.createPostFlight(postData.flight);
         }
 
-        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
+        const post = await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
+        
+        if (postData.mentions_ids) {
+            postData.mentions_ids.map(async mention => {
+              const createdMention = await this.mentionModel.create({ pilot_id, post_id: post.id, mentioned_pilot_id: mention });
+              await this.notificationService.pushNotification("Mention", createdMention.id, mention, 4);
+            })
+        }
+        return post;
       }
     
       async update(id: string, updateTodoDto: BasePost): Promise<Post> {
@@ -137,6 +148,7 @@ export class PostsService {
         if(!post) throw new NotFoundException();
         if (!commentInput.parent_comment_id) {
           const comment = await this.commentsService.createComment({ ...commentInput, pilot_id, post_id: post.id });
+          await this.notificationService.pushNotification("Comment", comment.id, post.pilot_id, 2);
           const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
           const populatedComment = await this.commentsService.getCommentById(comment.id);
           return { ...populatedComment, post: updatedPost };
@@ -144,6 +156,8 @@ export class PostsService {
         const parentComment = await this.commentsService.getCommentById(commentInput.parent_comment_id);
         if(!parentComment) throw new NotFoundException();
         const reply = await this.commentsService.createReply({ ...commentInput, pilot_id, post_id: post.id });
+        await this.notificationService.pushNotification("Comment", reply.id, post.pilot_id, 2);
+        await this.notificationService.pushNotification("Comment", reply.id, parentComment.pilot_id, 2);
         const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
         const populatedComment = await this.commentsService.getCommentById(reply.id);
         return { ...populatedComment, post: updatedPost };

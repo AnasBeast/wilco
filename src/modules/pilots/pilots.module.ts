@@ -19,6 +19,7 @@ import { PI } from 'aws-sdk';
 import { PilotRolesSchema, Pilot_Roles } from 'src/database/mongo/models/pilot-roles.model';
 import { CommunityTagsSchema, Community_tags } from 'src/database/mongo/models/community_tags.model';
 import { PostsModule } from '../posts/posts.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -53,7 +54,7 @@ import { PostsModule } from '../posts/posts.module';
       },
       inject: [getConnectionToken()]
     }
-  ]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule, FlightModule, PostsModule],
+  ]), RolesModule, S3Module, AirportsModule, CommunitiesModule, UsersModule, AirCraftModule, FlightModule, PostsModule, NotificationsModule],
   controllers: [PilotsController],
   providers: [PilotsService, PilotsRepository],
   exports: [PilotsService, PilotsRepository],

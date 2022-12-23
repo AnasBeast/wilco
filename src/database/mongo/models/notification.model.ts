@@ -22,3 +22,9 @@ export class Notification {
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
+
+NotificationSchema.virtual('pilot', {
+    ref: 'Pilot',
+    localField: 'pilot_id',
+    foreignField: 'id',
+})

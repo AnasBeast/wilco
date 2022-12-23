@@ -9,6 +9,7 @@ import { CommentReply, CommentReplySchema } from "src/database/mongo/models/comm
 import { PostsModule } from "../posts/posts.module";
 import { CommentController } from "./comments.controller";
 import { CommentService } from "./comments.service";
+import { NotificationsModule } from "../notifications/notifications.module";
 
 @Module({
     imports: [
@@ -54,6 +55,7 @@ import { CommentService } from "./comments.service";
                 inject: [getConnectionToken()] 
             }
         ]),
+        NotificationsModule,
         forwardRef(() => PostsModule),      
     ],
     controllers: [CommentController],

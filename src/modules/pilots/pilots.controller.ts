@@ -132,4 +132,20 @@ export class PilotsController {
   async create(@Body() body: CreateAirCraftDto, @Req() req) {
     return await this.pilotsService.createAircraft(body.aircraft, req.user.pilotId);
   }
+
+  // notifications
+  @ApiTags('Notifications')
+  @ApiBearerAuth()
+  @Get('/me/unread_number')
+  async getNotificationsUnreadNumber(@Req() req) {
+    return await this.pilotsService.getNotificationsUnreadNumber(req.user.pilotId);
+  }
+
+  @ApiTags('Notifications')
+  @ApiBearerAuth()
+  @Get('/me/notifications')
+  @Pagination(true)
+  async getNotifications(@Req() req, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.getNotifications(req.user.pilotId, +page, +per_page);
+  }
 }
