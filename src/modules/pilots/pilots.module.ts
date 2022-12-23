@@ -20,6 +20,10 @@ import { PilotRolesSchema, Pilot_Roles } from 'src/database/mongo/models/pilot-r
 import { CommunityTagsSchema, Community_tags } from 'src/database/mongo/models/community_tags.model';
 import { PostsModule } from '../posts/posts.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { Like, LikeSchema } from 'src/database/mongo/models/like.model';
+import { Comment, CommentSchema } from 'src/database/mongo/models/comment.model';
+import { Post, PostSchema } from 'src/database/mongo/models/post.model';
+import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -43,6 +47,22 @@ import { NotificationsModule } from '../notifications/notifications.module';
     {
       name: Community_tags.name,
       useFactory: () => CommunityTagsSchema
+    },
+    {
+      name: Like.name,
+      useFactory: () => LikeSchema
+    },
+    {
+      name: Comment.name,
+      useFactory: () => CommentSchema
+    },
+    {
+      name: Post.name,
+      useFactory: () => PostSchema
+    },
+    {
+      name: Mention.name,
+      useFactory: () => MentionSchema
     },
     {
       name: Pilot_Roles.name,

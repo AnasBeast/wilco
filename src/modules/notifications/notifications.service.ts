@@ -20,22 +20,7 @@ export class NotificationsService {
     }
 
     async getNotifications(pilot_id: number, page: number, per_page: number) {
-        const data = await this.notificationModel.find({ pilot_id }, {}, { skip: (page - 1) * per_page, limit: per_page }).sort({ created_at: -1 });
-        data.forEach(async notification => {
-            let notifiable;
-            switch(notification.notifiable_type) {
-                case 'Like':
-                    notifiable.id = notification.notifiable_id;
-                case 'Comment':
-                    //notifiable = await this.commentsService.getCommentById(notification.notifiable_id);
-                case 'Post':
-                    //notifiable = await this.postService.getPostById(notification.notifiable_id, notification.pilot_id);
-                case 'Mention':
-
-                case 'Airport':
-            }
-        })
-        
+        const data = await this.notificationModel.find({ pilot_id }, {}, { skip: (page - 1) * per_page, limit: per_page }).sort({ created_at: -1 }).lean();
         const count = await this.notificationModel.find({ pilot_id }).count();
         const pages = Math.ceil(count / per_page);
         return {
