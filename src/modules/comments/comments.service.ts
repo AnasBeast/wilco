@@ -75,7 +75,6 @@ export class CommentService {
 
         if(comment && !comment.likes.includes(pilot_id)) {
             await this.commentLikeModel.create({ pilot_id, comment_id: comment.id });
-            console.log(comment.number_of_likes, typeof comment.number_of_likes);
             return await this.commentModel.findOneAndUpdate({ id }, { number_of_likes: comment.number_of_likes ?? 0 + 1 }, { populate: "pilot", returnDocument: 'after' });
         }
 

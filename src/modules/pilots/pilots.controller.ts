@@ -25,7 +25,7 @@ export class PilotsController {
   @Pagination(true)
   @Get()
   async getPilots(@Query() { page, per_page }: PaginationDTO) {
-    return await this.pilotsService.getPilots(Number.parseInt(page), Number.parseInt(per_page));
+    return await this.pilotsService.getPilots(+page, +per_page);
   }
 
   @ApiTags('Pilots')
@@ -49,6 +49,16 @@ export class PilotsController {
   @ApiOperation({ summary: 'Get Pilot By ID' , description:"Gets a pilot by ID" })
   async getPilotById(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.getPilotById(id, req.user.pilotId, req.user.email);
+  }
+
+  @ApiTags('Pilots')
+  @ApiBearerAuth()
+  @Get('/:pilot_id/posts')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage(FETCHED)
+  @Pagination(true)
+  async getPilotPostsById(@Param('pilot_id') id: string, @Req() req, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.getPilotPostsById(id, req.user.pilotId, +page, +per_page);
   }
 
   // map to PATCH /1/pilots/{id} in old api
@@ -84,8 +94,9 @@ export class PilotsController {
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
   @ApiOperation({ summary: 'Search Pilot By Name' })
-  async searchPilotsByName(@Param('pattern') pattern: string) {
-    return await this.pilotsService.searchByName(pattern);
+  @Pagination(true)
+  async searchPilotsByName(@Param('pattern') pattern: string, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.searchByName(pattern, +page, +per_page);
   }
 
   @ApiTags('Pilots')
@@ -93,17 +104,19 @@ export class PilotsController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ResponseMessage(FETCHED)
+  @Pagination(true)
   @ApiOperation({ summary: 'Search Pilot By HomeAirport' })
-  async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string) {
-    return await this.pilotsService.searchByHomeAirPort(airport_code);
+  async getPilotsByHomeAirPort(@Param('airport_code') airport_code: string, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.searchByHomeAirPort(airport_code, +page, +per_page);
   }
 
   @ApiTags('Pilots')
   @ApiBearerAuth()
   @Get('/searchByCommunity/:community_name')
   @ApiOperation({ summary: 'Search Pilot By Community' })
-    async getPilotsByCommunity(@Param('community_name') community_name: string) {
-    return await this.pilotsService.searchByCommunities(community_name);
+  @Pagination(true)
+    async getPilotsByCommunity(@Param('community_name') community_name: string, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.searchByCommunities(community_name, +page, +per_page);
   }
 
   // aircrafts

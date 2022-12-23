@@ -17,6 +17,7 @@ import { FlightService } from '../flights/flights.service';
 import { RolesService } from '../roles/roles.service';
 import { UsersRepository } from '../users/users.repository';
 import { PilotsRepository } from './pilots.repository';
+import { PostsService } from '../posts/posts.service';
 
 @Injectable()
 export class PilotsService {
@@ -28,7 +29,8 @@ export class PilotsService {
     private communityService: CommunityService,
     private usersRepository: UsersRepository,
     private aircraftsService: AirCraftService,
-    private flightsService: FlightService
+    private flightsService: FlightService,
+    private postsService: PostsService
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -77,13 +79,20 @@ export class PilotsService {
       const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
       return { ...pilot, latest_flights, user: { email: email } };
     }
-    const parsedId = parseInt(id, 10);
-    if(isNaN(parsedId)) {
+    if(isNaN(+id)) {
       throw new BadRequestException()
     }
-    const pilot = await this.pilotsRepository.getPilotById(parsedId);
+    const pilot = await this.pilotsRepository.getPilotById(+id);
     const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
     return { ...pilot, latest_flights };
+  }
+
+  async getPilotPostsById(id: string, pilotId: number, page: number, per_page: number) {
+    if(id !== 'me' && isNaN(+id)) throw new BadRequestException();
+    if(id === "me" || +id === pilotId ) {
+      return await this.postsService.getFeedPosts(page, per_page, pilotId, 'false');
+    }
+    return await this.postsService.getFeedPosts(page, per_page, +id, 'false');
   }
 
   // async getPopulatedUserByEmail(email: string): Promise<UserDocument> {
@@ -103,9 +112,8 @@ export class PilotsService {
   // }
 
   async editPilotById(id: string, editedUser: PilotPatchDto, pilotId: number) {
-    if (id !== 'me' && Number.parseInt(id) !== pilotId) {
-      throw new UnauthorizedException();
-    }
+    if (id !== 'me' && isNaN(+id)) throw new UnauthorizedException();
+
     const pilot = await this.pilotsRepository.getMeById(pilotId);
     if (editedUser.profile_picture_base64) {
       if (pilot.profile_picture_key) {
@@ -152,29 +160,55 @@ export class PilotsService {
     return { ...updatedPilot, latest_flights };
   }
 
-  async searchByName(pattern: string) {
-    // const pilotRoleExist = await this.rolesService.getRoleByFilter({ name: 'pilot' });
-    // if (!pilotRoleExist) throw new HttpException(errors.ROLE_EXIST, HttpStatus.BAD_REQUEST);
-
-    return await this.pilotsRepository.getPilotsByFilter({
-      $or: [{ first_name: { $regex: pattern, $options: 'i' } }, { last_name: { $regex: pattern, $options: 'i' } }],
+  async searchByName(pattern: string, page: number, per_page: number) {
+    const data = await this.pilotsRepository.getPilotsByFilter({
+      $or: [{ first_name: { $regex: new RegExp(pattern), $options: 'i' } }, { last_name: { $regex: new RegExp(pattern), $options: 'i' } }],
+    }, page, per_page);
+    const count = await this.pilotsRepository.getPilotsCountByFilter({
+      $or: [{ first_name: { $regex: new RegExp(pattern), $options: 'i' } }, { last_name: { $regex: new RegExp(pattern), $options: 'i' } }],
     });
+    const pages = Math.ceil(count / per_page)
+    return { 
+      data,
+      pagination: { 
+        current: page,
+        pages,
+        first_page: (page - 1) * per_page === 0,
+        last_page: page === pages || pages === 0,
+       } 
+    }
   }
 
-  async searchByHomeAirPort(airport_code: string) {
-    const airport = await this.airportService.getAirportByFilter({ icao: airport_code });
-    if(!airport) {
-      throw new NotFoundException();
+  async searchByHomeAirPort(airport_code: string, page: number, per_page: number) {
+    const airports = await this.airportService.getTransformedAirportsByFilter({ icao: { $regex: new RegExp(airport_code), $options: 'i' } });
+    const data = await this.pilotsRepository.getPilotsByFilter({ home_airport: { $in: airports } }, page, per_page);
+    const count = await this.pilotsRepository.getPilotsCountByFilter({ home_airport: { $in: airports } });
+    const pages = Math.ceil(count / per_page);
+    return {
+      data,
+      pagination: {
+        current: page,
+        pages,
+        first_page: (page - 1) * per_page === 0,
+        last_page: page === pages || pages === 0
+      }
     }
-    return await this.pilotsRepository.getPilotsByFilter({ home_airport: airport.icao });
   }
 
-  async searchByCommunities(name: string) {
-    const community = await this.communityService.findCommunityByFilter({ name });
-    if (!community) {
-      throw new NotFoundException()
+  async searchByCommunities(name: string, page: number, per_page: number) {
+    const communities = await this.communityService.findTransformedCommunitiesByFilter({ name: { $regex: new RegExp(name), $options: 'i' } });
+    const data = await this.pilotsRepository.getPilotsByCommnityTags(communities, page, per_page);
+    const count = await this.pilotsRepository.getPilotsCountByCommnityTags(communities);
+    const pages = Math.ceil(count / per_page);
+    return {
+      data,
+      pagination: {
+        current: page,
+        pages,
+        first_page: (page - 1) * per_page === 0,
+        last_page: page === pages || pages === 0
+      }
     }
-    return await this.pilotsRepository.getPilotsByFilter({ communities_tags: { $in: [community.name] } });
   }
 
   // aircrafts

@@ -12,6 +12,7 @@ import { S3Service } from '../files/s3.service';
 import { FlightService } from '../flights/flights.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
+import { AirportsService } from '../airports/airports.service';
 
 @Injectable()
 export class PostsService {
@@ -20,7 +21,7 @@ export class PostsService {
         private readonly postsModel: Model<PostDocument>,
         private readonly s3service: S3Service,
         private readonly commentsService: CommentService,
-        private readonly postAirportsService: Post_Airports_Service,
+        private readonly airportsService: AirportsService,
         private readonly postFlightService: FlightService,
         @InjectModel(Like.name)
         private readonly likeModel: Model<LikeDocument>,
@@ -28,7 +29,6 @@ export class PostsService {
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
-        console.log(pilotId);
         if (feed === 'false') {
           const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
@@ -47,7 +47,7 @@ export class PostsService {
         return post;
       }
     
-      async create(createTodoDto: CreatePostDTO, pilot_id: string): Promise<Post> {
+      async create(createTodoDto: CreatePostDTO, pilot_id: string) {
         const postData = {
           ...createTodoDto.post,
           pilot_id
@@ -63,11 +63,16 @@ export class PostsService {
           })
         }
 
+        let airports = []
+        if (postData.airports) {
+          airports = await this.airportsService.getAirportsByFilter({ icao: { $in: postData.airports } }, ["icao", "lat", "lon", "-_id"]);
+        }
+
         if (postData.flight) {
           this.postFlightService.createPostFlight(postData.flight);
         }
 
-        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls });
+        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
       }
     
       async update(id: string, updateTodoDto: BasePost): Promise<Post> {
