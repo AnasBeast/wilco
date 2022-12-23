@@ -23,5 +23,6 @@ import * as AutoIncrementFactory from "mongoose-sequence";
   ],
   providers: [HashtagsService],
   controllers: [HashtagsController],
+  exports: [HashtagsService]
 })
 export class HashtagsModule {}
