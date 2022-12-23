@@ -15,6 +15,7 @@ import { Post_Airports_Service } from '../post_airports/post-airports.service';
 import { AirportsService } from '../airports/airports.service';
 import { HashtagsService } from '../hashtags/hashtags.service';
 import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
+import { EditedPostDTO } from 'src/dto/post/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -35,12 +36,12 @@ export class PostsService {
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
         if (feed === 'false') {
-          const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes" },{ path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
+          const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes", transform: (doc) => doc?.pilot_id },{ path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
           posts.forEach(post => post.likes.includes(pilotId) ? post.liked = true : post.liked = false);
           return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
         }
-        const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
+        const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes", transform: (doc) => doc?.pilot_id }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
         const count = await this.postsModel.find({ visibility: "public" }).count();
         posts.forEach(post => post.likes.includes(pilotId) ? post.liked = true : post.liked = false);
         return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
@@ -111,8 +112,11 @@ export class PostsService {
         return post;
       }
     
-      async update(id: string, updateTodoDto: BasePost): Promise<Post> {
-        return await this.postsModel.findByIdAndUpdate(id, updateTodoDto).exec();
+      async update(id: string, updateTodoDto: EditedPostDTO, pilot_id: number): Promise<Post> {
+        if (isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id });
+        if(post.pilot_id !== pilot_id) throw new UnauthorizedException();
+        return await this.postsModel.findOneAndUpdate({ id }, updateTodoDto, {  returnDocument: 'after', populate: [{ path: 'pilot', select: "-_id -__v -created_at -updated_at -updatedAt -profile_picture_key"}, { path: "flight", populate: "aircraft"}, { path: 'hashtags', populate: { path: 'hashtag'  }, transform: (doc) => doc && doc?.hashtag?.text }, {path:"community_tags", populate: { path:"community", }, transform: (doc) => doc && doc?.community?.name }] }).lean();
       }
     
       async delete(id: string): Promise<Post> {
