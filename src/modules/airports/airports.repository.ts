@@ -17,6 +17,10 @@ export class AirportsRepository {
     return await this.airportModel.find(filter).select(projection).lean();
   }
 
+  async getTransformedAirportsByFilter(filter: FilterQuery<Airport>,): Promise<Airport[]> {
+    return await this.airportModel.find(filter).transform(res => res.map(doc => doc.icao)).lean();
+  }
+
   async createAirport(body: CreateAirportDto): Promise<AirportEntity> {
     return await this.airportModel.create(body);
   }

@@ -24,6 +24,10 @@ export class CommunityService {
     return await this.model.findOne(filter).lean();
   }
 
+  async findTransformedCommunitiesByFilter(filter: FilterQuery<Community>) {
+    return await this.model.find(filter).transform(res => res.map(doc => doc.id));
+  }
+
   async create(createTodoDto: BaseCommunity): Promise<Community> {
     return await new this.model({
       ...createTodoDto,

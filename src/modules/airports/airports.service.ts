@@ -19,6 +19,10 @@ export class AirportsService {
     return await this.airportsRepository.getAirportsByFilter(filter, projection);
   }
 
+  async getTransformedAirportsByFilter(filter: FilterQuery<Airport>) {
+    return await this.airportsRepository.getTransformedAirportsByFilter(filter);
+  }
+
   async createAirport(body: CreateAirportDto): Promise<AirportEntity> {
     const { name } = body;
     const airportExist = await this.airportsRepository.getAirportByFilter({ name });

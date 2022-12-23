@@ -20,7 +20,6 @@ export class CommentController {
     @Post("/:comment_id/like")
     @ApiOperation({ summary: 'Like a comment' })
     async likeComment(@Param("comment_id") comment_id: string, @Req() req) {
-        console.log(comment_id);
         return await this.commentService.likeComment(comment_id, req.user.pilotId);
     }
 
