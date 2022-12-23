@@ -16,3 +16,9 @@ export class Like {
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);
+
+LikeSchema.virtual('pilot', {
+  ref: 'Pilot',
+  localField: 'pilot_id',
+  foreignField: 'id'
+})

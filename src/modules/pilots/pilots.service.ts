@@ -22,6 +22,10 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { PilotRolesDocument, Pilot_Roles } from 'src/database/mongo/models/pilot-roles.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
+import { Comment, CommentDocument } from 'src/database/mongo/models/comment.model';
+import { Post, PostDocument } from 'src/database/mongo/models/post.model';
+import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
 
 @Injectable()
 export class PilotsService {
@@ -36,7 +40,11 @@ export class PilotsService {
     private flightsService: FlightService,
     private postsService: PostsService,
     private notificationsService: NotificationsService,
-    @InjectModel(Pilot_Roles.name) private pilotRolesModel: Model<PilotRolesDocument>
+    @InjectModel(Pilot_Roles.name) private pilotRolesModel: Model<PilotRolesDocument>,
+    @InjectModel(Like.name) private likeModel: Model<LikeDocument>,
+    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectModel(Mention.name) private mentionModel: Model<MentionDocument>,
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -234,6 +242,19 @@ export class PilotsService {
   }
 
   async getNotifications(pilot_id: number, page: number, per_page: number) {
-    return await this.notificationsService.getNotifications(pilot_id, page, per_page);
+    const data = await this.notificationsService.getNotifications(pilot_id, page, per_page);
+    let newData = await Promise.all(data.data.map(async notification => {
+      if (notification.notifiable_type === "Like") {
+        notification["notifiable"] = await this.likeModel.findOne({ id: notification.notifiable_id }, {}, { populate: "pilot" }).lean();
+      } else if (notification.notifiable_type === "Comment") {
+        notification["notifiable"] = await this.commentModel.findOne({ id: notification.notifiable_id }, {}, { populate: "pilot" }).lean();
+      } else if (notification.notifiable_type === "Post") {
+        notification["notifiable"] = await this.postModel.findOne({ id: notification.notifiable_id }, {}, { populate: "pilot" }).lean();
+      } else if (notification.notifiable_type === "Mention") {
+        notification["notifiable"] = await this.mentionModel.findOne({ id: notification.notifiable_id }, {}, { populate: "pilot" }).lean();
+      }
+      return notification;
+    }))
+    return { data: newData, pagination: data.pagination }
   }
 }
