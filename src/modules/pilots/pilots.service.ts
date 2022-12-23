@@ -17,6 +17,7 @@ import { FlightService } from '../flights/flights.service';
 import { RolesService } from '../roles/roles.service';
 import { UsersRepository } from '../users/users.repository';
 import { PilotsRepository } from './pilots.repository';
+import { PostsService } from '../posts/posts.service';
 
 @Injectable()
 export class PilotsService {
@@ -28,7 +29,8 @@ export class PilotsService {
     private communityService: CommunityService,
     private usersRepository: UsersRepository,
     private aircraftsService: AirCraftService,
-    private flightsService: FlightService
+    private flightsService: FlightService,
+    private postsService: PostsService
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -77,13 +79,20 @@ export class PilotsService {
       const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
       return { ...pilot, latest_flights, user: { email: email } };
     }
-    const parsedId = parseInt(id, 10);
-    if(isNaN(parsedId)) {
+    if(isNaN(+id)) {
       throw new BadRequestException()
     }
-    const pilot = await this.pilotsRepository.getPilotById(parsedId);
+    const pilot = await this.pilotsRepository.getPilotById(+id);
     const latest_flights = await this.flightsService.getLatestFlights(pilot.aircrafts?.map((aircraft) => aircraft.id));
     return { ...pilot, latest_flights };
+  }
+
+  async getPilotPostsById(id: string, pilotId: number, page: number, per_page: number) {
+    if(id !== 'me' && isNaN(+id)) throw new BadRequestException();
+    if(id === "me" || +id === pilotId ) {
+      return await this.postsService.getFeedPosts(page, per_page, pilotId, 'false');
+    }
+    return await this.postsService.getFeedPosts(page, per_page, +id, 'false');
   }
 
   // async getPopulatedUserByEmail(email: string): Promise<UserDocument> {
@@ -103,9 +112,8 @@ export class PilotsService {
   // }
 
   async editPilotById(id: string, editedUser: PilotPatchDto, pilotId: number) {
-    if (id !== 'me' && Number.parseInt(id) !== pilotId) {
-      throw new UnauthorizedException();
-    }
+    if (id !== 'me' && isNaN(+id)) throw new UnauthorizedException();
+
     const pilot = await this.pilotsRepository.getMeById(pilotId);
     if (editedUser.profile_picture_base64) {
       if (pilot.profile_picture_key) {

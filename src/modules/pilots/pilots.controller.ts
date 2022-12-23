@@ -25,7 +25,7 @@ export class PilotsController {
   @Pagination(true)
   @Get()
   async getPilots(@Query() { page, per_page }: PaginationDTO) {
-    return await this.pilotsService.getPilots(Number.parseInt(page), Number.parseInt(per_page));
+    return await this.pilotsService.getPilots(+page, +per_page);
   }
 
   @ApiTags('Pilots')
@@ -49,6 +49,16 @@ export class PilotsController {
   @ApiOperation({ summary: 'Get Pilot By ID' , description:"Gets a pilot by ID" })
   async getPilotById(@Param('id') id: string, @Req() req) {
     return await this.pilotsService.getPilotById(id, req.user.pilotId, req.user.email);
+  }
+
+  @ApiTags('Pilots')
+  @ApiBearerAuth()
+  @Get('/:pilot_id/posts')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage(FETCHED)
+  @Pagination(true)
+  async getPilotPostsById(@Param('pilot_id') id: string, @Req() req, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.getPilotPostsById(id, req.user.pilotId, +page, +per_page);
   }
 
   // map to PATCH /1/pilots/{id} in old api

@@ -12,6 +12,7 @@ import { S3Service } from '../files/s3.service';
 import { FlightService } from '../flights/flights.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
+import { AirportsService } from '../airports/airports.service';
 
 @Injectable()
 export class PostsService {
@@ -20,7 +21,7 @@ export class PostsService {
         private readonly postsModel: Model<PostDocument>,
         private readonly s3service: S3Service,
         private readonly commentsService: CommentService,
-        private readonly postAirportsService: Post_Airports_Service,
+        private readonly airportsService: AirportsService,
         private readonly postFlightService: FlightService,
         @InjectModel(Like.name)
         private readonly likeModel: Model<LikeDocument>,
@@ -46,7 +47,7 @@ export class PostsService {
         return post;
       }
     
-      async create(createTodoDto: CreatePostDTO, pilot_id: string): Promise<Post> {
+      async create(createTodoDto: CreatePostDTO, pilot_id: string) {
         const postData = {
           ...createTodoDto.post,
           pilot_id
@@ -62,11 +63,16 @@ export class PostsService {
           })
         }
 
+        let airports = []
+        if (postData.airports) {
+          airports = await this.airportsService.getAirportsByFilter({ icao: { $in: postData.airports } }, ["icao", "lat", "lon", "-_id"]);
+        }
+
         if (postData.flight) {
           this.postFlightService.createPostFlight(postData.flight);
         }
 
-        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls });
+        return await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
       }
     
       async update(id: string, updateTodoDto: BasePost): Promise<Post> {

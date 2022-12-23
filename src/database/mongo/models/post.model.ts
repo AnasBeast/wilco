@@ -40,7 +40,7 @@ export class Post {
 
   @ApiProperty()
   @Prop({ default: [] })
-  airports: string[];
+  airports: [];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
