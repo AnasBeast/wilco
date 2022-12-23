@@ -35,12 +35,14 @@ export class PostsService {
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
         if (feed === 'false') {
-          const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
+          const posts = await this.postsModel.find({ pilot_id: pilotId }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes" },{ path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
           const count = await this.postsModel.find({ pilot_id: pilotId }).count();
+          posts.forEach(post => post.likes.includes(pilotId) ? post.liked = true : post.liked = false);
           return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
         }
-        const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
+        const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "likes" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
         const count = await this.postsModel.find({ visibility: "public" }).count();
+        posts.forEach(post => post.likes.includes(pilotId) ? post.liked = true : post.liked = false);
         return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
       }
 
