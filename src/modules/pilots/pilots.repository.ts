@@ -66,10 +66,10 @@ export class PilotsRepository {
   }
 
   async editPilot(id: number, updatedUser: UpdateQuery<Pilot>) {
-    return await this.pilotModel.findOneAndUpdate({ id }, updatedUser, { returnDocument: "after", populate: [{ path: "aircrafts" }, { path: "certificates" }, { path: "ratings" }, { path: "roles" }] }).lean();
+    return await this.pilotModel.findOneAndUpdate({ id }, updatedUser, { returnDocument: "after", populate: [{path: "aircrafts"}, {path:"certificates", populate: { path:"certificate", select: "id name custom -_id" }, transform: (doc) => doc.certificate }, {path:"ratings", populate: { path:"rating", select: "id name custom -_id" }, transform: (doc) => doc.rating }, {path:"roles", populate: { path:"role", select: "id name custom created_at updated_at -_id" }, transform: (doc) => doc.role },{path:"community_tags", populate: { path:"community", select: "name -_id" }, transform: (doc) => doc.community.name }] }).lean();
   }
 
   async deletePilot(id: number) {
-    return await this.pilotModel.findOneAndDelete({ id });
+    return await this.pilotModel.findOneAndDelete({ id }, { populate: [{path: "aircrafts"}, {path:"certificates", populate: { path:"certificate", select: "id name custom -_id" }, transform: (doc) => doc.certificate }, {path:"ratings", populate: { path:"rating", select: "id name custom -_id" }, transform: (doc) => doc.rating }, {path:"roles", populate: { path:"role", select: "id name custom created_at updated_at -_id" }, transform: (doc) => doc.role },{path:"community_tags", populate: { path:"community", select: "name -_id" }, transform: (doc) => doc.community.name }] });
   }
 }
