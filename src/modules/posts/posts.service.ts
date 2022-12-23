@@ -15,6 +15,7 @@ import { Post_Airports_Service } from '../post_airports/post-airports.service';
 import { AirportsService } from '../airports/airports.service';
 import { HashtagsService } from '../hashtags/hashtags.service';
 import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
+import { EditedPostDTO } from 'src/dto/post/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -111,8 +112,11 @@ export class PostsService {
         return post;
       }
     
-      async update(id: string, updateTodoDto: BasePost): Promise<Post> {
-        return await this.postsModel.findByIdAndUpdate(id, updateTodoDto).exec();
+      async update(id: string, updateTodoDto: EditedPostDTO, pilot_id: number): Promise<Post> {
+        if (isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id });
+        if(post.pilot_id !== pilot_id) throw new UnauthorizedException();
+        return await this.postsModel.findOneAndUpdate({ id }, updateTodoDto, {  returnDocument: 'after', populate: [{ path: 'pilot', select: "-_id -__v -created_at -updated_at -updatedAt -profile_picture_key"}, { path: "flight", populate: "aircraft"}, { path: 'hashtags', populate: { path: 'hashtag'  }, transform: (doc) => doc && doc?.hashtag?.text }, {path:"community_tags", populate: { path:"community", }, transform: (doc) => doc && doc?.community?.name }] }).lean();
       }
     
       async delete(id: string): Promise<Post> {

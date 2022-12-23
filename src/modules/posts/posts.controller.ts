@@ -22,6 +22,7 @@ import { BasePost } from 'src/dto/post/base-post.dto';
 import { CreatePostDTO } from 'src/dto/post/create-post.dto';
 import { FeedDTO } from 'src/dto/post/feed.dto';
 import { PostsService } from './posts.service';
+import { UpdatePostDTO } from 'src/dto/post/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -76,8 +77,8 @@ export class PostsController {
         description: 'The record updated',
         type: BasePost,
     })
-    async update(@Param('id') id: string, @Body() updateTodoDto: BasePost) {
-        return await this.postsService.update(id, updateTodoDto);
+    async update(@Param('id') id: string, @Body() updateTodoDto: UpdatePostDTO, @Req() req) {
+        return await this.postsService.update(id, updateTodoDto.post, req.user.pilotId);
     }
 
     @ApiTags("Posts")
