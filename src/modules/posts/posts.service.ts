@@ -13,6 +13,7 @@ import { FlightService } from '../flights/flights.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Post_Airports_Service } from '../post_airports/post-airports.service';
 import { AirportsService } from '../airports/airports.service';
+import { HashtagsService } from '../hashtags/hashtags.service';
 
 @Injectable()
 export class PostsService {
@@ -25,7 +26,8 @@ export class PostsService {
         private readonly postFlightService: FlightService,
         @InjectModel(Like.name)
         private readonly likeModel: Model<LikeDocument>,
-        private readonly notificationService: NotificationsService
+        private readonly notificationService: NotificationsService,
+        private readonly hashtagsService: HashtagsService
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
@@ -37,6 +39,22 @@ export class PostsService {
         const posts = await this.postsModel.find({ visibility: "public" }, {}, { limit: per_page, skip: (page - 1) * per_page, populate: [{ path: "pilot" }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }]}).sort({ created_at: -1 }).lean();
         const count = await this.postsModel.find({ visibility: "public" }).count();
         return {data: posts, pagination: { current: (page - 1) * per_page + posts.length, pages: Math.ceil(count / per_page), first_page: (page - 1) * per_page === 0, last_page: count < (page - 1) * per_page + per_page }}
+      }
+
+      async getPublicPostsByPilotId(page, per_page, pilot_id, my_pilot_id) {
+        const posts = await this.postsModel.find({ pilot_id, visibility: "public" }, {}, {limit: per_page, skip: (page - 1)* per_page, populate: [{ path: "pilot", select: "-_id -created_at -updated_at" }, { path: 'likes', transform: (doc) => doc?.pilot_id }, { path: "flight", populate: "aircraft"}, { path: "first_comments", populate: "pilot" }, { path: 'hashtags', populate: { path: 'hashtag'  }, transform: (doc) => doc && doc?.hashtag?.text }, {path:"community_tags", populate: { path:"community", }, transform: (doc) => doc && doc?.community?.name }]}).select("-_id -photo_keys").sort({ created_at: -1 }).lean();
+        posts.forEach(post => post.likes.includes(my_pilot_id) ? post.liked = true : post.liked = false);
+        const count = await this.postsModel.find({ pilot_id, visibility: "public" }).count();
+        const pages = Math.ceil(count / per_page);
+        return {
+          data: posts,
+          pagination: {
+            current: page,
+            pages: pages,
+            first_page: page === 1,
+            last_page: page === pages || pages === 0
+          }
+        }
       }
     
       async getPostById(id: number, pilotId: number) {

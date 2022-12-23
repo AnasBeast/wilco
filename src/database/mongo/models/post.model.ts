@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument } from 'mongoose';
 
-export type PostDocument = HydratedDocument<Post, {}, { likes: number[] }>;
+export type PostDocument = HydratedDocument<Post, {}, { likes: number[], liked: boolean }>;
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'edited_at' }, toJSON: { virtuals: true, transform: true }, toObject: { virtuals: true, transform: true } })
 export class Post {

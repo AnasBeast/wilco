@@ -38,7 +38,8 @@ export class HashtagsService {
     };
   }
 
-  // async findOne(id: string): Promise<Hashtags> {
-  //   return await this.model.findById(id).exec();
-  // }
+  async getHashtagsByIds(hashtag_ids: number[]) {
+    return await this.model.find({ id: { $in: hashtag_ids } }).transform(hashtags => hashtags.map(hashtag => hashtag.text));
+  }
+
 }

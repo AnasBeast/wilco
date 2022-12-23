@@ -92,7 +92,9 @@ export class PilotsService {
     if(id === "me" || +id === pilotId ) {
       return await this.postsService.getFeedPosts(page, per_page, pilotId, 'false');
     }
-    return await this.postsService.getFeedPosts(page, per_page, +id, 'false');
+    const pilot = this.pilotsRepository.getPilotDocumentById(+id);
+    if(!pilot) throw new NotFoundException();
+    return await this.postsService.getPublicPostsByPilotId(page, per_page, +id, pilotId);
   }
 
   // async getPopulatedUserByEmail(email: string): Promise<UserDocument> {

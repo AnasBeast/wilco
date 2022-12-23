@@ -18,21 +18,17 @@ export class Pilot {
   @ApiProperty()
   @Prop({ default: null })
   description: string;
-
-  @ApiProperty()
-  @Prop({ required: true, select: false })
-  roles_ids: number[]
   
   @ApiProperty()
   @Prop({ default: null })
   primary_aircraft_id: number;
 
   @ApiProperty()
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   profile_picture_url: string;
 
   @ApiProperty()
-  @Prop({ default: null })
+  @Prop({ default: null, type: String })
   home_airport: string;
 
   @ApiProperty()
@@ -43,7 +39,7 @@ export class Pilot {
   @Prop({ default: null })
   total_hours: string;
 
-  @Prop({ select: false })
+  @Prop({ default: null, type: String })
   profile_picture_key: string;
 }
 

@@ -13,6 +13,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { PostHashtagsSchema, Post_Hashtags } from 'src/database/mongo/models/post-hashtags.model';
 import { AirportsModule } from '../airports/airports.module';
+import { HashtagsModule } from '../hashtags/hashtags.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { AirportsModule } from '../airports/airports.module';
     Post_Airports_Module,
     FlightModule,
     AirportsModule,
+    HashtagsModule,
     forwardRef(() => CommentsModule) 
   ],
   providers: [PostsService],
