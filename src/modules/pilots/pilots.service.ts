@@ -19,6 +19,9 @@ import { UsersRepository } from '../users/users.repository';
 import { PilotsRepository } from './pilots.repository';
 import { PostsService } from '../posts/posts.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { PilotRolesDocument, Pilot_Roles } from 'src/database/mongo/models/pilot-roles.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PilotsService {
@@ -32,7 +35,8 @@ export class PilotsService {
     private aircraftsService: AirCraftService,
     private flightsService: FlightService,
     private postsService: PostsService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    @InjectModel(Pilot_Roles.name) private pilotRolesModel: Model<PilotRolesDocument>
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -60,15 +64,16 @@ export class PilotsService {
     if (pilot.custom_roles) {
       createdRoles = await this.rolesService.createCustomRoles(pilot.custom_roles);
       newPilot = await this.pilotsRepository.createPilot({
-        ...{ first_name: pilot.first_name, last_name: pilot.last_name },
-        roles_ids: [...pilot.roles, ...createdRoles.map((role: any) => role.id)],
+        first_name: pilot.first_name, last_name: pilot.last_name
       });
     }else {
       newPilot = await this.pilotsRepository.createPilot({
-        ...{ first_name: pilot.first_name, last_name: pilot.last_name },
-        roles_ids: [...pilot.roles],
+        first_name: pilot.first_name, last_name: pilot.last_name
       });
     }
+
+    pilot.roles.map(async role_id => await this.pilotRolesModel.create({ pilot_id: newPilot.id, role_id }));
+    createdRoles.map((role: any) => role.id).map(async role_id => await this.pilotRolesModel.create({ pilot_id: newPilot.id, role_id }));
     
     await this.usersRepository.addPilotIdToUser(userId, newPilot.id);
     return newPilot;
