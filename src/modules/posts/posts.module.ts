@@ -15,6 +15,7 @@ import { PostHashtagsSchema, Post_Hashtags } from 'src/database/mongo/models/pos
 import { AirportsModule } from '../airports/airports.module';
 import { HashtagsModule } from '../hashtags/hashtags.module';
 import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model';
+import { Report, ReportSchema } from 'src/database/mongo/models/reports.model';
 
 @Module({
   imports: [
@@ -58,6 +59,10 @@ import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model'
           return schema;
         },
         inject: [getConnectionToken()]
+      },
+      {
+        name: Report.name,
+        useFactory: () => ReportSchema,
       },
     ]),
     NotificationsModule,

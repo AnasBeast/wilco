@@ -148,4 +148,9 @@ export class PilotsController {
   async getNotifications(@Req() req, @Query() { page, per_page }: PaginationDTO) {
     return await this.pilotsService.getNotifications(req.user.pilotId, +page, +per_page);
   }
+
+  @Post('/:pilot_id/reports')
+  async reportPilot(@Param('pilot_id') id: string) {
+      return await this.pilotsService.reportPilot(id);
+  }
 }
