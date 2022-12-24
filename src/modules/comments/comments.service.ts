@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnprocessableEntityException, forwardRef } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException, UnprocessableEntityException, forwardRef } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { CommentDislike, CommentDislikeDocument } from "src/database/mongo/models/comment-dislike.model";
@@ -7,6 +7,7 @@ import { Comment, CommentDocument } from "src/database/mongo/models/comment.mode
 import { CommentReply, CommentReplyDocument } from "src/database/mongo/models/commentReply.model";
 import { PostsService } from "../posts/posts.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { Report, ReportDocument } from "src/database/mongo/models/reports.model";
 
 
 @Injectable()
@@ -22,6 +23,8 @@ export class CommentService {
         private readonly commentLikeModel: Model<CommentLikeDocument>,
         @InjectModel(CommentDislike.name)
         private readonly commentDislikeModel: Model<CommentDislikeDocument>,
+        @InjectModel(Report.name)
+        private readonly reportModel: Model<ReportDocument>,
         private readonly notificationService: NotificationsService
     ) {}
 
@@ -39,6 +42,13 @@ export class CommentService {
 
     async getReplyById(id: number) {
         return await this.commentReplyModel.findOne({ id });
+    }
+
+    async reportComment(id: string) {
+        if(isNaN(+id)) throw new BadRequestException();
+        const comment = await this.commentModel.findOne({ id: +id });
+        if(!comment) throw new NotFoundException();
+        return await this.reportModel.create({ reportable_type: "Comment", reportable_id: +id });
     }
 
     // TODO: fix

@@ -120,4 +120,9 @@ export class PostsController {
         return await this.postsService.createComment(postId, createCommentDTO.comment, req.user.pilotId);
     }
 
+    @Post('/:post_id/reports')
+    async reportPost(@Param('post_id') id: string) {
+        return await this.postsService.reportPost(id);
+    }
+
 }

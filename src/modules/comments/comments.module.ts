@@ -10,6 +10,7 @@ import { PostsModule } from "../posts/posts.module";
 import { CommentController } from "./comments.controller";
 import { CommentService } from "./comments.service";
 import { NotificationsModule } from "../notifications/notifications.module";
+import { Report, ReportSchema } from "src/database/mongo/models/reports.model";
 
 @Module({
     imports: [
@@ -23,6 +24,10 @@ import { NotificationsModule } from "../notifications/notifications.module";
                     return schema;
                 },
                 inject: [getConnectionToken()]
+            },
+            { 
+                name: Report.name, 
+                useFactory: () => ReportSchema
             },
             { 
                 name: CommentReply.name, 

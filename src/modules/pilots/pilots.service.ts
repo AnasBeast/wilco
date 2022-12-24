@@ -26,6 +26,7 @@ import { Like, LikeDocument } from 'src/database/mongo/models/like.model';
 import { Comment, CommentDocument } from 'src/database/mongo/models/comment.model';
 import { Post, PostDocument } from 'src/database/mongo/models/post.model';
 import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
+import { Report, ReportDocument } from 'src/database/mongo/models/reports.model';
 
 @Injectable()
 export class PilotsService {
@@ -45,6 +46,8 @@ export class PilotsService {
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(Mention.name) private mentionModel: Model<MentionDocument>,
+    @InjectModel(Report.name)
+    private readonly reportModel: Model<ReportDocument>,
   ) {}
 
   // GET ALL WITH PAGINATION
@@ -257,4 +260,11 @@ export class PilotsService {
     }))
     return { data: newData, pagination: data.pagination }
   }
+
+  async reportPilot(id: string) {
+    if(isNaN(+id)) throw new BadRequestException();
+    const pilot = await this.pilotsRepository.getMeById(+id);
+    if(!pilot) throw new NotFoundException();
+    return await this.reportModel.create({ reportable_type: "Pilot", reportable_id: +id });
+}
 }

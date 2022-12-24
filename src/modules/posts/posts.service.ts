@@ -16,6 +16,7 @@ import { AirportsService } from '../airports/airports.service';
 import { HashtagsService } from '../hashtags/hashtags.service';
 import { Mention, MentionDocument } from 'src/database/mongo/models/mention.model';
 import { EditedPostDTO } from 'src/dto/post/update-post.dto';
+import { Report, ReportDocument } from 'src/database/mongo/models/reports.model';
 
 @Injectable()
 export class PostsService {
@@ -31,7 +32,9 @@ export class PostsService {
         @InjectModel(Mention.name)
         private readonly mentionModel: Model<MentionDocument>,
         private readonly notificationService: NotificationsService,
-        private readonly hashtagsService: HashtagsService
+        private readonly hashtagsService: HashtagsService,
+        @InjectModel(Report.name)
+        private readonly reportModel: Model<ReportDocument>,
       ) {}
     
       async getFeedPosts(page: number, per_page: number, pilotId: number, feed: string = 'true', community_tags?: string[], hashtags?: string[]) {
@@ -180,4 +183,11 @@ export class PostsService {
         const pages = Math.ceil(count / per_page)
         return await { data: comments, pagination: { current: page, pages, first_page: (page - 1) * per_page === 0, last_page: page === pages } }
       }
+
+      async reportPost(id: string) {
+        if(isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id });
+        if(!post) throw new NotFoundException();
+        return await this.reportModel.create({ reportable_type: "Post", reportable_id: +id });
+    }
 }

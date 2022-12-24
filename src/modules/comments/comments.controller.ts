@@ -28,4 +28,9 @@ export class CommentController {
     async dislikeComment(@Param("comment_id") comment_id: string, @Req() req) {
         return await this.commentService.dislikeComment(comment_id, req.user.pilotId);
     }
+
+    @Post('/:comment_id/reports')
+    async reportComment(@Param('comment_id') id: string) {
+        return await this.commentService.reportComment(id);
+    }
 }

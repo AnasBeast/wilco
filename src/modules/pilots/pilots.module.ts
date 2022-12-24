@@ -24,6 +24,7 @@ import { Like, LikeSchema } from 'src/database/mongo/models/like.model';
 import { Comment, CommentSchema } from 'src/database/mongo/models/comment.model';
 import { Post, PostSchema } from 'src/database/mongo/models/post.model';
 import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model';
+import { Report, ReportSchema } from 'src/database/mongo/models/reports.model';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -63,6 +64,10 @@ import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model'
     {
       name: Mention.name,
       useFactory: () => MentionSchema
+    },
+    {
+      name: Report.name,
+      useFactory: () => ReportSchema
     },
     {
       name: Pilot_Roles.name,
