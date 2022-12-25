@@ -18,7 +18,7 @@ const api = axios.create({
 export class FlightService {
     constructor(@InjectModel(Post_Flights.name) private flightModel: Model<FlightDocument>) {}
 
-    async createPostFlight(body: FlightDTO) {
+    async createPostFlight(body: Post_Flights) {
         return await this.flightModel.create(body);
     }
 

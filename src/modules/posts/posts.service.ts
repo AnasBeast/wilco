@@ -100,12 +100,13 @@ export class PostsService {
           airports = await this.airportsService.getAirportsByFilter({ icao: { $in: postData.airports } }, ["icao", "lat", "lon", "-_id"]);
         }
 
-        if (postData.flight) {
-          this.postFlightService.createPostFlight(postData.flight);
-        }
-
+        
         const post = await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
         
+        if (postData.flight) {
+          this.postFlightService.createPostFlight({ ...postData.flight, post_id: post.id, track_url: postData.flight.track });
+        }
+
         if (postData.mentions_ids) {
             postData.mentions_ids.map(async mention => {
               const createdMention = await this.mentionModel.create({ pilot_id, post_id: post.id, mentioned_pilot_id: mention });

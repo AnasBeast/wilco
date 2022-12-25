@@ -17,11 +17,11 @@ export class Post_Flights {
 
   @ApiProperty()
   @Prop({ required: true, type: Date })
-  departure_time: Date;
+  departure_time: string;
 
   @ApiProperty()
   @Prop({ required: true, type: Date })
-  arrival_time: Date;
+  arrival_time: string;
 
   @ApiProperty()
   @Prop({ required: true })
@@ -44,7 +44,7 @@ export class Post_Flights {
   post_id: number;
 
   @ApiProperty()
-  @Prop({ required: true })
+  @Prop()
   track_url: string;
 }
 
