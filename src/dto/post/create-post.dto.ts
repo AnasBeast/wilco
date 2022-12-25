@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { Type } from "class-transformer";
-import { IsDate, IsNotEmpty, IsOptional, IsPositive, IsString, Length, ValidateNested } from "class-validator";
+import { IsDate, IsDateString, IsNotEmpty, IsOptional, IsPositive, IsString, Length, ValidateNested } from "class-validator";
 
 type Visibility = "public" | "only_me";
 
@@ -15,11 +15,11 @@ export class FlightDTO {
   to: string;
 
   @ApiProperty()
-  @IsDate()
+  @IsDateString()
   departure_time: string;
 
   @ApiProperty()
-  @IsDate()
+  @IsDateString()
   arrival_time: string;
 
   @ApiProperty()
