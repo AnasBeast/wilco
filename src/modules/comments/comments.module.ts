@@ -11,6 +11,7 @@ import { CommentController } from "./comments.controller";
 import { CommentService } from "./comments.service";
 import { NotificationsModule } from "../notifications/notifications.module";
 import { Report, ReportSchema } from "src/database/mongo/models/reports.model";
+import { Post, PostSchema } from "src/database/mongo/models/post.model";
 
 @Module({
     imports: [
@@ -24,6 +25,10 @@ import { Report, ReportSchema } from "src/database/mongo/models/reports.model";
                     return schema;
                 },
                 inject: [getConnectionToken()]
+            },
+            { 
+                name: Post.name, 
+                useFactory: () => PostSchema
             },
             { 
                 name: Report.name, 
@@ -61,7 +66,6 @@ import { Report, ReportSchema } from "src/database/mongo/models/reports.model";
             }
         ]),
         NotificationsModule,
-        forwardRef(() => PostsModule),      
     ],
     controllers: [CommentController],
     providers: [CommentService],

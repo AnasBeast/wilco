@@ -113,7 +113,7 @@ export class PostsService {
               await this.notificationService.pushNotification("Mention", createdMention.id, mention, 4);
             })
         }
-        return post;
+        return await post.populate("pilot");
       }
     
       async update(id: string, updateTodoDto: EditedPostDTO, pilot_id: number): Promise<Post> {
@@ -123,15 +123,19 @@ export class PostsService {
         return await this.postsModel.findOneAndUpdate({ id }, updateTodoDto, {  returnDocument: 'after', populate: [{ path: 'pilot', select: "-_id -__v -created_at -updated_at -updatedAt -profile_picture_key"}, { path: "flight", populate: "aircraft"}, { path: 'hashtags', populate: { path: 'hashtag'  }, transform: (doc) => doc && doc?.hashtag?.text }, {path:"community_tags", populate: { path:"community", }, transform: (doc) => doc && doc?.community?.name }] }).lean();
       }
     
-      async delete(id: string): Promise<Post> {
-        return await this.postsModel.findByIdAndDelete(id).exec();
+      async delete(id: string, pilot_id: number): Promise<Post> {
+        if(isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id });
+        if(!post) throw new NotFoundException();
+        if(post.pilot_id !== pilot_id) throw new UnauthorizedException();
+        return await this.postsModel.findOneAndDelete({ id: post.id });
       }
 
       async likePost(id: string, pilot_id: number) {
-        const post = await this.postsModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
-        if(!post) {
-          throw new NotFoundException();
-        }
+        if(isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        if(!post) throw new NotFoundException();
+        
         if(!post.likes.includes(pilot_id)) {
           const like = await this.likeModel.create({ pilot_id, post_id: post.id });
           await this.notificationService.pushNotification("Like", like.id, post.pilot_id, 1);
@@ -143,7 +147,8 @@ export class PostsService {
       }
 
       async unlikePost(id: string, pilot_id: number) {
-        const post = await this.postsModel.findOne({ id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
+        if(isNaN(+id)) throw new BadRequestException();
+        const post = await this.postsModel.findOne({ id: +id }, {}, { populate: { path: "likes", match: { pilot_id }, transform: (doc) => doc == null ? null : doc.pilot_id } }).lean();
         if(!post || !post.likes.includes(pilot_id)) {
           throw new NotFoundException();
         }
@@ -159,7 +164,7 @@ export class PostsService {
         if (!commentInput.parent_comment_id) {
           const comment = await this.commentsService.createComment({ ...commentInput, pilot_id, post_id: post.id });
           await this.notificationService.pushNotification("Comment", comment.id, post.pilot_id, 2);
-          const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
+          const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }, { returnDocument: "after" }).lean();
           const populatedComment = await this.commentsService.getCommentById(comment.id);
           return { ...populatedComment, post: updatedPost };
         }
@@ -168,7 +173,7 @@ export class PostsService {
         const reply = await this.commentsService.createReply({ ...commentInput, pilot_id, post_id: post.id });
         await this.notificationService.pushNotification("Comment", reply.id, post.pilot_id, 2);
         await this.notificationService.pushNotification("Comment", reply.id, parentComment.pilot_id, 2);
-        const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }).lean();
+        const updatedPost = await this.postsModel.findOneAndUpdate({ id }, { number_of_comments: post.number_of_comments + 1 }, { returnDocument: "after" }).lean();
         const populatedComment = await this.commentsService.getCommentById(reply.id);
         return { ...populatedComment, post: updatedPost };
       }

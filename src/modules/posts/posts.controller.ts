@@ -90,8 +90,8 @@ export class PostsController {
         description: 'The record deleted',
         type: BasePost,
     })
-    async delete(@Param('id') id: string) {
-        return await this.postsService.delete(id);
+    async delete(@Param('id') id: string, @Req() req) {
+        return await this.postsService.delete(id, req.user.pilotId);
     }
 
     @Post(':post_id/like')

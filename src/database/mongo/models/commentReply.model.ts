@@ -40,3 +40,15 @@ CommentReplySchema.virtual("pilot", {
   foreignField: "id",
   justOne: true
 })
+
+CommentReplySchema.virtual("likes", {
+  ref: "CommentLike",
+  localField: "id",
+  foreignField: "comment_id",
+})
+
+CommentReplySchema.virtual("dislikes", {
+  ref: "CommentDislike",
+  localField: "id",
+  foreignField: "comment_id",
+})
