@@ -29,7 +29,7 @@ async function bootstrap() {
 //   app.use(json({ limit: '250mb' }));
 //   app.use(urlencoded({ extended: true, limit: '250mb' }));
 
-app.use(express.json({ limit: '250mb' }));
+// app.use(express.json({ limit: '250mb' }));
 
 const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
