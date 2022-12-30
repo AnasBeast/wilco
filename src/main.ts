@@ -26,8 +26,8 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
   //nest js transformes responses to their corresponding type for example if response type is String the response Content-Type is set to text/html
   //so there is no use for using json as a middleware
-  // app.use(json({ limit: '50mb' }));
-  // app.use(urlencoded({ extended: true, limit: '50mb' }));
+  app.use(json({ limit: '250mb' }));
+  app.use(urlencoded({ extended: true, limit: '250mb' }));
 
   const appConfig: AppConfigService = app.get(AppConfigService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
