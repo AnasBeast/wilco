@@ -119,6 +119,15 @@ export class PilotsController {
     return await this.pilotsService.searchByCommunities(community_name, +page, +per_page);
   }
 
+  @ApiTags('Pilots')
+  @ApiBearerAuth()
+  @Get('/searchByHomeAircraft/:aircraft_name')
+  @ApiOperation({ summary: 'Search Pilot By Community' })
+  @Pagination(true)
+    async getPilotsByAircraft(@Param('aircraft_name') aircraft_name: string, @Query() { page, per_page }: PaginationDTO) {
+    return await this.pilotsService.searchByAircraft(aircraft_name, +page, +per_page);
+  }
+
   // aircrafts
 
   @ApiTags('Aircrafts')

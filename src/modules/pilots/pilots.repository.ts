@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Aggregate, FilterQuery, Model, PipelineStage, ProjectionFields, UpdateQuery } from 'mongoose';
+import { AirCraft } from 'src/database/mongo/models/airCraft.model';
 import { CommunityTagsDocument, Community_tags } from 'src/database/mongo/models/community_tags.model';
 import { Pilot, PilotDocument } from 'src/database/mongo/models/pilot.model';
 
 @Injectable()
 export class PilotsRepository {
-  constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>, @InjectModel(Community_tags.name) private communityTagsModel: Model<CommunityTagsDocument>) {}
+  constructor(@InjectModel(Pilot.name) private pilotModel: Model<PilotDocument>, @InjectModel(Community_tags.name) 
+  private communityTagsModel: Model<CommunityTagsDocument>,
+  @InjectModel(AirCraft.name) private aircraftsModel: Model<AirCraft>
+  ) {}
 
   async getMeById(id: number) {
     return await this.pilotModel.findOne({ id }, {}, { populate: [{path: "aircrafts"}, {path:"certificates", populate: { path:"certificate", select: "id name custom -_id" }, transform: (doc) => doc.certificate }, {path:"ratings", populate: { path:"rating", select: "id name custom -_id" }, transform: (doc) => doc.rating }, {path:"roles", populate: { path:"role", select: "id name custom created_at updated_at -_id" }, transform: (doc) => doc.role },{path:"community_tags", populate: { path:"community", select: "name -_id" }, transform: (doc) => doc.community.name }] }).select("-_id -__v").lean()
@@ -48,6 +52,14 @@ export class PilotsRepository {
   async getPilotsCountByCommnityTags(community_ids: number[]) {
     return await this.communityTagsModel.find({ community_id: { $in: community_ids }, taggable_type: "Pilot" }).count();
   }
+
+  async getPilotsByAircrafts(name: string, page: number, per_page: number) {
+    const pilot_ids = await this.aircraftsModel.find({ make_and_model: { $regex: new RegExp(name), $options: 'i' } }).transform(res =>res.map(doc => doc.pilot_id));
+    const pilots =  await this.pilotModel.find({ id: { $in: pilot_ids } }).populate("aircrafts");
+    const count =  await this.pilotModel.find({ id: { $in: pilot_ids } }).count();
+    return {data:pilots,count}
+  }
+
 
   async getPilotDocumentByFilter(filter: FilterQuery<Pilot>): Promise<PilotDocument> {
     return await this.pilotModel.findOne(filter);

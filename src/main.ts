@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { AppConfigService } from './config/app/config.service';
 import { firebaseConfig } from './providers/firebase/config';
 import { swaggerConfig } from './providers/swagger/config';
+import { urlencoded, json } from 'express';
 
 const fb_admin = admin.initializeApp(firebaseConfig, "test-wilco")
 
@@ -35,6 +36,8 @@ async function bootstrap() {
   SwaggerModule.setup('/api/swagger', app, document);
 
   app.use(cookieParser(appConfig.jwtSecret));
+  app.use(json({ limit: '400mb' }));
+  app.use(urlencoded({ extended: true, limit: '400mb' }));
 
   app.enableCors({
     origin: appConfig.corsOrigin.split(/\s*,\s*/) ?? '*',

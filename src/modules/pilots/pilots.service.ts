@@ -231,6 +231,20 @@ export class PilotsService {
     }
   }
 
+  async searchByAircraft(name: string, page: number, per_page: number) {
+    const {data,count} = await this.pilotsRepository.getPilotsByAircrafts(name, page, per_page);
+    const pages = Math.ceil(count / per_page);
+    return {
+      data,
+      pagination: {
+        current: page,
+        pages,
+        first_page: (page - 1) * per_page === 0,
+        last_page: page === pages || pages === 0
+      }
+    }
+  }
+
   // aircrafts
   // create aircraft
   async createAircraft(body: AircraftObjectDTO, pilotId: number) {

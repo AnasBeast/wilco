@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import axios from "axios";
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { errors } from 'src/common/helpers/responses/error.helper';
 import { AirCraft } from 'src/database/mongo/models/airCraft.model';
 import { S3Service } from './../files/s3.service';
@@ -18,7 +19,12 @@ const api = axios.create({
 
 @Injectable()
 export class AirCraftService {
-  constructor(private airCraftsRepository: AirCraftsRepository, private s3Service: S3Service) {}
+  constructor(
+    @InjectModel(AirCraft.name)
+    private readonly model: Model<AirCraft>,
+    private airCraftsRepository: AirCraftsRepository, private s3Service: S3Service
+
+    ) {}
 
   async create(aircraft: AircraftObjectDTO, pilot_id: number) {
     const aircraftInput: AirCraftCreate = {
@@ -38,6 +44,14 @@ export class AirCraftService {
 
   async getAircraftByFilter(filter: FilterQuery<AirCraft>) {
     return await this.airCraftsRepository.getAirCraftByFilter(filter);
+  }
+
+  async getAircraftsByFilter(filter: FilterQuery<AirCraft>) {
+    return await this.airCraftsRepository.getAirCraftsByFilter(filter);
+  }
+
+  async findTransformedAircraftsByFilter(filter: FilterQuery<AirCraft>) {
+    return await this.model.find(filter).transform(res => res.map(doc => doc.id));
   }
 
   async getAircraftsByPilotId(pilot_id: number) {

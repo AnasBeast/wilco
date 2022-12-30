@@ -25,6 +25,7 @@ import { Comment, CommentSchema } from 'src/database/mongo/models/comment.model'
 import { Post, PostSchema } from 'src/database/mongo/models/post.model';
 import { Mention, MentionSchema } from 'src/database/mongo/models/mention.model';
 import { Report, ReportSchema } from 'src/database/mongo/models/reports.model';
+import { AirCraft, AirCraftSchema } from 'src/database/mongo/models/airCraft.model';
 @Module({
   imports: [MongooseModule.forFeatureAsync([
     { 
@@ -48,6 +49,10 @@ import { Report, ReportSchema } from 'src/database/mongo/models/reports.model';
     {
       name: Community_tags.name,
       useFactory: () => CommunityTagsSchema
+    },
+    {
+      name: AirCraft.name,
+      useFactory: () => AirCraftSchema
     },
     {
       name: Like.name,
