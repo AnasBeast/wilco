@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Query } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post, {}, { likes: number[], liked: boolean }>;
 
@@ -36,6 +36,10 @@ export class Post {
 
   @ApiProperty()
   @Prop({ default: [] })
+  photo_urls: string[];
+
+  @ApiProperty()
+  @Prop({ default: [] })
   photo_preview_urls: string[];
 
   @ApiProperty()
@@ -44,6 +48,14 @@ export class Post {
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+PostSchema.post("find", function(docs) {
+  docs.map(doc => doc.photo_urls = doc.photo_preview_urls);
+})
+
+PostSchema.post(["findOne", "findOneAndUpdate"], function(doc) {
+  doc.photo_urls = doc.photo_preview_urls;
+})
 
 PostSchema.virtual('pilot', {
   ref: 'Pilot',
