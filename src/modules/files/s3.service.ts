@@ -5,7 +5,7 @@ import { AWSConfigService } from './../../config/aws/config.service';
 
 @Injectable()
 export class S3Service {
-  constructor(private awsConfigService: AWSConfigService) {}
+  constructor(private awsConfigService: AWSConfigService) { }
   s3Client = new AWS.S3({
     region: this.awsConfigService.awsBucketRegion,
     endpoint: this.awsConfigService.awsEndpont,
@@ -19,9 +19,14 @@ export class S3Service {
 
   async parseFile(file) {
     try {
-      return { 
+      const base64Value = file
+        .replace(/^data:image\/\w+;base64,/, '')
+        .replace(/^data:video\/\w+;base64,/, '')
+
+      return {
         mimetype: file.split(';')[0].split('/')[1],
-        buffer: Buffer.from(file.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+        buffer: Buffer.from(base64Value, 'base64'),
+        contenttype: file.split(';')[0].split(':')[1]
       };
     } catch (e) {
       throw new BadRequestException(e);
@@ -30,7 +35,7 @@ export class S3Service {
 
   async uploadFile(fileToParse) {
     const file = await this.parseFile(fileToParse);
-    return await this.s3_upload(file.buffer, this.awsConfigService.awsBucketName, file.mimetype);
+    return await this.s3_upload(file.buffer, this.awsConfigService.awsBucketName, file.mimetype, file.contenttype);
   }
 
   async uploadFiles(files) {
@@ -51,13 +56,13 @@ export class S3Service {
     }
   }
 
-  async s3_upload(file, bucket, mimetype) {
+  async s3_upload(file, bucket, mimetype, contenttype) {
     const uploadParams = {
       Bucket: bucket,
       Key: String(new Date().getTime() + Math.floor(Math.random() * 100 + 1)) + "." + mimetype,
       Body: file,
       ACL: 'public-read',
-      ContentType: mimetype,
+      ContentType: contenttype,
       ContentEncoding: 'base64',
     };
 
