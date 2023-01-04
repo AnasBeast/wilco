@@ -101,7 +101,7 @@ export class PostsService {
         }
 
         
-        const post = await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, airports });
+        const post = await this.postsModel.create({  ...postData, photo_keys, photo_preview_urls, photo_urls: photo_preview_urls, airports });
         
         if (postData.flight) {
           this.postFlightService.createPostFlight({ ...postData.flight, post_id: post.id, track_url: postData.flight.track });
